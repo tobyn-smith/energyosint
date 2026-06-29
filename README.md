@@ -8,12 +8,11 @@ a rough overview and not as anything precise or operational.
 
 ![Map of exposure scores by state](outputs/exposure_map_r.png)
 
-Quick heads up before anything else: the numbers in the map above came from the
-project's built in sample data, not a live download. So treat the ranking as an
-example of what the project produces, not as a real finding. There is more on
-this further down.
+Note: the map above uses the built in sample data, not a live download. So the
+ranking is just an example of what comes out, not a real result. More on that
+below.
 
-## The short version 
+## The short version
 
 Every state gets one number, an "exposure score" from 0 to 100. A higher score
 means the state looks more exposed, meaning more likely to have trouble keeping
@@ -40,10 +39,9 @@ the weights and run it again. I put the most weight on outage burden, because
 how often the power really fails is the most direct evidence. The other two are
 more about the underlying setup.
 
-One thing worth knowing: the way the numbers are scaled actually changes the
-order a little. Arizona and Georgia trade the top spot depending on the setting.
-That is not a mistake, just a reminder that the ranking depends on a couple of
-reasonable choices.
+The scaling method also shifts the order a bit. Arizona and Georgia swap the top
+spot depending on which one you use, so the exact ranking depends on a few
+choices made in the settings.
 
 ## What you need to install
 
@@ -128,7 +126,7 @@ you want to see the numbers at each step.
 
 ![Bar chart of the most exposed states](outputs/ranked_states.png)
 
-## About the data, and the sample fallback
+## Data and the sample fallback
 
 The real generation data comes from the EIA open data service. Using it needs a
 free key. You request one at https://www.eia.gov/opendata, then save it where
@@ -145,10 +143,9 @@ a `source` column, and the program says so when it finishes, so you can always
 tell which one you got. The committed results in this repo were made with the
 sample, which is why the ranking should be read as an example.
 
-One honest gap: the outage numbers (SAIDI and SAIFI) do not have a clean
-download endpoint the way the generation data does, so for now those use the
-sample even when a key is set. There is a note in the code marking where a real
-loader would go.
+The outage numbers (SAIDI and SAIFI) do not have a clean download endpoint like
+the generation data, so for now they use the sample even when a key is set.
+There is a note in the code marking where a real loader would go.
 
 ## How the project is laid out
 
