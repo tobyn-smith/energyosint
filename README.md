@@ -166,6 +166,7 @@ analysis/
   weight_sensitivity.py  checks how much the weights move the ranking
 docs/            a small web page version of this project
 config.yaml      the weights and other settings
+METHODOLOGY.md   the longer write-up of the choices and limits
 ```
 
 ## How much the weights matter
@@ -177,6 +178,9 @@ matter how the weights are set, while others move around a lot. West Virginia,
 for instance, runs from 4th under an outage-heavy weighting to 23rd under a
 structure-heavy one. So the very top of the table is fairly stable, but the
 middle depends on the choices, which is worth keeping in mind when reading it.
+
+The full reasoning behind the components, the weights, and the limitations is
+written up in [METHODOLOGY.md](METHODOLOGY.md).
 
 ## Sources
 
