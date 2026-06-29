@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Grid Resilience Exposure Index</title>
+  <meta name="description" content="A public-data project ranking US states by how exposed their electricity systems look.">
+  <style>
+    :root {
+      --ink: #1f2328;
+      --muted: #57606a;
+      --line: #e4e7eb;
+      --accent: #b5462f;
+      --bg: #ffffff;
+      --panel: #faf8f7;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--bg);
+      font: 17px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    .wrap { max-width: 820px; margin: 0 auto; padding: 0 22px 80px; }
+    header { padding: 56px 0 8px; }
+    h1 { font-size: 2.1rem; line-height: 1.2; margin: 0 0 10px; }
+    h2 { font-size: 1.35rem; margin: 44px 0 12px; }
+    h3 { font-size: 1.05rem; margin: 26px 0 6px; }
+    p { margin: 0 0 16px; }
+    a { color: var(--accent); }
+    .lede { font-size: 1.15rem; color: var(--muted); }
+    .note {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-left: 3px solid var(--accent);
+      border-radius: 6px;
+      padding: 14px 18px;
+      font-size: 0.96rem;
+      color: var(--muted);
+    }
+    figure { margin: 24px 0; }
+    img { width: 100%; height: auto; border: 1px solid var(--line); border-radius: 8px; }
+    figcaption { font-size: 0.88rem; color: var(--muted); margin-top: 8px; }
+    table { border-collapse: collapse; width: 100%; margin: 18px 0; font-size: 0.96rem; }
+    th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); }
+    th { color: var(--muted); font-weight: 600; }
+    td.score { font-variant-numeric: tabular-nums; }
+    .bar { display: inline-block; height: 9px; background: var(--accent); border-radius: 3px; vertical-align: middle; margin-left: 8px; opacity: 0.85; }
+    ol, ul { padding-left: 22px; }
+    li { margin: 6px 0; }
+    .pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 0; padding: 0; list-style: none; }
+    .pills li {
+      margin: 0; padding: 4px 12px; font-size: 0.85rem;
+      background: var(--panel); border: 1px solid var(--line); border-radius: 999px; color: var(--muted);
+    }
+    code {
+      background: var(--panel); border: 1px solid var(--line); border-radius: 4px;
+      padding: 1px 6px; font-size: 0.88em;
+    }
+    footer { margin-top: 56px; padding-top: 22px; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>Grid Resilience Exposure Index</h1>
+    <p class="lede">A small data project that ranks US states by how exposed
+    their electricity systems look, using only public data.</p>
+  </header>
+
+  <p class="note">The numbers on this page come from the project's built in
+  sample data, not a live download. So read the ranking as an example of what
+  the project produces, not as a real finding.</p>
+
+  <figure>
+    <img src="assets/exposure_map.png" alt="US map shaded by exposure score, darker means more exposed">
+    <figcaption>Each state is shaded by its exposure score. Darker means more exposed.</figcaption>
+  </figure>
+
+  <h2>What the score means</h2>
+  <p>Every state gets one number from 0 to 100. A higher score means the state
+  looks more likely to struggle to keep the power on. That number is built from
+  three simpler pieces, all from public figures:</p>
+  <ol>
+    <li><strong>Outage burden.</strong> How often the power goes out and for how
+    long, using the industry measures SAIDI and SAIFI.</li>
+    <li><strong>Concentration.</strong> How much of a state's power leans on one
+    fuel type or one very large plant.</li>
+    <li><strong>Exposure deficit.</strong> Whether there is much spare capacity
+    above peak demand, and how varied the supply is.</li>
+  </ol>
+  <p>The three pieces are put on the same scale and blended. The weights live in
+  one settings file, so they are easy to change and re-run.</p>
+
+  <h2>Most exposed states (sample run)</h2>
+  <table>
+    <thead><tr><th>Rank</th><th>State</th><th>Score</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Arizona</td><td class="score">100.0<span class="bar" style="width:100px"></span></td></tr>
+      <tr><td>2</td><td>Georgia</td><td class="score">99.5<span class="bar" style="width:99px"></span></td></tr>
+      <tr><td>3</td><td>Mississippi</td><td class="score">89.2<span class="bar" style="width:89px"></span></td></tr>
+      <tr><td>4</td><td>New Mexico</td><td class="score">86.6<span class="bar" style="width:87px"></span></td></tr>
+      <tr><td>5</td><td>Texas</td><td class="score">84.7<span class="bar" style="width:85px"></span></td></tr>
+      <tr><td>6</td><td>Washington</td><td class="score">80.9<span class="bar" style="width:81px"></span></td></tr>
+      <tr><td>7</td><td>Michigan</td><td class="score">79.3<span class="bar" style="width:79px"></span></td></tr>
+      <tr><td>8</td><td>Nevada</td><td class="score">79.1<span class="bar" style="width:79px"></span></td></tr>
+      <tr><td>9</td><td>West Virginia</td><td class="score">76.0<span class="bar" style="width:76px"></span></td></tr>
+      <tr><td>10</td><td>Delaware</td><td class="score">74.4<span class="bar" style="width:74px"></span></td></tr>
+    </tbody>
+  </table>
+
+  <figure>
+    <img src="assets/ranked_states.png" alt="Bar chart of the most exposed states">
+    <figcaption>The same ranking as a bar chart, straight from the pipeline.</figcaption>
+  </figure>
+
+  <h2>How it was built</h2>
+  <p>The analysis runs in Python: it pulls the public data (or falls back to a
+  built in sample), cleans and joins it, scores each state, and writes the
+  charts and a results table. The map shown above is drawn in R with the
+  <code>usmap</code> package, which lays out all 50 states including Alaska and
+  Hawaii. The same results are also exported as a GeoPackage so they can be
+  opened in mapping software like QGIS.</p>
+
+  <h3>Skills this used</h3>
+  <ul class="pills">
+    <li>Python (intermediate)</li>
+    <li>R (intermediate)</li>
+    <li>GIS (beginner)</li>
+  </ul>
+  <p style="margin-top:14px">The GIS side is deliberately simple. It is a first
+  pass at working with map data: a shaded state map and an exported layer, with
+  room to go further later.</p>
+
+  <h2>Run it yourself</h2>
+  <p>With Python installed, from the project folder:</p>
+  <p><code>pip install -r requirements.txt</code><br>
+  <code>python pipeline.py</code></p>
+  <p>Full setup notes, including the optional R map and how to plug in a live
+  EIA data key, are in the
+  <a href="https://github.com/tobyn-smith/energyosint#readme">project README</a>.</p>
+
+  <footer>
+    <p>Built from US Energy Information Administration open data (Forms 860 and
+    861). Code and data on
+    <a href="https://github.com/tobyn-smith/energyosint">GitHub</a>.</p>
+  </footer>
+
+</div>
+</body>
+</html>
