@@ -162,10 +162,21 @@ grid/            the analysis code, split into small steps
   plots.py       the bar chart and the Python map
 pipeline.py      runs all the steps in order
 analysis/
-  exposure_map.R the R version of the map
+  exposure_map.R         the R version of the map
+  weight_sensitivity.py  checks how much the weights move the ranking
 docs/            a small web page version of this project
 config.yaml      the weights and other settings
 ```
+
+## How much the weights matter
+
+The weights are a judgement call, so `analysis/weight_sensitivity.py` re-scores
+the states under a few different weightings and prints which ones stay in the top
+10. On the sample data, six states (AZ, GA, MS, NM, TX, WA) land in the top 10 no
+matter how the weights are set, while others move around a lot. West Virginia,
+for instance, runs from 4th under an outage-heavy weighting to 23rd under a
+structure-heavy one. So the very top of the table is fairly stable, but the
+middle depends on the choices, which is worth keeping in mind when reading it.
 
 ## Sources
 
