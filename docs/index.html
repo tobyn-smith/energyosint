@@ -7,117 +7,88 @@
   <meta name="description" content="A public-data project ranking US states by how exposed their electricity systems look.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
   <style>
     :root {
-      --paper: #f3f2ed;
-      --panel: #fbfaf7;
-      --ink: #181714;
-      --gray: #6f6e67;
-      --hair: #dddbd2;
-      --accent: #c8401d;
-      --maxw: 1060px;
+      --paper: #f4f3ef;
+      --panel: #faf9f6;
+      --ink: #1a1916;
+      --gray: #6e6d66;
+      --hair: #e0ded6;
+      --accent: #c14625;
+      --maxw: 720px;
     }
     @media (prefers-color-scheme: dark) {
       :root {
-        --paper: #100f0e; --panel: #171614; --ink: #ecebe6;
-        --gray: #908e86; --hair: #272620; --accent: #e85a30;
+        --paper: #111110; --panel: #181716; --ink: #ecebe6;
+        --gray: #918f88; --hair: #28271f; --accent: #e0603a;
       }
     }
     * { box-sizing: border-box; }
-    html { -webkit-text-size-adjust: 100%; }
     body {
       margin: 0; background: var(--paper); color: var(--ink);
-      font: 16.5px/1.6 "Archivo", system-ui, sans-serif;
-      -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+      font: 17px/1.65 "Archivo", system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
     }
-    .top-rule { height: 3px; background: var(--accent); }
-    .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 28px; }
-    a { color: inherit; }
+    .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 26px; }
+    a { color: var(--ink); }
 
-    .mono {
-      font-family: "JetBrains Mono", ui-monospace, monospace;
-      text-transform: uppercase; letter-spacing: .07em;
-    }
+    header.bar { border-bottom: 1px solid var(--hair); }
+    header.bar .wrap { display: flex; align-items: center; justify-content: space-between; height: 60px; }
+    .wordmark { font-weight: 600; font-size: .98rem; letter-spacing: -.01em; }
+    header.bar nav a { color: var(--gray); text-decoration: none; font-size: .92rem; margin-left: 20px; }
+    header.bar nav a:hover { color: var(--ink); }
+    @media (max-width: 560px) { header.bar nav a:not(:last-child) { display: none; } }
 
-    /* header bar */
-    .bar { position: sticky; top: 0; z-index: 10; background: var(--paper); border-bottom: 1px solid var(--hair); }
-    .bar .wrap { display: flex; align-items: center; justify-content: space-between; height: 56px; }
-    .logo { font-family: "JetBrains Mono", monospace; font-weight: 600; font-size: 13px; letter-spacing: .04em; }
-    .bar nav a { font-family: "JetBrains Mono", monospace; font-size: 12px; letter-spacing: .05em; text-transform: uppercase; color: var(--gray); text-decoration: none; margin-left: 24px; }
-    .bar nav a:hover { color: var(--ink); }
-    @media (max-width: 640px) { .bar nav a:not(:last-child) { display: none; } }
+    .hero { padding: 76px 0 18px; }
+    h1 { font-weight: 700; font-size: clamp(2.3rem, 6vw, 3.6rem); line-height: 1.02; letter-spacing: -.035em; margin: 0 0 22px; }
+    .stand { font-size: 1.25rem; line-height: 1.45; color: var(--gray); margin: 0 0 28px; }
+    .hero-links { display: flex; gap: 26px; }
+    .hero-links a { font-size: .98rem; text-decoration: none; border-bottom: 1px solid var(--ink); padding-bottom: 2px; }
+    .hero-links a:hover { color: var(--accent); border-color: var(--accent); }
 
-    /* hero */
-    .hero { padding: 84px 0 60px; }
-    .hero .tag { font-family: "JetBrains Mono", monospace; font-size: 12px; letter-spacing: .07em; text-transform: uppercase; color: var(--accent); margin: 0 0 26px; }
-    h1 { font-weight: 700; font-size: clamp(2.5rem, 6.4vw, 4.4rem); line-height: .98; letter-spacing: -.035em; margin: 0 0 24px; max-width: 15ch; }
-    .stand { font-size: 1.24rem; line-height: 1.45; color: var(--gray); max-width: 44ch; margin: 0 0 30px; }
-    .meta { font-family: "JetBrains Mono", monospace; font-size: 12.5px; letter-spacing: .05em; text-transform: uppercase; color: var(--gray); margin: 0 0 28px; }
-    .links { display: flex; flex-wrap: wrap; gap: 22px; }
-    .ln { font-family: "JetBrains Mono", monospace; font-size: 13px; letter-spacing: .03em; text-transform: uppercase; text-decoration: none; color: var(--ink); border-bottom: 1px solid var(--ink); padding-bottom: 3px; }
-    .ln:hover { color: var(--accent); border-color: var(--accent); }
-
-    section { padding: 60px 0; border-top: 1px solid var(--hair); }
-    .kick { font-family: "JetBrains Mono", monospace; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--gray); margin: 0 0 18px; }
-    .kick b { color: var(--accent); font-weight: 500; }
-    h2 { font-weight: 600; font-size: clamp(1.5rem, 3.2vw, 2rem); letter-spacing: -.02em; margin: 0 0 14px; }
-    .sub { color: var(--gray); max-width: 60ch; margin: 0 0 8px; }
+    section { padding: 46px 0; }
+    section + section { border-top: 1px solid var(--hair); }
+    h2 { font-weight: 600; font-size: 1.5rem; letter-spacing: -.02em; margin: 0 0 16px; }
     p { margin: 0 0 16px; }
+    .lead { color: var(--gray); }
 
-    .note { border: 1px solid var(--hair); border-left: 2px solid var(--accent); padding: 16px 18px; color: var(--gray); font-size: .96rem; background: var(--panel); }
-    .note b { font-family: "JetBrains Mono", monospace; font-size: 11px; letter-spacing: .09em; text-transform: uppercase; color: var(--accent); display: block; margin-bottom: 5px; font-weight: 500; }
-
-    /* figures */
     figure { margin: 0; }
-    .cap { font-family: "JetBrains Mono", monospace; font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--gray); margin: 0 0 12px; }
-    .cap b { color: var(--accent); font-weight: 500; }
-    .box { border: 1px solid var(--hair); background: #fff; padding: 12px; }
-    .box img { display: block; width: 100%; height: auto; }
-    figcaption { font-size: .85rem; color: var(--gray); margin-top: 12px; }
+    figure img { display: block; width: 100%; height: auto; background: #fff; border: 1px solid var(--hair); border-radius: 3px; }
+    figcaption { font-size: .9rem; color: var(--gray); margin-top: 12px; line-height: 1.5; }
 
-    /* method as numbered rows */
-    .steps { border-top: 1px solid var(--ink); margin-top: 24px; }
-    .step { display: grid; grid-template-columns: 60px 1fr; gap: 22px; padding: 22px 2px; border-bottom: 1px solid var(--hair); }
-    .step .no { font-family: "JetBrains Mono", monospace; font-size: 13px; color: var(--accent); padding-top: 3px; }
-    .step h3 { font-size: 1.12rem; font-weight: 600; margin: 0 0 5px; letter-spacing: -.01em; }
-    .step p { margin: 0; color: var(--gray); font-size: .97rem; }
-    @media (max-width: 520px) { .step { grid-template-columns: 1fr; gap: 6px; } }
+    .step { display: grid; grid-template-columns: 28px 1fr; gap: 16px; padding: 18px 0; }
+    .step + .step { border-top: 1px solid var(--hair); }
+    .step .no { color: var(--accent); font-weight: 600; font-variant-numeric: tabular-nums; }
+    .step h3 { font-size: 1.08rem; font-weight: 600; margin: 0 0 4px; }
+    .step p { margin: 0; color: var(--gray); font-size: .98rem; }
 
-    /* results table */
-    table { width: 100%; border-collapse: collapse; margin-top: 22px; }
-    thead th { font-family: "JetBrains Mono", monospace; font-size: 11px; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; color: var(--gray); text-align: left; padding: 0 10px 10px; border-bottom: 1px solid var(--ink); }
-    tbody td { padding: 12px 10px; border-bottom: 1px solid var(--hair); }
-    tbody tr:hover td { background: color-mix(in srgb, var(--accent) 5%, transparent); }
-    td.n { font-family: "JetBrains Mono", monospace; color: var(--gray); width: 42px; font-size: .9rem; }
+    table { width: 100%; border-collapse: collapse; }
+    th { text-align: left; font-weight: 500; font-size: .85rem; color: var(--gray); padding: 0 8px 10px; border-bottom: 1px solid var(--ink); }
+    td { padding: 11px 8px; border-bottom: 1px solid var(--hair); font-variant-numeric: tabular-nums; }
+    td.n { color: var(--gray); width: 34px; }
     td.s { font-weight: 600; }
-    td.sc { font-family: "JetBrains Mono", monospace; text-align: right; width: 66px; font-size: .92rem; }
-    td.b { width: 42%; }
-    .track { height: 6px; background: var(--hair); }
+    td.sc { text-align: right; width: 62px; }
+    td.b { width: 44%; }
+    .track { height: 5px; background: var(--hair); border-radius: 3px; overflow: hidden; }
     .track i { display: block; height: 100%; background: var(--accent); }
 
-    /* tools */
-    .tags { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; margin: 18px 0 0; }
-    .tags li { font-family: "JetBrains Mono", monospace; font-size: 12px; letter-spacing: .03em; text-transform: uppercase; color: var(--gray); border: 1px solid var(--hair); padding: 5px 11px; }
-    .tags li b { color: var(--ink); font-weight: 500; }
-
-    pre { border: 1px solid var(--hair); background: var(--panel); padding: 18px; overflow-x: auto; margin: 6px 0 16px; font: 13.5px/1.7 "JetBrains Mono", monospace; color: var(--ink); }
+    pre { background: var(--panel); border: 1px solid var(--hair); border-radius: 4px; padding: 16px 18px; overflow-x: auto; margin: 4px 0 16px; font: 13.5px/1.7 "JetBrains Mono", ui-monospace, monospace; }
     pre .cmt { color: var(--gray); }
-    code { font-family: "JetBrains Mono", monospace; font-size: .88em; border: 1px solid var(--hair); padding: 1px 5px; }
-    pre code { border: 0; padding: 0; }
+    code { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: .88em; }
+    p code, li code { background: var(--panel); border: 1px solid var(--hair); border-radius: 3px; padding: 1px 5px; }
 
-    footer { border-top: 1px solid var(--hair); padding: 30px 0 56px; }
-    footer .wrap { display: flex; flex-wrap: wrap; gap: 10px 24px; justify-content: space-between; }
-    footer span, footer a { font-family: "JetBrains Mono", monospace; font-size: 11.5px; letter-spacing: .04em; text-transform: uppercase; color: var(--gray); text-decoration: none; }
+    footer { border-top: 1px solid var(--hair); padding: 28px 0 52px; }
+    footer p { margin: 0; font-size: .9rem; color: var(--gray); }
+    footer a { color: var(--gray); }
     footer a:hover { color: var(--ink); }
   </style>
 </head>
 <body>
-  <div class="top-rule"></div>
 
-  <div class="bar">
+  <header class="bar">
     <div class="wrap">
-      <span class="logo">GRID&nbsp;RESILIENCE</span>
+      <span class="wordmark">Grid Resilience</span>
       <nav>
         <a href="#method">Method</a>
         <a href="#results">Results</a>
@@ -125,142 +96,108 @@
         <a href="https://github.com/tobyn-smith/energyosint">GitHub</a>
       </nav>
     </div>
-  </div>
-
-  <header class="hero">
-    <div class="wrap">
-      <p class="tag">Energy security / open source</p>
-      <h1>Grid Resilience Exposure Index</h1>
-      <p class="stand">Ranking US states by how exposed their electricity systems look, using nothing but public data.</p>
-      <p class="meta">Public data only &nbsp;/&nbsp; 50 states + DC &nbsp;/&nbsp; Python &amp; R</p>
-      <div class="links">
-        <a class="ln" href="#results">See the results &rarr;</a>
-        <a class="ln" href="https://github.com/tobyn-smith/energyosint">View the code &#8599;</a>
-      </div>
-    </div>
   </header>
 
-  <main>
-    <section style="border-top:0; padding-top:0;">
-      <div class="wrap">
-        <p class="note"><b>Note</b>The numbers here use the built in sample data, not a live download,
-        so the ranking is an example of what the project outputs rather than a real result.</p>
-      </div>
-    </section>
+  <main class="wrap">
 
-    <section style="border-top:0; padding-top:36px;">
-      <div class="wrap">
-        <figure>
-          <p class="cap"><b>Fig. 01</b> &nbsp; Exposure score by state</p>
-          <div class="box"><img src="assets/exposure_map.png" alt="US map shaded by exposure score, darker means more exposed"></div>
-          <figcaption>Each state is shaded by its exposure score. Darker means more exposed.</figcaption>
-        </figure>
+    <div class="hero">
+      <h1>Grid Resilience Exposure Index</h1>
+      <p class="stand">Ranking US states by how exposed their electricity systems look, using nothing but public data.</p>
+      <div class="hero-links">
+        <a href="#results">See the results</a>
+        <a href="https://github.com/tobyn-smith/energyosint">View the code</a>
       </div>
+    </div>
+
+    <section>
+      <figure>
+        <img src="assets/exposure_map.png" alt="US map shaded by exposure score, darker means more exposed">
+        <figcaption>Each state is shaded by its exposure score, darker means more exposed. The figures
+        here use the project's sample data rather than a live download, so the ranking is illustrative.</figcaption>
+      </figure>
     </section>
 
     <section id="method">
-      <div class="wrap">
-        <p class="kick"><b>01</b> &nbsp;/&nbsp; Method</p>
-        <h2>What the score means</h2>
-        <p class="sub">Every state gets one number from 0 to 100. Higher means it looks more likely to
-        struggle to keep the power on. The number is built from three pieces, all from public figures.</p>
-        <div class="steps">
-          <div class="step">
-            <div class="no">01</div>
-            <div>
-              <h3>Outage burden</h3>
-              <p>How often the power goes out and for how long, using the industry measures SAIDI and SAIFI.</p>
-            </div>
-          </div>
-          <div class="step">
-            <div class="no">02</div>
-            <div>
-              <h3>Concentration</h3>
-              <p>How much of a state's power leans on one fuel type or a single very large plant.</p>
-            </div>
-          </div>
-          <div class="step">
-            <div class="no">03</div>
-            <div>
-              <h3>Exposure deficit</h3>
-              <p>Whether there is much spare capacity above peak demand, and how varied the supply is.</p>
-            </div>
-          </div>
+      <h2>What the score means</h2>
+      <p class="lead">Every state gets one number from 0 to 100. Higher means it looks more likely to
+      struggle to keep the power on. The number is built from three pieces, all from public figures.</p>
+      <div class="step">
+        <div class="no">1</div>
+        <div>
+          <h3>Outage burden</h3>
+          <p>How often the power goes out and for how long, using the industry measures SAIDI and SAIFI.</p>
         </div>
-        <p style="margin-top:22px">The three pieces are put on the same scale and blended. The weights
-        live in one settings file, so they are easy to change and re-run.</p>
       </div>
+      <div class="step">
+        <div class="no">2</div>
+        <div>
+          <h3>Concentration</h3>
+          <p>How much of a state's power leans on one fuel type or a single very large plant.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="no">3</div>
+        <div>
+          <h3>Exposure deficit</h3>
+          <p>Whether there is much spare capacity above peak demand, and how varied the supply is.</p>
+        </div>
+      </div>
+      <p style="margin-top:22px">The three pieces are put on the same scale and blended. The weights live
+      in one settings file, so they are easy to change and re-run.</p>
     </section>
 
     <section id="results">
-      <div class="wrap">
-        <p class="kick"><b>02</b> &nbsp;/&nbsp; Results</p>
-        <h2>Most exposed states</h2>
-        <p class="sub">Top ten from the sample run.</p>
-        <table>
-          <thead><tr><th>Rank</th><th>State</th><th>Exposure</th><th></th></tr></thead>
-          <tbody>
-            <tr><td class="n">01</td><td class="s">Arizona</td><td class="sc">100.0</td><td class="b"><div class="track"><i style="width:100%"></i></div></td></tr>
-            <tr><td class="n">02</td><td class="s">Georgia</td><td class="sc">99.5</td><td class="b"><div class="track"><i style="width:99.5%"></i></div></td></tr>
-            <tr><td class="n">03</td><td class="s">Mississippi</td><td class="sc">89.2</td><td class="b"><div class="track"><i style="width:89.2%"></i></div></td></tr>
-            <tr><td class="n">04</td><td class="s">New Mexico</td><td class="sc">86.6</td><td class="b"><div class="track"><i style="width:86.6%"></i></div></td></tr>
-            <tr><td class="n">05</td><td class="s">Texas</td><td class="sc">84.7</td><td class="b"><div class="track"><i style="width:84.7%"></i></div></td></tr>
-            <tr><td class="n">06</td><td class="s">Washington</td><td class="sc">80.9</td><td class="b"><div class="track"><i style="width:80.9%"></i></div></td></tr>
-            <tr><td class="n">07</td><td class="s">Michigan</td><td class="sc">79.3</td><td class="b"><div class="track"><i style="width:79.3%"></i></div></td></tr>
-            <tr><td class="n">08</td><td class="s">Nevada</td><td class="sc">79.1</td><td class="b"><div class="track"><i style="width:79.1%"></i></div></td></tr>
-            <tr><td class="n">09</td><td class="s">West Virginia</td><td class="sc">76.0</td><td class="b"><div class="track"><i style="width:76%"></i></div></td></tr>
-            <tr><td class="n">10</td><td class="s">Delaware</td><td class="sc">74.4</td><td class="b"><div class="track"><i style="width:74.4%"></i></div></td></tr>
-          </tbody>
-        </table>
-        <figure style="margin-top:34px">
-          <p class="cap"><b>Fig. 02</b> &nbsp; Ranking, bar chart</p>
-          <div class="box"><img src="assets/ranked_states.png" alt="Bar chart of the most exposed states"></div>
-        </figure>
-      </div>
+      <h2>Most exposed states</h2>
+      <p class="lead" style="margin-bottom:22px">Top ten from the sample run.</p>
+      <table>
+        <thead><tr><th>Rank</th><th>State</th><th>Score</th><th></th></tr></thead>
+        <tbody>
+          <tr><td class="n">1</td><td class="s">Arizona</td><td class="sc">100.0</td><td class="b"><div class="track"><i style="width:100%"></i></div></td></tr>
+          <tr><td class="n">2</td><td class="s">Georgia</td><td class="sc">99.5</td><td class="b"><div class="track"><i style="width:99.5%"></i></div></td></tr>
+          <tr><td class="n">3</td><td class="s">Mississippi</td><td class="sc">89.2</td><td class="b"><div class="track"><i style="width:89.2%"></i></div></td></tr>
+          <tr><td class="n">4</td><td class="s">New Mexico</td><td class="sc">86.6</td><td class="b"><div class="track"><i style="width:86.6%"></i></div></td></tr>
+          <tr><td class="n">5</td><td class="s">Texas</td><td class="sc">84.7</td><td class="b"><div class="track"><i style="width:84.7%"></i></div></td></tr>
+          <tr><td class="n">6</td><td class="s">Washington</td><td class="sc">80.9</td><td class="b"><div class="track"><i style="width:80.9%"></i></div></td></tr>
+          <tr><td class="n">7</td><td class="s">Michigan</td><td class="sc">79.3</td><td class="b"><div class="track"><i style="width:79.3%"></i></div></td></tr>
+          <tr><td class="n">8</td><td class="s">Nevada</td><td class="sc">79.1</td><td class="b"><div class="track"><i style="width:79.1%"></i></div></td></tr>
+          <tr><td class="n">9</td><td class="s">West Virginia</td><td class="sc">76.0</td><td class="b"><div class="track"><i style="width:76%"></i></div></td></tr>
+          <tr><td class="n">10</td><td class="s">Delaware</td><td class="sc">74.4</td><td class="b"><div class="track"><i style="width:74.4%"></i></div></td></tr>
+        </tbody>
+      </table>
+      <figure style="margin-top:30px">
+        <img src="assets/ranked_states.png" alt="Bar chart of the most exposed states">
+      </figure>
     </section>
 
     <section id="build">
-      <div class="wrap">
-        <p class="kick"><b>03</b> &nbsp;/&nbsp; Build</p>
-        <h2>How it was built</h2>
-        <p>The analysis runs in Python: it pulls the public data (or falls back to a built in sample),
-        cleans and joins it, scores each state, and writes the charts and a results table. The map is
-        drawn in R with the <code>usmap</code> package, which lays out all 50 states including Alaska
-        and Hawaii. The same results are exported as a GeoPackage, so they open in mapping software
-        like QGIS.</p>
-        <ul class="tags">
-          <li><b>Python</b> &middot; intermediate</li>
-          <li><b>R</b> &middot; intermediate</li>
-          <li><b>GIS</b> &middot; beginner</li>
-          <li>pandas</li>
-          <li>matplotlib</li>
-          <li>ggplot2</li>
-          <li>geopandas</li>
-        </ul>
-        <p style="margin-top:20px">The GIS part is basic for now. It is my first go at working with map
-        data: a shaded state map and an exported layer I can build on later.</p>
-      </div>
+      <h2>How it was built</h2>
+      <p>The analysis runs in Python: it pulls the public data (or falls back to a built in sample),
+      cleans and joins it, scores each state, and writes the charts and a results table. The map is
+      drawn in R with the <code>usmap</code> package, which lays out all 50 states including Alaska and
+      Hawaii. The same results are exported as a GeoPackage, so they open in mapping software like QGIS.</p>
+      <p class="lead">Built with pandas, matplotlib, ggplot2 and geopandas. Python and R at an
+      intermediate level; the GIS side is more of a first pass, a shaded state map and an exported
+      layer I can build on later.</p>
     </section>
 
     <section id="run">
-      <div class="wrap">
-        <p class="kick"><b>04</b> &nbsp;/&nbsp; Run</p>
-        <h2>Run it yourself</h2>
-        <p>With Python installed, from the project folder:</p>
-        <pre><code><span class="cmt"># install the libraries, then run the pipeline</span>
+      <h2>Run it yourself</h2>
+      <p>With Python installed, from the project folder:</p>
+      <pre><code><span class="cmt"># install the libraries, then run the pipeline</span>
 pip install -r requirements.txt
 python pipeline.py</code></pre>
-        <p>Full setup notes, including the optional R map and how to plug in a live EIA data key, are
-        in the <a href="https://github.com/tobyn-smith/energyosint#readme">project README</a>.</p>
-      </div>
+      <p>Full setup notes, including the optional R map and how to plug in a live EIA data key, are in
+      the <a href="https://github.com/tobyn-smith/energyosint#readme" style="color:var(--accent)">project README</a>.</p>
     </section>
+
   </main>
 
   <footer>
     <div class="wrap">
-      <span>US EIA open data &middot; Forms 860 / 861</span>
-      <a href="https://github.com/tobyn-smith/energyosint">github.com/tobyn-smith/energyosint</a>
+      <p>US EIA open data, Forms 860 and 861. Code at
+      <a href="https://github.com/tobyn-smith/energyosint">github.com/tobyn-smith/energyosint</a>.</p>
     </div>
   </footer>
+
 </body>
 </html>
