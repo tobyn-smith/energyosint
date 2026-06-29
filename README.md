@@ -13,7 +13,7 @@ project's built in sample data, not a live download. So treat the ranking as an
 example of what the project produces, not as a real finding. There is more on
 this further down.
 
-## The short version (no code needed to understand it)
+## The short version 
 
 Every state gets one number, an "exposure score" from 0 to 100. A higher score
 means the state looks more exposed, meaning more likely to have trouble keeping
