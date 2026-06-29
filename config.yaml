@@ -1,0 +1,23 @@
+# Pipeline settings. Defaults are fine for a first run.
+# Set EIA_API_KEY in your environment to pull live data instead of the
+# bundled synthetic fallback (free key: https://www.eia.gov/opendata/).
+
+region:
+  level: state          # only "state" is wired up at the moment
+  country: US
+
+sources:
+  eia_api_base: https://api.eia.gov/v2
+  allow_synthetic_fallback: true   # keep the run reproducible offline
+  cache_raw: true                  # write pulled tables to data/raw
+
+# Component weights for the composite. These are judgement calls, not gospel.
+# I started even and nudged outage burden up after eyeballing the spread.
+weights:
+  outage_burden: 0.45
+  infra_concentration: 0.30
+  exposure_deficit: 0.25
+
+scoring:
+  normalize: zscore     # zscore | minmax
+  top_n: 15
