@@ -7,12 +7,6 @@ from the same open sources that EIA, academics, and reporters already use.
 
 ## What it measures
 
-![Exposure index by state](outputs/exposure_map.png)
-
-*Example output. The committed results were generated from the synthetic
-fallback sample (see below), so the ranking is illustrative — point it at the
-live EIA API for real figures.*
-
 The exposure index blends three components, each a proxy built from public
 figures and oriented so that **higher = more exposed**:
 
@@ -65,8 +59,6 @@ Outputs:
 - `outputs/exposure_index.csv` — ranked scores with component breakdown
 - `outputs/ranked_states.png` — top-N bar chart
 - `outputs/exposure_map.png` — choropleth (only if `geopandas` is installed)
-
-![Top exposed states](outputs/ranked_states.png)
 
 ## Layout
 
