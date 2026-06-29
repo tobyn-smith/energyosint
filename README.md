@@ -121,6 +121,11 @@ After running, look in the `outputs` folder:
 - `exposure_states.gpkg` is the map data in a format you can open in free
   mapping software like QGIS, if you want to explore it as a real map layer.
 
+The Python map and the GeoPackage need an extra library called geopandas. If you
+want them, run `pip install geopandas` first. Without it the pipeline still runs
+and just skips those two files (it prints a line saying so). The bar chart and
+the results table do not need it.
+
 There is also a `data` folder with the cleaned table and the raw inputs, in case
 you want to see the numbers at each step.
 
@@ -158,6 +163,7 @@ grid/            the analysis code, split into small steps
 pipeline.py      runs all the steps in order
 analysis/
   exposure_map.R the R version of the map
+docs/            a small web page version of this project
 config.yaml      the weights and other settings
 ```
 
@@ -166,3 +172,7 @@ config.yaml      the weights and other settings
 - EIA Open Data, Forms 860 and 861, https://www.eia.gov/opendata
 - State map shapes: the R `usmap` package, and Natural Earth boundaries for the
   Python map
+
+## License
+
+MIT, see [LICENSE](LICENSE). Use it however you like.
