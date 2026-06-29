@@ -10,35 +10,38 @@ import numpy as np
 import pandas as pd
 
 
-def _fuel_hhi(group: pd.DataFrame) -> float:
-    """Herfindahl index of capacity across fuels (0-10000).
-
-    A state running everything off one fuel scores near 10000; a balanced
-    mix sits low. This is our stand-in for "how much does the grid lean on a
-    single resource type".
-    """
-    shares = group.groupby("fuel")["capacity_mw"].sum()
-    frac = shares / shares.sum()
-    return float((frac**2).sum() * 10_000)
-
-
-def _top_plant_share(group: pd.DataFrame) -> float:
-    total = group["capacity_mw"].sum()
-    return float(group["capacity_mw"].max() / total) if total else np.nan
-
-
 def concentration_by_state(plants: pd.DataFrame) -> pd.DataFrame:
-    out = []
-    for state, grp in plants.groupby("state"):
-        out.append({
-            "state": state,
-            "total_capacity_mw": round(grp["capacity_mw"].sum(), 1),
-            "n_plants": len(grp),
-            "fuel_hhi": round(_fuel_hhi(grp), 1),
-            "top_plant_share": round(_top_plant_share(grp), 4),
-            "n_fuels": grp["fuel"].nunique(),
+    """Vectorized aggregation of plant-level data by state.
+    
+    Uses pandas groupby aggregation instead of Python loops for better
+    performance on larger datasets.
+    """
+    def compute_state_metrics(state_group):
+        total_cap = state_group["capacity_mw"].sum()
+        
+        # Fuel HHI: Herfindahl index of capacity across fuels (0-10000)
+        fuel_shares = state_group.groupby("fuel")["capacity_mw"].sum()
+        fuel_frac = fuel_shares / total_cap
+        fuel_hhi = float((fuel_frac**2).sum() * 10_000)
+        
+        # Top plant share: fraction of total capacity from largest plant
+        top_share = float(state_group["capacity_mw"].max() / total_cap) if total_cap else np.nan
+        
+        # Fuel diversity
+        n_fuels = state_group["fuel"].nunique()
+        
+        return pd.Series({
+            "total_capacity_mw": round(total_cap, 1),
+            "n_plants": len(state_group),
+            "fuel_hhi": round(fuel_hhi, 1),
+            "top_plant_share": round(top_share, 4),
+            "n_fuels": n_fuels,
         })
-    return pd.DataFrame(out)
+    
+    # Apply vectorized computation per state
+    result = plants.groupby("state", as_index=False).apply(compute_state_metrics).reset_index(drop=True)
+    
+    return result[["state", "total_capacity_mw", "n_plants", "fuel_hhi", "top_plant_share", "n_fuels"]]
 
 
 def build_state_table(plants, reliability, demand) -> pd.DataFrame:
