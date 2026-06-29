@@ -164,19 +164,6 @@ analysis/
 config.yaml      the weights and other settings
 ```
 
-## Limits and things I would do next
-
-- State level numbers hide a lot. A state can look fine overall and still have
-  weak spots inside it.
-- The concentration measures are simple on purpose. They say nothing about the
-  transmission lines that move power around, which probably matter just as much,
-  but that data is harder to get cleanly.
-- The outage piece still uses sample data, as mentioned above. Wiring up the
-  real EIA reliability files is the obvious next step.
-- The code is written to work off a generic state column rather than assuming
-  the US everywhere, so in theory it could be pointed at another country, but I
-  have not actually tried that.
-
 ## Sources
 
 - EIA Open Data, Forms 860 and 861, https://www.eia.gov/opendata
