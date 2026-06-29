@@ -9,3 +9,6 @@ data/interim/
 
 # outputs/ is kept in the repo so the example results and README images show
 # up on GitHub. Delete locally and rerun to regenerate.
+
+# Local editor/agent config
+.claude/
