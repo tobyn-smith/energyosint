@@ -57,8 +57,10 @@ def run(cfg: dict) -> None:
     print("[4/4] plotting")
     bar = plots.ranked_bar(scored, cfg["scoring"]["top_n"], OUTPUTS / "ranked_states.png")
     print(f"      wrote {bar}")
-    cmap = plots.choropleth(scored, OUTPUTS / "exposure_map.png")
-    print(f"      wrote {cmap}" if cmap else "      choropleth skipped (geopandas not available)")
+    cmap = plots.choropleth(scored, OUTPUTS / "exposure_map.png",
+                            gpkg_path=OUTPUTS / "exposure_states.gpkg")
+    print(f"      wrote {cmap} (+ exposure_states.gpkg)" if cmap
+          else "      choropleth skipped (geopandas not available)")
 
     top = scored.head(cfg["scoring"]["top_n"])
     print("\nMost exposed (top of the ranking):")
