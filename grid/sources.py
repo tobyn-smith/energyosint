@@ -24,8 +24,8 @@ import requests
 
 RAW_DIR = Path("data/raw")
 
-# 50 states + DC. PR/territories left out — EIA reliability coverage is patchy
-# there and it would skew the normalization.
+# 50 states + DC. PR/territories left out because EIA reliability coverage is
+# patchy there and it would skew the normalization.
 STATES = [
     "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "DC", "FL", "GA", "HI",
     "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN",
@@ -202,8 +202,8 @@ def load_plants(cfg: dict) -> pd.DataFrame:
 
 def load_reliability(cfg: dict) -> pd.DataFrame:
     # A clean EIA-861 reliability endpoint isn't exposed in API v2 the way the
-    # capacity data is — it ships as bulk files. For a live build you'd parse
-    # the EIA-861 reliability workbook here. Until then, synthetic.
+    # capacity data is; it ships as bulk files. For a live build you'd parse the
+    # EIA-861 reliability workbook here. Until then, synthetic.
     return _maybe_cache(_synthetic_reliability(), "reliability", cfg)
 
 
