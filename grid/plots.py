@@ -10,11 +10,12 @@ import matplotlib.pyplot as plt
 
 def ranked_bar(scored, top_n: int, out_path: Path) -> Path:
     top = scored.head(top_n).iloc[::-1]   # reverse so #1 lands at the top
+    shown = len(top)                      # head() may return fewer than asked
 
-    fig, ax = plt.subplots(figsize=(8, 0.42 * len(top) + 1))
+    fig, ax = plt.subplots(figsize=(8, 0.42 * shown + 1))
     ax.barh(top["state"], top["exposure_score"], color="#b5462f")
     ax.set_xlabel("Exposure score (0 to 100)")
-    ax.set_title(f"Most exposed states, grid resilience index (top {top_n})")
+    ax.set_title(f"Most exposed states, grid resilience index (top {shown})")
     for y, v in zip(range(len(top)), top["exposure_score"]):
         ax.text(v + 0.6, y, f"{v:.0f}", va="center", fontsize=8)
     ax.margins(x=0.08)
