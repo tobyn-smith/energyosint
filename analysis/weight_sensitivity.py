@@ -49,6 +49,7 @@ def main():
     print("\nIn the top 10 under some weightings but not others:")
     print(movers.to_string())
 
+    Path("outputs").mkdir(exist_ok=True)
     ranks.sort_values("default").to_csv("outputs/rank_sensitivity.csv")
     print("\nwrote outputs/rank_sensitivity.csv")
 

@@ -79,7 +79,7 @@ def main() -> None:
     cfg = load_config(args.config)
     if args.normalize:
         cfg["scoring"]["normalize"] = args.normalize
-    if args.top_n:
+    if args.top_n is not None:
         cfg["scoring"]["top_n"] = args.top_n
 
     run(cfg)
