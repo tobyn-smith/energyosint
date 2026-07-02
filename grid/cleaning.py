@@ -21,12 +21,15 @@ def concentration_by_state(plants: pd.DataFrame) -> pd.DataFrame:
         fuel_frac = fuel_shares / total_cap
         fuel_hhi = float((fuel_frac**2).sum() * 10_000)
 
-        # Share of capacity sitting in the single largest plant.
-        top_share = float(state_group["capacity_mw"].max() / total_cap) if total_cap else np.nan
+        # Work at plant level: real EIA data has several generator rows per
+        # plant, so roll them up before counting plants or taking the largest.
+        # On the synthetic sample there is one row per plant, so this is a no-op.
+        plant_caps = state_group.groupby("plant_name")["capacity_mw"].sum()
+        top_share = float(plant_caps.max() / total_cap) if total_cap else np.nan
 
         return pd.Series({
             "total_capacity_mw": round(total_cap, 1),
-            "n_plants": len(state_group),
+            "n_plants": int(plant_caps.size),
             "fuel_hhi": round(fuel_hhi, 1),
             "top_plant_share": round(top_share, 4),
             "n_fuels": state_group["fuel"].nunique(),

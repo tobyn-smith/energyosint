@@ -191,12 +191,20 @@ def _live_plants(base: str, key: str) -> pd.DataFrame | None:
 # Public entry points
 # --------------------------------------------------------------------------- #
 
+def _no_synthetic(cfg: dict, what: str) -> None:
+    # Honour allow_synthetic_fallback: if it's off, refuse to quietly hand back
+    # sample data. Raise so the caller knows real data wasn't available.
+    if not cfg["sources"].get("allow_synthetic_fallback", True):
+        raise RuntimeError(f"no live {what} data available and allow_synthetic_fallback is off")
+
+
 def load_plants(cfg: dict) -> pd.DataFrame:
     key = _eia_key()
     if key:
         live = _live_plants(cfg["sources"]["eia_api_base"], key)
         if live is not None:
             return _maybe_cache(live, "plants", cfg)
+    _no_synthetic(cfg, "capacity")
     return _maybe_cache(_synthetic_plants(), "plants", cfg)
 
 
@@ -204,10 +212,12 @@ def load_reliability(cfg: dict) -> pd.DataFrame:
     # A clean EIA-861 reliability endpoint isn't exposed in API v2 the way the
     # capacity data is; it ships as bulk files. For a live build you'd parse the
     # EIA-861 reliability workbook here. Until then, synthetic.
+    _no_synthetic(cfg, "reliability")
     return _maybe_cache(_synthetic_reliability(), "reliability", cfg)
 
 
 def load_demand(cfg: dict, plants: pd.DataFrame) -> pd.DataFrame:
+    _no_synthetic(cfg, "demand")
     return _maybe_cache(_synthetic_demand(plants), "demand", cfg)
 
 
