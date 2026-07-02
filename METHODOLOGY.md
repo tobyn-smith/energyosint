@@ -38,8 +38,8 @@ Each component is built so that a higher value means more exposed.
 **Outage burden.** How much interruption customers actually see. SAIDI (minutes
 without power per year) does most of the work, with SAIFI (number of
 interruptions) as a lighter second signal. I combine them as 0.7 SAIDI and 0.3
-SAIFI after standardizing each. This is the most direct evidence of resilience,
-since it measures realized outcomes rather than structure.
+SAIFI after standardising each. This is the most direct evidence of resilience,
+since it measures realised outcomes rather than structure.
 
 **Concentration.** How much the supply leans on a single thing. Two parts: a
 Herfindahl index of capacity across fuel types (0 to 10000, higher when one fuel
@@ -55,7 +55,7 @@ combined 0.65 and 0.35.
 
 ## Putting them together
 
-Each component is standardized (z-score by default, with a min-max option), so
+Each component is standardised (z-score by default, with a min-max option), so
 the three sit on a common scale before they are combined. The composite uses the
 weights in `config.yaml`:
 
@@ -63,9 +63,9 @@ weights in `config.yaml`:
 - concentration 0.30
 - exposure deficit 0.25
 
-I put the most weight on outage burden because realized reliability is the most
+I put the most weight on outage burden because realised reliability is the most
 direct signal. The other two are structural proxies, so they count for less. The
-weights are normalized to sum to one, and the final composite is rescaled to a 0
+weights are normalised to sum to one, and the final composite is rescaled to a 0
 to 100 score for readability.
 
 The weights are a judgement call, which is the main reason they live in one file
@@ -81,7 +81,7 @@ runs from 4th under an outage-heavy weighting to 23rd under a structure-heavy
 one. So the very top is fairly stable, but the middle of the table should be read
 with that movement in mind.
 
-The choice of normalization matters too: Arizona and Georgia swap the top spot
+The choice of normalisation matters too: Arizona and Georgia swap the top spot
 between the z-score and min-max versions.
 
 ## Limitations

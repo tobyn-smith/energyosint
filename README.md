@@ -8,7 +8,7 @@ a rough overview and not as anything precise or operational.
 
 ![Map of exposure scores by state](outputs/exposure_map_r.png)
 
-Note: the map above uses the built in sample data, not a live download. So the
+Note: the map above uses the built-in sample data, not a live download. So the
 ranking is just an example of what comes out, not a real result. More on that
 below.
 
@@ -143,7 +143,7 @@ export EIA_API_KEY=your_key_here   # Mac or Linux
 ```
 
 If there is no key, or the download fails, the project quietly switches to a
-built in sample so it still runs from start to finish. Sample rows are marked in
+built-in sample so it still runs from start to finish. Sample rows are marked in
 a `source` column, and the program says so when it finishes, so you can always
 tell which one you got. The committed results in this repo were made with the
 sample, which is why the ranking should be read as an example.
