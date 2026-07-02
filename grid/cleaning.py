@@ -46,9 +46,11 @@ def build_state_table(plants, reliability, demand) -> pd.DataFrame:
     peak = df["peak_demand_mw"].replace(0, np.nan)
     df["capacity_margin"] = (df["total_capacity_mw"] / peak).round(3)
 
-    # Flag anything still missing after the joins rather than silently scoring
-    # a half-empty row.
-    key_cols = ["fuel_hhi", "saidi_minutes", "capacity_margin"]
+    # Drop any state missing an input the score depends on, rather than letting
+    # a NaN slip through and blow up the ranking later. These are all the
+    # columns scoring.py reads.
+    key_cols = ["fuel_hhi", "top_plant_share", "n_fuels",
+                "saidi_minutes", "saifi_events", "capacity_margin"]
     incomplete = df[key_cols].isna().any(axis=1)
     if incomplete.any():
         missing = ", ".join(df.loc[incomplete, "state"])

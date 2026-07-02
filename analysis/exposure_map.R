@@ -14,7 +14,11 @@ suppressPackageStartupMessages({
   library(ggplot2)
 })
 
-scores <- read.csv("outputs/exposure_index.csv", stringsAsFactors = FALSE)
+csv <- "outputs/exposure_index.csv"
+if (!file.exists(csv)) {
+  stop("outputs/exposure_index.csv not found, run `python pipeline.py` first", call. = FALSE)
+}
+scores <- read.csv(csv, stringsAsFactors = FALSE)
 
 # usmap matches on a column called "state" (it accepts the two-letter codes),
 # which is exactly what the CSV already has.
