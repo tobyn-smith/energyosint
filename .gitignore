@@ -3,7 +3,7 @@ __pycache__/
 .venv/
 venv/
 
-# Regenerable intermediates — rebuilt by `python pipeline.py`
+# Regenerable intermediates, rebuilt by `python pipeline.py`
 data/raw/
 data/interim/
 
