@@ -24,9 +24,9 @@ seeded synthetic sample so it still runs end to end. Sample rows are tagged in a
 `source` column. The committed results were produced from the sample, so the
 ranking shown in the repo is illustrative.
 
-One honest gap: EIA-861 reliability ships as bulk spreadsheets rather than a
-clean API route, so the outage component currently uses the synthetic path even
-when a key is set. The code marks where a real loader would slot in.
+EIA-861 reliability ships as bulk spreadsheets rather than a clean API route, so
+the outage component currently uses the synthetic path even when a key is set.
+The code marks where a real loader would slot in.
 
 State outlines for the maps come from the R `usmap` package and from Natural
 Earth (for the Python version).

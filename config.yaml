@@ -8,7 +8,7 @@ region:
 
 sources:
   eia_api_base: https://api.eia.gov/v2
-  allow_synthetic_fallback: true   # keep the run reproducible offline
+  allow_synthetic_fallback: true   # true falls back to the sample; false errors instead
   cache_raw: true                  # write pulled tables to data/raw
 
 # Component weights for the composite. These are judgement calls, not gospel.

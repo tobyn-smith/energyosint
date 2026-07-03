@@ -60,8 +60,8 @@ If you only want the analysis and the charts, you only need the first one.
 **R** (optional, only if you want to redraw the map yourself):
 
 1. Go to https://cran.r-project.org and install R.
-2. The map script will tell you which R add ons it needs, and you install those
-   from inside R with one line, shown later.
+2. The map needs two R packages, usmap and ggplot2. Install them with the one
+   line shown in step 3 below.
 
 ## How to run it
 
@@ -69,7 +69,7 @@ These steps assume you have opened a terminal and moved into the project folder.
 If you are not sure how to move into the folder, the usual command is `cd`
 followed by the path, for example `cd Downloads/energyosint`.
 
-**Step 1. Install the Python add ons the project uses.** This reads the list in
+**Step 1. Install the Python add-ons the project uses.** This reads the list in
 `requirements.txt` and installs everything in one go.
 
 ```
@@ -96,7 +96,7 @@ python pipeline.py --normalize minmax --top-n 10
 show up in the bar chart.
 
 **Step 3 (optional). Redraw the map in R.** If you installed R and want the R
-version of the map, run this once to get the add ons:
+version of the map, run this once to get the add-ons:
 
 ```
 Rscript -e "install.packages(c('usmap','ggplot2'))"
@@ -145,8 +145,10 @@ export EIA_API_KEY=your_key_here   # Mac or Linux
 If there is no key, or the download fails, the project quietly switches to a
 built-in sample so it still runs from start to finish. Sample rows are marked in
 a `source` column, and the program says so when it finishes, so you can always
-tell which one you got. The committed results in this repo were made with the
-sample, which is why the ranking should be read as an example.
+tell which one you got. If you would rather the run stop than fall back to sample
+data, set `allow_synthetic_fallback: false` in `config.yaml`. The committed
+results in this repo were made with the sample, which is why the ranking should
+be read as an example.
 
 The outage numbers (SAIDI and SAIFI) do not have a clean download endpoint like
 the generation data, so for now they use the sample even when a key is set.
