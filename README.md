@@ -190,6 +190,6 @@ written up in [METHODOLOGY.md](METHODOLOGY.md).
 - State map shapes: the R `usmap` package, and Natural Earth boundaries for the
   Python map
 
-## License
+## Licence
 
-MIT, see [LICENSE](LICENSE). Use it however you like.
+MIT licence, see [LICENSE](LICENSE). Use it however you like.
