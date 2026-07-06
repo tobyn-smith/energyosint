@@ -10,6 +10,7 @@ charts). Set EIA_API_KEY first if you want live capacity data.
 from __future__ import annotations
 
 import argparse
+import os
 from pathlib import Path
 
 import yaml
@@ -66,7 +67,11 @@ def run(cfg: dict) -> None:
     print("\nMost exposed (top of the ranking):")
     print(top[["rank", "state", "exposure_score"]].to_string(index=False))
     if origin == "synthetic":
-        print("\nNote: ran on the synthetic fallback. Set EIA_API_KEY for live capacity data.")
+        if os.environ.get("EIA_API_KEY", "").strip():
+            print("\nNote: used the synthetic capacity sample. EIA_API_KEY is set, but the live "
+                  "pull did not return usable data.")
+        else:
+            print("\nNote: ran on the synthetic fallback. Set EIA_API_KEY for live capacity data.")
 
 
 def main() -> None:
