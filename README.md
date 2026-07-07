@@ -4,7 +4,7 @@ This is a small data project I put together to look at which US states have the
 most exposed or least resilient electricity systems, using only public data.
 Everything here comes from open government sources, mostly the US Energy
 Information Administration (EIA). It works at the state level, so it is meant as
-a rough overview and not as anything precise or operational.
+a rough overview rather than anything precise or operational.
 
 ![Map of exposure scores by state](outputs/exposure_map_r.png)
 
