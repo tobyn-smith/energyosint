@@ -166,6 +166,7 @@ pipeline.py      runs all the steps in order
 analysis/
   exposure_map.R         the R version of the map
   weight_sensitivity.py  checks how much the weights move the ranking
+  regional_summary.py    averages the scores up to US Census regions
 docs/            a small web page version of this project
 config.yaml      the weights and other settings
 METHODOLOGY.md   the longer write-up of the choices and limits
@@ -183,6 +184,17 @@ middle depends on the choices, which is worth keeping in mind when reading it.
 
 The full reasoning behind the components, the weights, and the limitations is
 written up in [METHODOLOGY.md](METHODOLOGY.md).
+
+## A regional view
+
+`analysis/regional_summary.py` averages the state scores up to the four US Census
+regions, which is often an easier way to read the pattern. On the sample data the
+West comes out highest, and the telling part is that each region is exposed for a
+different reason: the West through tight capacity margins, the South through
+actual outages, and the Northeast and Midwest through how concentrated their
+supply is. It writes `outputs/regional_summary.csv` and the chart below.
+
+![Average exposure by US Census region](outputs/regional_exposure.png)
 
 ## Sources
 
