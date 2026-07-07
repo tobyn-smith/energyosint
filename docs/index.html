@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <script>document.documentElement.classList.add('js');</script>
   <style>
     :root {
       --paper: #f4f3ef;
@@ -71,7 +72,16 @@
     td.sc { text-align: right; width: 62px; }
     td.b { width: 44%; }
     .track { height: 5px; background: var(--hair); border-radius: 3px; overflow: hidden; }
-    .track i { display: block; height: 100%; background: var(--accent); }
+    .track i { display: block; height: 100%; background: var(--accent); transition: width .12s ease; }
+
+    .explorer .sliders { display: none; gap: 13px; max-width: 430px; margin: 0 0 26px; }
+    html.js .explorer .sliders { display: grid; }
+    .explorer label { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 5px 10px; font-size: .92rem; }
+    .explorer label span { font-variant-numeric: tabular-nums; color: var(--gray); }
+    .explorer input[type=range] { grid-column: 1 / -1; width: 100%; accent-color: var(--accent); margin: 0; }
+    .explorer button { justify-self: start; margin-top: 4px; font: inherit; font-size: .85rem; color: var(--gray); background: none; border: 1px solid var(--hair); padding: 5px 12px; cursor: pointer; }
+    .explorer button:hover { color: var(--ink); border-color: var(--ink); }
+    .hint { font-size: .85rem; color: var(--gray); margin-top: 16px; }
 
     pre { background: var(--panel); border: 1px solid var(--hair); border-radius: 4px; padding: 16px 18px; overflow-x: auto; margin: 4px 0 16px; font: 13.5px/1.7 "JetBrains Mono", ui-monospace, monospace; }
     pre .cmt { color: var(--gray); }
@@ -148,25 +158,42 @@
 
     <section id="results">
       <h2>Most exposed states</h2>
-      <p class="lead" style="margin-bottom:22px">Top ten from the sample run.</p>
-      <table>
-        <thead><tr><th>Rank</th><th>State</th><th>Score</th><th></th></tr></thead>
-        <tbody>
-          <tr><td class="n">1</td><td class="s">Arizona</td><td class="sc">100.0</td><td class="b"><div class="track"><i style="width:100%"></i></div></td></tr>
-          <tr><td class="n">2</td><td class="s">Georgia</td><td class="sc">99.5</td><td class="b"><div class="track"><i style="width:99.5%"></i></div></td></tr>
-          <tr><td class="n">3</td><td class="s">Mississippi</td><td class="sc">89.2</td><td class="b"><div class="track"><i style="width:89.2%"></i></div></td></tr>
-          <tr><td class="n">4</td><td class="s">New Mexico</td><td class="sc">86.6</td><td class="b"><div class="track"><i style="width:86.6%"></i></div></td></tr>
-          <tr><td class="n">5</td><td class="s">Texas</td><td class="sc">84.7</td><td class="b"><div class="track"><i style="width:84.7%"></i></div></td></tr>
-          <tr><td class="n">6</td><td class="s">Washington</td><td class="sc">80.9</td><td class="b"><div class="track"><i style="width:80.9%"></i></div></td></tr>
-          <tr><td class="n">7</td><td class="s">Michigan</td><td class="sc">79.3</td><td class="b"><div class="track"><i style="width:79.3%"></i></div></td></tr>
-          <tr><td class="n">8</td><td class="s">Nevada</td><td class="sc">79.1</td><td class="b"><div class="track"><i style="width:79.1%"></i></div></td></tr>
-          <tr><td class="n">9</td><td class="s">West Virginia</td><td class="sc">76.0</td><td class="b"><div class="track"><i style="width:76%"></i></div></td></tr>
-          <tr><td class="n">10</td><td class="s">Delaware</td><td class="sc">74.4</td><td class="b"><div class="track"><i style="width:74.4%"></i></div></td></tr>
-        </tbody>
-      </table>
-      <figure style="margin-top:30px">
-        <img src="assets/ranked_states.png" alt="Bar chart of the most exposed states">
-      </figure>
+      <p class="lead">The score blends three parts, and how much each one counts is a judgement
+      call. Drag the weights and the ranking re-sorts live.</p>
+
+      <div class="explorer">
+        <div class="sliders">
+          <label>Outage burden <span id="wO">45%</span>
+            <input type="range" id="sO" min="0" max="100" value="45" step="1" aria-label="Outage burden weight"></label>
+          <label>Concentration <span id="wC">30%</span>
+            <input type="range" id="sC" min="0" max="100" value="30" step="1" aria-label="Concentration weight"></label>
+          <label>Exposure deficit <span id="wD">25%</span>
+            <input type="range" id="sD" min="0" max="100" value="25" step="1" aria-label="Exposure deficit weight"></label>
+          <button id="reset" type="button">Reset to defaults</button>
+        </div>
+        <table>
+          <thead><tr><th>#</th><th>State</th><th>Score</th><th></th></tr></thead>
+          <tbody id="rows">
+            <tr><td class="n">1</td><td class="s">Arizona</td><td class="sc">100.0</td><td class="b"><div class="track"><i style="width:100%"></i></div></td></tr>
+            <tr><td class="n">2</td><td class="s">Georgia</td><td class="sc">99.5</td><td class="b"><div class="track"><i style="width:99.5%"></i></div></td></tr>
+            <tr><td class="n">3</td><td class="s">Mississippi</td><td class="sc">89.2</td><td class="b"><div class="track"><i style="width:89.2%"></i></div></td></tr>
+            <tr><td class="n">4</td><td class="s">New Mexico</td><td class="sc">86.6</td><td class="b"><div class="track"><i style="width:86.6%"></i></div></td></tr>
+            <tr><td class="n">5</td><td class="s">Texas</td><td class="sc">84.7</td><td class="b"><div class="track"><i style="width:84.7%"></i></div></td></tr>
+            <tr><td class="n">6</td><td class="s">Washington</td><td class="sc">80.9</td><td class="b"><div class="track"><i style="width:80.9%"></i></div></td></tr>
+            <tr><td class="n">7</td><td class="s">Michigan</td><td class="sc">79.3</td><td class="b"><div class="track"><i style="width:79.3%"></i></div></td></tr>
+            <tr><td class="n">8</td><td class="s">Nevada</td><td class="sc">79.1</td><td class="b"><div class="track"><i style="width:79.1%"></i></div></td></tr>
+            <tr><td class="n">9</td><td class="s">West Virginia</td><td class="sc">76.0</td><td class="b"><div class="track"><i style="width:76%"></i></div></td></tr>
+            <tr><td class="n">10</td><td class="s">Delaware</td><td class="sc">74.4</td><td class="b"><div class="track"><i style="width:74.4%"></i></div></td></tr>
+            <tr><td class="n">11</td><td class="s">New Hampshire</td><td class="sc">72.7</td><td class="b"><div class="track"><i style="width:72.7%"></i></div></td></tr>
+            <tr><td class="n">12</td><td class="s">Oregon</td><td class="sc">71.6</td><td class="b"><div class="track"><i style="width:71.6%"></i></div></td></tr>
+            <tr><td class="n">13</td><td class="s">Vermont</td><td class="sc">64.6</td><td class="b"><div class="track"><i style="width:64.6%"></i></div></td></tr>
+            <tr><td class="n">14</td><td class="s">South Dakota</td><td class="sc">63.7</td><td class="b"><div class="track"><i style="width:63.7%"></i></div></td></tr>
+            <tr><td class="n">15</td><td class="s">Arkansas</td><td class="sc">62.8</td><td class="b"><div class="track"><i style="width:62.8%"></i></div></td></tr>
+          </tbody>
+        </table>
+        <p class="hint">Showing the top 15. At the default 45 / 30 / 25 this matches the pipeline
+        output. Push the weight onto one part to watch states like West Virginia climb or slide.</p>
+      </div>
     </section>
 
     <section id="build">
@@ -198,6 +225,43 @@ python pipeline.py</code></pre>
       <a href="https://github.com/tobyn-smith/energyosint">github.com/tobyn-smith/energyosint</a>.</p>
     </div>
   </footer>
+
+  <script>
+    // Normalised component values per state, straight from exposure_index.csv.
+    // The score is a weighted blend of these three, min-max scaled to 0-100,
+    // which reproduces the Python scoring for any weighting.
+    const DATA = [{"s":"AZ","n":"Arizona","o":0.7174,"c":1.5805,"d":2.202},{"s":"GA","n":"Georgia","o":2.9162,"c":0.086,"d":-0.0122},{"s":"MS","n":"Mississippi","o":1.8967,"c":-0.1482,"d":0.9815},{"s":"NM","n":"New Mexico","o":-0.0432,"c":2.6196,"d":0.8654},{"s":"TX","n":"Texas","o":-0.1392,"c":2.3138,"d":1.1984},{"s":"WA","n":"Washington","o":0.1008,"c":1.445,"d":1.4001},{"s":"MI","n":"Michigan","o":0.1157,"c":1.7463,"d":0.8327},{"s":"NV","n":"Nevada","o":1.3509,"c":0.4812,"d":0.1115},{"s":"WV","n":"West Virginia","o":2.326,"c":-1.3918,"d":0.2678},{"s":"DE","n":"Delaware","o":2.4229,"c":-1.1648,"d":-0.3575},{"s":"NH","n":"New Hampshire","o":-0.4745,"c":2.2406,"d":0.5882},{"s":"OR","n":"Oregon","o":0.8495,"c":-0.4086,"d":1.2664},{"s":"VT","n":"Vermont","o":0.3337,"c":0.3594,"d":0.5048},{"s":"SD","n":"South Dakota","o":0.0027,"c":0.2188,"d":1.1807},{"s":"AR","n":"Arkansas","o":0.0262,"c":-0.0726,"d":1.3799},{"s":"AK","n":"Alaska","o":0.4123,"c":0.2149,"d":0.3385},{"s":"WY","n":"Wyoming","o":0.1535,"c":0.3867,"d":0.1721},{"s":"RI","n":"Rhode Island","o":-0.5969,"c":0.7485,"d":0.9714},{"s":"NC","n":"North Carolina","o":-0.413,"c":0.1296,"d":1.2739},{"s":"IL","n":"Illinois","o":-0.5406,"c":1.4059,"d":-0.1406},{"s":"OK","n":"Oklahoma","o":0.9152,"c":-0.7651,"d":-0.1886},{"s":"MA","n":"Massachusetts","o":0.9245,"c":-0.8869,"d":-0.1559},{"s":"NY","n":"New York","o":-0.1556,"c":0.527,"d":-0.012},{"s":"TN","n":"Tennessee","o":1.0842,"c":-0.5677,"d":-1.3334},{"s":"OH","n":"Ohio","o":0.4485,"c":-1.1465,"d":0.4973},{"s":"CA","n":"California","o":0.6993,"c":0.0456,"d":-1.4292},{"s":"NE","n":"Nebraska","o":-0.7123,"c":0.4239,"d":0.6259},{"s":"WI","n":"Wisconsin","o":0.5535,"c":-0.6199,"d":-0.6451},{"s":"LA","n":"Louisiana","o":-1.2707,"c":1.3909,"d":0.1492},{"s":"ME","n":"Maine","o":-0.4021,"c":0.0261,"d":0.1847},{"s":"AL","n":"Alabama","o":1.0616,"c":-0.1976,"d":-2.2739},{"s":"MT","n":"Montana","o":-0.0519,"c":-0.4599,"d":0.0056},{"s":"PA","n":"Pennsylvania","o":-0.2241,"c":-0.2196,"d":-0.2087},{"s":"ID","n":"Idaho","o":-0.8843,"c":-0.2864,"d":1.0067},{"s":"IA","n":"Iowa","o":-0.4513,"c":-0.1433,"d":-0.0851},{"s":"KY","n":"Kentucky","o":-0.7228,"c":-0.0114,"d":0.1468},{"s":"NJ","n":"New Jersey","o":-0.3352,"c":-1.0589,"d":0.409},{"s":"CO","n":"Colorado","o":-0.692,"c":0.2532,"d":-0.7206},{"s":"IN","n":"Indiana","o":-0.6384,"c":-0.0535,"d":-0.5391},{"s":"VA","n":"Virginia","o":-0.3349,"c":-1.3239,"d":-0.0651},{"s":"HI","n":"Hawaii","o":-0.5431,"c":-0.4016,"d":-1.0031},{"s":"MN","n":"Minnesota","o":-1.3968,"c":0.0483,"d":-0.0373},{"s":"DC","n":"District of Columbia","o":-1.1132,"c":-0.3481,"d":-0.3702},{"s":"KS","n":"Kansas","o":-1.0694,"c":-1.019,"d":0.2427},{"s":"CT","n":"Connecticut","o":-1.2183,"c":-0.0142,"d":-0.8089},{"s":"FL","n":"Florida","o":0.198,"c":-1.6648,"d":-1.573},{"s":"MD","n":"Maryland","o":-1.1533,"c":0.0441,"d":-1.3914},{"s":"ND","n":"North Dakota","o":-0.9814,"c":-0.6778,"d":-0.9753},{"s":"UT","n":"Utah","o":-1.3483,"c":-1.407,"d":-0.0626},{"s":"SC","n":"South Carolina","o":-1.7076,"c":-0.3586,"d":-1.0434},{"s":"MO","n":"Missouri","o":0.1052,"c":-1.9182,"d":-3.3708}];
+
+    const $ = (id) => document.getElementById(id);
+    const sO = $("sO"), sC = $("sC"), sD = $("sD"), rows = $("rows");
+
+    function render() {
+      const wo = +sO.value, wc = +sC.value, wd = +sD.value;
+      const sum = (wo + wc + wd) || 1;
+      $("wO").textContent = Math.round((wo / sum) * 100) + "%";
+      $("wC").textContent = Math.round((wc / sum) * 100) + "%";
+      $("wD").textContent = Math.round((wd / sum) * 100) + "%";
+
+      const scored = DATA.map((x) => ({ n: x.n, raw: (wo * x.o + wc * x.c + wd * x.d) / sum }));
+      let lo = Infinity, hi = -Infinity;
+      for (const s of scored) { if (s.raw < lo) lo = s.raw; if (s.raw > hi) hi = s.raw; }
+      const span = (hi - lo) || 1;
+      for (const s of scored) s.score = ((s.raw - lo) / span) * 100;
+      scored.sort((a, b) => b.score - a.score);
+
+      rows.innerHTML = scored.slice(0, 15).map((s, i) =>
+        `<tr><td class="n">${i + 1}</td><td class="s">${s.n}</td>` +
+        `<td class="sc">${s.score.toFixed(1)}</td>` +
+        `<td class="b"><div class="track"><i style="width:${s.score.toFixed(1)}%"></i></div></td></tr>`
+      ).join("");
+    }
+
+    [sO, sC, sD].forEach((el) => el.addEventListener("input", render));
+    $("reset").addEventListener("click", () => {
+      sO.value = 45; sC.value = 30; sD.value = 25; render();
+    });
+    render();
+  </script>
 
 </body>
 </html>

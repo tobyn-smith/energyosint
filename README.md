@@ -43,6 +43,10 @@ The scaling method also shifts the order a bit. Arizona and Georgia swap the top
 spot depending on which one you use, so the exact ranking depends on a few
 choices made in the settings.
 
+You can try this directly on the
+[project page](https://tobyn-smith.github.io/energyosint/): the three weights are
+sliders there, and the table re-ranks as you move them.
+
 ## What you need to install
 
 You do not have to be a programmer to run this, but you do need two free tools.
