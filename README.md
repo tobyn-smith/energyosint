@@ -171,6 +171,7 @@ analysis/
   exposure_map.R         the R version of the map
   weight_sensitivity.py  checks how much the weights move the ranking
   regional_summary.py    averages the scores up to US Census regions
+  component_overlap.py   checks whether the three parts overlap
 docs/            a small web page version of this project
 config.yaml      the weights and other settings
 METHODOLOGY.md   the longer write-up of the choices and limits
@@ -199,6 +200,16 @@ actual outages, and the Northeast and Midwest through how concentrated their
 supply is. It writes `outputs/regional_summary.csv` and the chart below.
 
 ![Average exposure by US Census region](outputs/regional_exposure.png)
+
+## Do the three parts overlap?
+
+`analysis/component_overlap.py` checks how much the three components correlate,
+since adding them up only makes sense if they are not all measuring the same
+thing. Outage burden turns out to be its own signal, but concentration and the
+exposure deficit move together (about 0.5 on the sample data): a state with a
+concentrated supply also tends to have a tighter, less varied one. So the index
+leans on that structural side of things a little twice, which is worth flagging
+rather than hiding.
 
 ## Sources
 

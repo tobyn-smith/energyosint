@@ -1,0 +1,4 @@
+,outage_burden,infra_concentration,exposure_deficit
+outage_burden,1.0,-0.13,0.05
+infra_concentration,-0.13,1.0,0.5
+exposure_deficit,0.05,0.5,1.0
