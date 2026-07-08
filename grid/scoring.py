@@ -66,5 +66,7 @@ def score(df: pd.DataFrame, weights: dict, normalize: str = "zscore") -> pd.Data
     comp["exposure_score"] = (_minmax(comp["exposure_index"]) * 100).round(1)
 
     result = df.merge(comp, on="state")
-    result["rank"] = result["exposure_score"].rank(ascending=False, method="min").astype(int)
+    # Rank on the underlying index, not the score rounded to one decimal, so two
+    # states that happen to round the same do not share a rank.
+    result["rank"] = result["exposure_index"].rank(ascending=False, method="min").astype(int)
     return result.sort_values("rank").reset_index(drop=True)
