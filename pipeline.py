@@ -80,6 +80,8 @@ def main() -> None:
     p.add_argument("--normalize", choices=["zscore", "minmax"])
     p.add_argument("--top-n", type=int)
     args = p.parse_args()
+    if args.top_n is not None and args.top_n < 1:
+        p.error("--top-n must be 1 or more")
 
     cfg = load_config(args.config)
     if args.normalize:
