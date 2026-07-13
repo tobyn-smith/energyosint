@@ -25,6 +25,29 @@ def ranked_bar(scored, top_n: int, out_path: Path) -> Path:
     return out_path
 
 
+def _boundary_file() -> "Path | None":
+    """Natural Earth state boundaries, fetched once and cached under data/raw.
+
+    geopandas can read straight from the URL, but its GDAL network layer can
+    stall for a long time, so we pull it with requests (which has a timeout) and
+    read the local copy instead. Returns the path, or None if the fetch fails.
+    """
+    import requests
+
+    cache = Path("data/raw/ne_110m_admin_1_states_provinces.zip")
+    if cache.exists():
+        return cache
+    url = "https://naciscdn.org/naturalearth/110m/cultural/ne_110m_admin_1_states_provinces.zip"
+    try:
+        r = requests.get(url, timeout=30)
+        r.raise_for_status()
+    except requests.RequestException:
+        return None
+    cache.parent.mkdir(parents=True, exist_ok=True)
+    cache.write_bytes(r.content)
+    return cache
+
+
 def choropleth(scored, out_path: Path, gpkg_path: Path | None = None) -> Path | None:
     """State map, only if geopandas is installed. Returns None otherwise.
 
@@ -36,11 +59,11 @@ def choropleth(scored, out_path: Path, gpkg_path: Path | None = None) -> Path | 
     except ImportError:
         return None
 
-    # Natural Earth admin-1 boundaries. If we can't reach them, skip the map
-    # rather than failing the whole run.
+    path = _boundary_file()
+    if path is None:
+        return None
     try:
-        url = "https://naciscdn.org/naturalearth/110m/cultural/ne_110m_admin_1_states_provinces.zip"
-        states = gpd.read_file(url)
+        states = gpd.read_file(path)
     except Exception:
         return None
 
