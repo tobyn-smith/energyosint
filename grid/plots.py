@@ -44,7 +44,9 @@ def _boundary_file() -> "Path | None":
     except requests.RequestException:
         return None
     cache.parent.mkdir(parents=True, exist_ok=True)
-    cache.write_bytes(r.content)
+    part = cache.with_suffix(".part")
+    part.write_bytes(r.content)
+    part.replace(cache)  # rename last, so an interrupted download never looks cached
     return cache
 
 
@@ -65,6 +67,7 @@ def choropleth(scored, out_path: Path, gpkg_path: Path | None = None) -> Path | 
     try:
         states = gpd.read_file(path)
     except Exception:
+        path.unlink(missing_ok=True)  # drop a damaged cache so the next run refetches
         return None
 
     states = states[states["iso_3166_2"].str.startswith("US-", na=False)].copy()

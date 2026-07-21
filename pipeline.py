@@ -60,8 +60,15 @@ def run(cfg: dict) -> None:
     print(f"      wrote {bar}")
     cmap = plots.choropleth(scored, OUTPUTS / "exposure_map.png",
                             gpkg_path=OUTPUTS / "exposure_states.gpkg")
-    print(f"      wrote {cmap} (+ exposure_states.gpkg)" if cmap
-          else "      choropleth skipped (geopandas not available)")
+    if cmap:
+        print(f"      wrote {cmap} (+ exposure_states.gpkg)")
+    else:
+        # The map can be skipped for two very different reasons, so say which.
+        try:
+            import geopandas  # noqa: F401
+            print("      map skipped (could not read the boundary file)")
+        except ImportError:
+            print("      map skipped (geopandas is not installed)")
 
     top = scored.head(cfg["scoring"]["top_n"])
     print("\nMost exposed (top of the ranking):")
