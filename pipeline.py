@@ -66,7 +66,7 @@ def run(cfg: dict) -> None:
         # The map can be skipped for two very different reasons, so say which.
         try:
             import geopandas  # noqa: F401
-            print("      map skipped (could not read the boundary file)")
+            print("      map skipped (could not get the boundary file)")
         except ImportError:
             print("      map skipped (geopandas is not installed)")
 
