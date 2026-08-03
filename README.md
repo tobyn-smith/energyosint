@@ -112,6 +112,9 @@ Then draw the map:
 Rscript analysis/exposure_map.R
 ```
 
+The other scripts in `analysis/` (the weight, regional and overlap checks) read
+what the pipeline writes, so run `python pipeline.py` before any of them.
+
 ## What you get
 
 After running, look in the `outputs` folder:
