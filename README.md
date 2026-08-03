@@ -197,7 +197,8 @@ regions, which is often an easier way to read the pattern. On the sample data th
 West comes out highest, and the telling part is that each region is exposed for a
 different reason: the West through tight capacity margins, the South through
 actual outages, and the Northeast and Midwest through how concentrated their
-supply is. It writes `outputs/regional_summary.csv` and the chart below.
+supply is. It writes `outputs/regional_summary.csv` and the chart below. Run it
+with `--level division` for the finer nine-way census split.
 
 ![Average exposure by US Census region](outputs/regional_exposure.png)
 
