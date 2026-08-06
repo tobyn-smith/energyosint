@@ -57,6 +57,19 @@
     .rank b { font-family: "Archivo"; font-size: 1.7rem; font-weight: 700; line-height: 1; }
     .rank span { font-size: .82rem; color: var(--gray); margin-top: 6px; }
 
+    .mix { margin: 18px 0 0; }
+    .mix .row { display: grid; grid-template-columns: 92px 1fr 44px; align-items: center; gap: 10px; margin: 7px 0; font-size: .95rem; }
+    .mix .track { height: 8px; background: var(--hair); border-radius: 3px; overflow: hidden; }
+    .mix .track i { display: block; height: 100%; background: var(--accent); }
+    .mix .pct { font-variant-numeric: tabular-nums; color: var(--gray); text-align: right; font-size: .88rem; }
+
+    table.plants { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: .92rem; }
+    table.plants th { text-align: left; font-weight: 500; font-size: .76rem; letter-spacing: .02em; color: var(--gray); padding: 0 8px 8px; border-bottom: 1px solid var(--ink); }
+    table.plants td { padding: 9px 8px; border-bottom: 1px solid var(--hair); font-variant-numeric: tabular-nums; }
+    table.plants td.name { font-weight: 600; font-variant-numeric: normal; }
+    table.plants td.fuel { color: var(--gray); font-variant-numeric: normal; }
+    .src { font-family: "JetBrains Mono", monospace; font-size: .74rem; letter-spacing: .04em; color: var(--gray); }
+
     footer { border-top: 1px solid var(--hair); padding: 26px 0 52px; }
     footer p { margin: 0; font-size: .9rem; color: var(--gray); }
     footer a { color: var(--gray); }
@@ -113,25 +126,54 @@
         <div><b>28 GW</b><span>of that is regulated utilities</span><br><small>the rest is IPPs and CHP</small></div>
       </div>
       <p>So Georgia is a big consumer and a big producer, sells more power than all but four states, yet
-      pays a fairly middling price for it. Natural gas does most of the generating, with nuclear the next
-      largest and coal shrinking.</p>
+      pays a fairly middling price for it.</p>
+    </section>
+
+    <section>
+      <h2>Where the power comes from</h2>
+      <p class="lead">Share of net generation by fuel, from EPA's eGRID for 2023 (a separate source from
+      the EIA totals above). Gas does most of it, nuclear is a clear second, and coal keeps shrinking as
+      solar grows.</p>
+      <div class="mix">
+        <div class="row"><span>Natural gas</span><div class="track"><i style="width:46%"></i></div><span class="pct">46%</span></div>
+        <div class="row"><span>Nuclear</span><div class="track"><i style="width:29%"></i></div><span class="pct">29%</span></div>
+        <div class="row"><span>Coal</span><div class="track"><i style="width:13%"></i></div><span class="pct">13%</span></div>
+        <div class="row"><span>Solar</span><div class="track"><i style="width:6%"></i></div><span class="pct">6%</span></div>
+        <div class="row"><span>Biomass</span><div class="track"><i style="width:4%"></i></div><span class="pct">4%</span></div>
+        <div class="row"><span>Hydro</span><div class="track"><i style="width:2%"></i></div><span class="pct">2%</span></div>
+      </div>
+      <p class="src" style="margin-top:12px">Source: EPA eGRID2023, Georgia plant records.</p>
     </section>
 
     <section>
       <h2>The big plants</h2>
       <p>Georgia's grid leans on a small number of very large stations, which is exactly the kind of
-      single-point concentration the index tries to pick up.</p>
+      single-point concentration the index tries to pick up. Its five biggest, from eGRID:</p>
+
+      <table class="plants">
+        <thead><tr><th>Plant</th><th>Fuel</th><th>Capacity</th><th>Generation</th><th>CO2</th></tr></thead>
+        <tbody>
+          <tr><td class="name">Vogtle</td><td class="fuel">nuclear</td><td>3,544 MW</td><td>23.0 TWh</td><td>none</td></tr>
+          <tr><td class="name">Bowen</td><td class="fuel">coal</td><td>3,499 MW</td><td>10.2 TWh</td><td>11.2M t</td></tr>
+          <tr><td class="name">McDonough</td><td class="fuel">gas</td><td>2,848 MW</td><td>17.8 TWh</td><td>7.1M t</td></tr>
+          <tr><td class="name">Scherer</td><td class="fuel">coal</td><td>2,673 MW</td><td>6.5 TWh</td><td>8.3M t</td></tr>
+          <tr><td class="name">Hatch</td><td class="fuel">nuclear</td><td>1,848 MW</td><td>14.3 TWh</td><td>none</td></tr>
+        </tbody>
+      </table>
+      <p class="src">Source: EPA eGRID2023. Generation in terawatt-hours; CO2 in millions of tons a year.</p>
 
       <h3>Plant Vogtle (nuclear)</h3>
-      <p>Vogtle is now the largest nuclear plant in the country. Its two new reactors, Units 3 and 4,
-      came online in 2023 and 2024, the first newly built US reactors in a generation. They add a big
-      block of steady, low-carbon baseload, which is the sort of thing that eases the "exposure deficit"
-      side of the score even as it deepens the reliance on one site.</p>
+      <p>Vogtle's two new reactors, Units 3 and 4, came online in 2023 and 2024, the first newly built US
+      reactors in a generation. The capacity above is the 2023 figure, before Unit 4 was running; with it,
+      Vogtle is around 4,500 MW and the largest nuclear plant in the country. That is a big block of steady,
+      low-carbon baseload, which eases the exposure-deficit side of the score even as it deepens the
+      reliance on one site.</p>
 
       <h3>Plant Scherer (coal)</h3>
-      <p>Scherer, near Juliette, is one of the largest coal-fired plants in the United States. Coal's
-      share has been falling in Georgia as gas and nuclear grow, but a plant this size still shapes both
-      the emissions picture and how much rides on a single asset.</p>
+      <p>Scherer, near Juliette, is one of the largest coal-fired plants in the United States, and at 8.3
+      million tons of CO2 in 2023 one of the bigger single emitters too. Coal's share has been falling in
+      Georgia as gas and nuclear grow, but a plant this size still shapes both the emissions picture and how
+      much rides on a single asset.</p>
 
       <p style="margin-top:18px">Most of the state is served by Georgia Power, a Southern Company utility,
       alongside a large set of electric membership cooperatives and municipal systems.</p>
@@ -169,8 +211,9 @@
   <footer>
     <div class="wrap">
       <p>Real figures: EIA Georgia electricity profile
-      (<a href="https://www.eia.gov/electricity/state/georgia/">eia.gov/electricity/state/georgia</a>),
-      2024, and NOAA's Storm Events Database
+      (<a href="https://www.eia.gov/electricity/state/georgia/">eia.gov/electricity/state/georgia</a>, 2024),
+      EPA eGRID2023 (<a href="https://www.epa.gov/egrid">epa.gov/egrid</a>) for the fuel mix and plants, and
+      NOAA's Storm Events Database
       (<a href="https://www.ncdc.noaa.gov/stormevents/">ncdc.noaa.gov/stormevents</a>). Index and code:
       <a href="https://github.com/tobyn-smith/energyosint">github.com/tobyn-smith/energyosint</a>.</p>
     </div>
