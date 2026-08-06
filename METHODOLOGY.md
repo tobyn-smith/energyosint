@@ -38,12 +38,14 @@ Each component is built so that a higher value means more exposed.
 **Outage burden.** How much interruption customers actually see. SAIDI (minutes
 without power per year) does most of the work, with SAIFI (number of
 interruptions) as a lighter second signal. I combine them as 0.7 SAIDI and 0.3
-SAIFI after standardising each. This is the most direct evidence of resilience,
-since it measures realised outcomes rather than structure.
+SAIFI after putting each on a common scale. This is the most direct evidence of
+resilience, since it measures what actually happened rather than how the system
+is built.
 
 **Concentration.** How much the supply leans on a single thing. Two parts: a
-Herfindahl index of capacity across fuel types (0 to 10000, higher when one fuel
-dominates), and the share of total capacity sitting in the single largest plant.
+Herfindahl index of capacity across fuel types (the same concentration score
+economists use for market share, from 0 to 10000, higher when one fuel dominates),
+and the share of total capacity sitting in the single largest plant.
 I weight these 0.6 and 0.4. The idea is that a grid riding on one fuel or one big
 asset has more to lose if that thing goes down.
 
@@ -55,16 +57,18 @@ combined 0.65 and 0.35.
 
 ## Putting them together
 
-Each component is standardised (z-score by default, with a min-max option), so
-the three sit on a common scale before they are combined. The composite uses the
-weights in `config.yaml`:
+Each component is put on a common scale before the three are combined (a z-score
+by default, which just measures how far each state sits above or below the
+average, with a min-max option as well), so no part dominates only because its
+raw numbers happen to be larger. The composite uses the weights in `config.yaml`:
 
 - outage burden 0.45
 - concentration 0.30
 - exposure deficit 0.25
 
-I put the most weight on outage burden because realised reliability is the most
-direct signal. The other two are structural proxies, so they count for less. The
+I put the most weight on outage burden because how often the power really fails
+is the most direct signal. The other two are more about how the system is built,
+so they count for less. The
 weights are normalised to sum to one, and the final composite is rescaled to a 0
 to 100 score for readability.
 
