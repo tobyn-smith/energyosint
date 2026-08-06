@@ -70,6 +70,17 @@
     table.plants td.fuel { color: var(--gray); font-variant-numeric: normal; }
     .src { font-family: "JetBrains Mono", monospace; font-size: .74rem; letter-spacing: .04em; color: var(--gray); }
 
+    .gamap { width: 100%; max-width: 400px; height: auto; display: block; margin: 10px auto 0; }
+    .ga-outline { fill: var(--panel); stroke: var(--gray); stroke-width: 1.1; }
+    .dot { stroke: var(--paper); stroke-width: .6; fill-opacity: .85; cursor: pointer; transition: stroke .1s; }
+    .dot:hover { stroke: var(--ink); stroke-width: 1.6; fill-opacity: 1; }
+    .d-gas { fill: #d0692e; } .d-coal { fill: #6f6a63; } .d-nuc { fill: #7d5bb0; } .d-sol { fill: #e0b23a; }
+    .d-bio { fill: #5fa05f; } .d-hyd { fill: #3f86c4; } .d-oil { fill: #9c6b52; }
+    .maplegend { display: flex; flex-wrap: wrap; gap: 7px 15px; justify-content: center; margin: 14px 0 0; font-size: .84rem; color: var(--gray); }
+    .maplegend span { display: inline-flex; align-items: center; gap: 6px; }
+    .maplegend i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+    .maptip { position: fixed; pointer-events: none; background: var(--ink); color: var(--paper); padding: 5px 9px; border-radius: 4px; font-size: .8rem; opacity: 0; transition: opacity .1s; z-index: 30; white-space: nowrap; }
+
     footer { border-top: 1px solid var(--hair); padding: 26px 0 52px; }
     footer p { margin: 0; font-size: .9rem; color: var(--gray); }
     footer a { color: var(--gray); }
@@ -179,6 +190,117 @@
     </section>
 
     <section>
+      <h2>Where the plants are</h2>
+      <p class="lead">Every Georgia plant of 50 MW or more from eGRID, placed roughly where it sits. Size is
+      capacity, colour is the fuel, and you can hover a dot for its name and size. The handful of big dots
+      are where most of the power actually comes from, spread across the state.</p>
+      <svg viewBox="0 0 552 634" class="gamap" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Map of Georgia power plants">
+  <path class="ga-outline" d="M 83.7,534.6 78.4,519.3 71.4,502.7 74.4,481.4 77.2,458.5 71.3,434.0 77.3,392.8 95.4,370.0 85.8,346.8 70.2,306.2 44.4,177.2 16.0,16.1 100.2,17.3 158.5,16.0 294.4,17.0 282.5,27.8 265.0,52.4 294.4,74.0 313.4,81.8 333.7,122.9 346.8,145.9 384.8,176.7 392.3,192.8 418.2,214.0 430.9,244.9 465.8,271.0 473.6,300.7 480.1,315.0 476.3,324.6 496.7,338.8 507.4,363.1 507.3,387.8 517.3,392.6 536.0,399.3 484.5,476.2 467.7,568.4 444.6,566.0 423.0,556.5 409.8,560.9 409.5,606.0 395.4,617.6 387.3,594.9 210.2,575.5 100.3,569.5 83.7,534.6 Z"/>
+  <circle class="dot d-sol" cx="400.8" cy="348.6" r="3.6" data-n="Live Oak Solar, LLC" data-f="solar" data-c="51"><title>Live Oak Solar, LLC, solar, 51 MW</title></circle>
+  <circle class="dot d-sol" cx="346.2" cy="427.0" r="3.6" data-n="Hazlehurst II" data-f="solar" data-c="52"><title>Hazlehurst II, solar, 52 MW</title></circle>
+  <circle class="dot d-bio" cx="181.5" cy="461.2" r="3.7" data-n="Albany Green Energy LLC" data-f="biomass" data-c="54"><title>Albany Green Energy LLC, biomass, 54 MW</title></circle>
+  <circle class="dot d-sol" cx="177.4" cy="507.9" r="3.7" data-n="OE_GA3" data-f="solar" data-c="58"><title>OE_GA3, solar, 58 MW</title></circle>
+  <circle class="dot d-bio" cx="266.7" cy="95.3" r="3.7" data-n="GRP Franklin Renewable Energy Facility" data-f="biomass" data-c="58"><title>GRP Franklin Renewable Energy Facility, biomass, 58 MW</title></circle>
+  <circle class="dot d-bio" cx="281.7" cy="138.8" r="3.7" data-n="GRP Madison Renewable Energy Facility" data-f="biomass" data-c="58"><title>GRP Madison Renewable Energy Facility, biomass, 58 MW</title></circle>
+  <circle class="dot d-bio" cx="179.8" cy="268.0" r="3.7" data-n="Piedmont Green Power" data-f="biomass" data-c="60"><title>Piedmont Green Power, biomass, 60 MW</title></circle>
+  <circle class="dot d-hyd" cx="84.3" cy="336.7" r="3.7" data-n="Oliver Dam" data-f="hydro" data-c="60"><title>Oliver Dam, hydro, 60 MW</title></circle>
+  <circle class="dot d-sol" cx="192.7" cy="420.7" r="3.7" data-n="SR DeSoto III" data-f="solar" data-c="60"><title>SR DeSoto III, solar, 60 MW</title></circle>
+  <circle class="dot d-sol" cx="189.6" cy="420.4" r="3.8" data-n="SR DeSoto II" data-f="solar" data-c="65"><title>SR DeSoto II, solar, 65 MW</title></circle>
+  <circle class="dot d-sol" cx="219.4" cy="352.2" r="3.8" data-n="SR Perry" data-f="solar" data-c="68"><title>SR Perry, solar, 68 MW</title></circle>
+  <circle class="dot d-bio" cx="429.1" cy="447.8" r="3.9" data-n="Jesup Plant" data-f="biomass" data-c="70"><title>Jesup Plant, biomass, 70 MW</title></circle>
+  <circle class="dot d-bio" cx="269.7" cy="573.0" r="3.9" data-n="PCA-Valdosta Mill" data-f="biomass" data-c="70"><title>PCA-Valdosta Mill, biomass, 70 MW</title></circle>
+  <circle class="dot d-sol" cx="392.6" cy="239.8" r="3.9" data-n="Hobnail Solar" data-f="solar" data-c="70"><title>Hobnail Solar, solar, 70 MW</title></circle>
+  <circle class="dot d-sol" cx="74.8" cy="501.5" r="3.9" data-n="SR Cedar Springs, LLC" data-f="solar" data-c="70"><title>SR Cedar Springs, LLC, solar, 70 MW</title></circle>
+  <circle class="dot d-oil" cx="48.5" cy="111.3" r="3.9" data-n="Inland Paperboard Packaging Rome" data-f="oil" data-c="70"><title>Inland Paperboard Packaging Rome, oil, 70 MW</title></circle>
+  <circle class="dot d-hyd" cx="259.6" cy="48.2" r="3.9" data-n="Tallulah Falls" data-f="hydro" data-c="72"><title>Tallulah Falls, hydro, 72 MW</title></circle>
+  <circle class="dot d-bio" cx="464.3" cy="510.6" r="3.9" data-n="Brunswick Cellulose" data-f="biomass" data-c="72"><title>Brunswick Cellulose, biomass, 72 MW</title></circle>
+  <circle class="dot d-bio" cx="503.9" cy="383.3" r="3.9" data-n="Port Wentworth Mill" data-f="biomass" data-c="72"><title>Port Wentworth Mill, biomass, 72 MW</title></circle>
+  <circle class="dot d-hyd" cx="63.7" cy="284.4" r="3.9" data-n="West Point (GA)" data-f="hydro" data-c="73"><title>West Point (GA), hydro, 73 MW</title></circle>
+  <circle class="dot d-bio" cx="234.2" cy="303.5" r="3.9" data-n="Riverwood International Macon Mill" data-f="biomass" data-c="73"><title>Riverwood International Macon Mill, biomass, 73 MW</title></circle>
+  <circle class="dot d-sol" cx="154.0" cy="420.3" r="3.9" data-n="SR Terrell" data-f="solar" data-c="74"><title>SR Terrell, solar, 74 MW</title></circle>
+  <circle class="dot d-sol" cx="399.9" cy="269.1" r="3.9" data-n="White Oak Solar, LLC" data-f="solar" data-c="76"><title>White Oak Solar, LLC, solar, 76 MW</title></circle>
+  <circle class="dot d-bio" cx="186.3" cy="370.6" r="4.0" data-n="Flint River Operations" data-f="biomass" data-c="77"><title>Flint River Operations, biomass, 77 MW</title></circle>
+  <circle class="dot d-sol" cx="124.3" cy="534.4" r="4.0" data-n="Decatur Parkway Solar Project, LLC" data-f="solar" data-c="80"><title>Decatur Parkway Solar Project, LLC, solar, 80 MW</title></circle>
+  <circle class="dot d-sol" cx="338.0" cy="225.7" r="4.0" data-n="Bulldog Solar LLC" data-f="solar" data-c="80"><title>Bulldog Solar LLC, solar, 80 MW</title></circle>
+  <circle class="dot d-sol" cx="106.5" cy="433.9" r="4.0" data-n="Lancaster Solar GA" data-f="solar" data-c="80"><title>Lancaster Solar GA, solar, 80 MW</title></circle>
+  <circle class="dot d-oil" cx="133.8" cy="544.9" r="4.0" data-n="Walton Bainbridge Power Facility" data-f="oil" data-c="80"><title>Walton Bainbridge Power Facility, oil, 80 MW</title></circle>
+  <circle class="dot d-bio" cx="319.8" cy="338.2" r="4.0" data-n="WestRock Southeast, LLC." data-f="biomass" data-c="82"><title>WestRock Southeast, LLC., biomass, 82 MW</title></circle>
+  <circle class="dot d-bio" cx="417.1" cy="231.2" r="4.0" data-n="Graphic Packaging International Augusta Mill" data-f="biomass" data-c="85"><title>Graphic Packaging International Augusta Mill, biomass, 85 MW</title></circle>
+  <circle class="dot d-sol" cx="330.2" cy="440.5" r="4.1" data-n="Snipesville" data-f="solar" data-c="86"><title>Snipesville, solar, 86 MW</title></circle>
+  <circle class="dot d-hyd" cx="114.0" cy="122.8" r="4.1" data-n="Allatoona" data-f="hydro" data-c="87"><title>Allatoona, hydro, 87 MW</title></circle>
+  <circle class="dot d-gas" cx="184.8" cy="483.2" r="4.2" data-n="Sowega Power Project" data-f="gas" data-c="100"><title>Sowega Power Project, gas, 100 MW</title></circle>
+  <circle class="dot d-sol" cx="113.5" cy="400.4" r="4.2" data-n="SR Lumpkin" data-f="solar" data-c="100"><title>SR Lumpkin, solar, 100 MW</title></circle>
+  <circle class="dot d-bio" cx="73.9" cy="511.8" r="4.2" data-n="Georgia-Pacific Cedar Springs" data-f="biomass" data-c="101"><title>Georgia-Pacific Cedar Springs, biomass, 101 MW</title></circle>
+  <circle class="dot d-sol" cx="165.5" cy="337.9" r="4.2" data-n="White Pine Solar, LLC" data-f="solar" data-c="101"><title>White Pine Solar, LLC, solar, 101 MW</title></circle>
+  <circle class="dot d-sol" cx="102.8" cy="479.4" r="4.2" data-n="SR Arlington II" data-f="solar" data-c="102"><title>SR Arlington II, solar, 102 MW</title></circle>
+  <circle class="dot d-sol" cx="163.4" cy="330.7" r="4.2" data-n="Butler Solar Project 103" data-f="solar" data-c="104"><title>Butler Solar Project 103, solar, 104 MW</title></circle>
+  <circle class="dot d-sol" cx="95.2" cy="462.7" r="4.3" data-n="SR Clay, LLC" data-f="solar" data-c="106"><title>SR Clay, LLC, solar, 106 MW</title></circle>
+  <circle class="dot d-sol" cx="328.5" cy="442.9" r="4.3" data-n="SR Snipesville III" data-f="solar" data-c="107"><title>SR Snipesville III, solar, 107 MW</title></circle>
+  <circle class="dot d-sol" cx="333.8" cy="441.4" r="4.3" data-n="SR Snipesville II" data-f="solar" data-c="107"><title>SR Snipesville II, solar, 107 MW</title></circle>
+  <circle class="dot d-sol" cx="188.7" cy="466.9" r="4.4" data-n="Dougherty County Solar, LLC" data-f="solar" data-c="120"><title>Dougherty County Solar, LLC, solar, 120 MW</title></circle>
+  <circle class="dot d-sol" cx="235.5" cy="315.2" r="4.5" data-n="Robins Air Force Base Solar" data-f="solar" data-c="128"><title>Robins Air Force Base Solar, solar, 128 MW</title></circle>
+  <circle class="dot d-hyd" cx="185.1" cy="123.0" r="4.5" data-n="Buford" data-f="hydro" data-c="131"><title>Buford, hydro, 131 MW</title></circle>
+  <circle class="dot d-oil" cx="499.2" cy="360.6" r="4.6" data-n="Savannah River Mill" data-f="oil" data-c="140"><title>Savannah River Mill, oil, 140 MW</title></circle>
+  <circle class="dot d-sol" cx="161.1" cy="327.9" r="4.6" data-n="Taylor County Solar" data-f="solar" data-c="148"><title>Taylor County Solar, solar, 148 MW</title></circle>
+  <circle class="dot d-sol" cx="232.5" cy="553.0" r="4.6" data-n="Quitman Solar" data-f="solar" data-c="150"><title>Quitman Solar, solar, 150 MW</title></circle>
+  <circle class="dot d-sol" cx="231.6" cy="551.3" r="4.6" data-n="Quitman II Solar" data-f="solar" data-c="150"><title>Quitman II Solar, solar, 150 MW</title></circle>
+  <circle class="dot d-bio" cx="507.7" cy="390.6" r="4.7" data-n="International Paper Savanna Mill" data-f="biomass" data-c="154"><title>International Paper Savanna Mill, biomass, 154 MW</title></circle>
+  <circle class="dot d-sol" cx="191.2" cy="418.3" r="4.8" data-n="SR DeSoto I, LLC" data-f="solar" data-c="165"><title>SR DeSoto I, LLC, solar, 165 MW</title></circle>
+  <circle class="dot d-hyd" cx="77.2" cy="452.3" r="4.8" data-n="Walter F George" data-f="hydro" data-c="168"><title>Walter F George, hydro, 168 MW</title></circle>
+  <circle class="dot d-sol" cx="168.6" cy="498.4" r="4.8" data-n="Camilla Solar Energy Project" data-f="solar" data-c="171"><title>Camilla Solar Energy Project, solar, 171 MW</title></circle>
+  <circle class="dot d-gas" cx="239.2" cy="328.4" r="4.9" data-n="Robins" data-f="gas" data-c="184"><title>Robins, gas, 184 MW</title></circle>
+  <circle class="dot d-sol" cx="249.1" cy="325.1" r="5.1" data-n="Twiggs Solar" data-f="solar" data-c="204"><title>Twiggs Solar, solar, 204 MW</title></circle>
+  <circle class="dot d-sol" cx="174.3" cy="498.4" r="5.3" data-n="Hickory Park Solar Hybrid" data-f="solar" data-c="236"><title>Hickory Park Solar Hybrid, solar, 236 MW</title></circle>
+  <circle class="dot d-gas" cx="210.3" cy="275.9" r="5.3" data-n="Smarr Energy Facility" data-f="gas" data-c="242"><title>Smarr Energy Facility, gas, 242 MW</title></circle>
+  <circle class="dot d-gas" cx="184.8" cy="483.2" r="5.3" data-n="Baconton Power" data-f="gas" data-c="242"><title>Baconton Power, gas, 242 MW</title></circle>
+  <circle class="dot d-sol" cx="119.2" cy="566.1" r="5.4" data-n="Cool Springs Solar (Hybrid)" data-f="solar" data-c="253"><title>Cool Springs Solar (Hybrid), solar, 253 MW</title></circle>
+  <circle class="dot d-oil" cx="439.5" cy="256.0" r="5.8" data-n="Allen B Wilson Combustion Turbine Plant" data-f="oil" data-c="318"><title>Allen B Wilson Combustion Turbine Plant, oil, 318 MW</title></circle>
+  <circle class="dot d-hyd" cx="285.6" cy="228.4" r="5.8" data-n="Wallace Dam" data-f="hydro" data-c="321"><title>Wallace Dam, hydro, 321 MW</title></circle>
+  <circle class="dot d-gas" cx="236.8" cy="340.6" r="5.8" data-n="Mid-Georgia Cogeneration" data-f="gas" data-c="323"><title>Mid-Georgia Cogeneration, gas, 323 MW</title></circle>
+  <circle class="dot d-gas" cx="322.5" cy="100.0" r="6.0" data-n="Hartwell Energy Facility" data-f="gas" data-c="360"><title>Hartwell Energy Facility, gas, 360 MW</title></circle>
+  <circle class="dot d-gas" cx="226.8" cy="168.5" r="6.1" data-n="MPC Generating" data-f="gas" data-c="386"><title>MPC Generating, gas, 386 MW</title></circle>
+  <circle class="dot d-gas" cx="226.4" cy="165.1" r="6.2" data-n="Doyle Energy Facility" data-f="gas" data-c="409"><title>Doyle Energy Facility, gas, 409 MW</title></circle>
+  <circle class="dot d-hyd" cx="322.2" cy="97.8" r="6.3" data-n="Hartwell Lake" data-f="hydro" data-c="420"><title>Hartwell Lake, hydro, 420 MW</title></circle>
+  <circle class="dot d-gas" cx="226.8" cy="168.1" r="6.6" data-n="Walton County Power" data-f="gas" data-c="494"><title>Walton County Power, gas, 494 MW</title></circle>
+  <circle class="dot d-gas" cx="85.3" cy="227.3" r="6.6" data-n="Hawk Road Energy Facility" data-f="gas" data-c="495"><title>Hawk Road Energy Facility, gas, 495 MW</title></circle>
+  <circle class="dot d-hyd" cx="120.0" cy="64.6" r="6.7" data-n="Carters" data-f="hydro" data-c="500"><title>Carters, hydro, 500 MW</title></circle>
+  <circle class="dot d-gas" cx="80.1" cy="221.0" r="6.8" data-n="Chattahoochee Energy Facility" data-f="gas" data-c="540"><title>Chattahoochee Energy Facility, gas, 540 MW</title></circle>
+  <circle class="dot d-oil" cx="461.6" cy="505.6" r="6.9" data-n="McManus" data-f="oil" data-c="560"><title>McManus, oil, 560 MW</title></circle>
+  <circle class="dot d-gas" cx="54.1" cy="150.7" r="7.0" data-n="Sewell Creek Energy" data-f="gas" data-c="570"><title>Sewell Creek Energy, gas, 570 MW</title></circle>
+  <circle class="dot d-gas" cx="79.9" cy="220.9" r="7.1" data-n="Wansley (7946)" data-f="gas" data-c="594"><title>Wansley (7946), gas, 594 MW</title></circle>
+  <circle class="dot d-gas" cx="490.2" cy="367.6" r="7.1" data-n="Bobby C. Smith Jr. Energy Facility" data-f="gas" data-c="597"><title>Bobby C. Smith Jr. Energy Facility, gas, 597 MW</title></circle>
+  <circle class="dot d-hyd" cx="347.0" cy="140.7" r="7.2" data-n="Richard B Russell" data-f="hydro" data-c="628"><title>Richard B Russell, hydro, 628 MW</title></circle>
+  <circle class="dot d-gas" cx="318.0" cy="258.4" r="7.5" data-n="AL Sandersville Energy Facility" data-f="gas" data-c="692"><title>AL Sandersville Energy Facility, gas, 692 MW</title></circle>
+  <circle class="dot d-gas" cx="160.1" cy="285.4" r="7.5" data-n="Edward L Addison Generating Plant" data-f="gas" data-c="701"><title>Edward L Addison Generating Plant, gas, 701 MW</title></circle>
+  <circle class="dot d-gas" cx="118.0" cy="327.1" r="7.6" data-n="Talbot Energy Facility" data-f="gas" data-c="726"><title>Talbot Energy Facility, gas, 726 MW</title></circle>
+  <circle class="dot d-gas" cx="305.0" cy="261.9" r="7.8" data-n="Washington County Power" data-f="gas" data-c="796"><title>Washington County Power, gas, 796 MW</title></circle>
+  <circle class="dot d-gas" cx="95.4" cy="213.9" r="7.9" data-n="Yates" data-f="gas" data-c="807"><title>Yates, gas, 807 MW</title></circle>
+  <circle class="dot d-gas" cx="502.9" cy="357.4" r="7.9" data-n="McIntosh (6124)" data-f="gas" data-c="810"><title>McIntosh (6124), gas, 810 MW</title></circle>
+  <circle class="dot d-hyd" cx="51.1" cy="97.9" r="8.0" data-n="Rocky Mountain Hydroelectric Plant" data-f="hydro" data-c="848"><title>Rocky Mountain Hydroelectric Plant, hydro, 848 MW</title></circle>
+  <circle class="dot d-gas" cx="259.3" cy="138.6" r="8.3" data-n="Dahlberg (Jackson County)" data-f="gas" data-c="919"><title>Dahlberg (Jackson County), gas, 919 MW</title></circle>
+  <circle class="dot d-gas" cx="84.4" cy="228.2" r="8.8" data-n="Tenaska Georgia Generating Station" data-f="gas" data-c="1,099"><title>Tenaska Georgia Generating Station, gas, 1,099 MW</title></circle>
+  <circle class="dot d-gas" cx="93.3" cy="52.0" r="9.1" data-n="Thomas A. Smith Energy Facility" data-f="gas" data-c="1,192"><title>Thomas A. Smith Energy Facility, gas, 1,192 MW</title></circle>
+  <circle class="dot d-gas" cx="80.3" cy="221.1" r="9.2" data-n="Wansley CC (55965)" data-f="gas" data-c="1,239"><title>Wansley CC (55965), gas, 1,239 MW</title></circle>
+  <circle class="dot d-gas" cx="501.4" cy="358.5" r="9.6" data-n="McIntosh Combined Cycle Facility" data-f="gas" data-c="1,377"><title>McIntosh Combined Cycle Facility, gas, 1,377 MW</title></circle>
+  <circle class="dot d-nuc" cx="374.4" cy="412.1" r="10.8" data-n="Edwin I Hatch" data-f="nuclear" data-c="1,848"><title>Edwin I Hatch, nuclear, 1,848 MW</title></circle>
+  <circle class="dot d-coal" cx="214.6" cy="266.0" r="12.5" data-n="Scherer" data-f="coal" data-c="2,673"><title>Scherer, coal, 2,673 MW</title></circle>
+  <circle class="dot d-gas" cx="141.6" cy="166.9" r="12.9" data-n="Jack McDonough" data-f="gas" data-c="2,848"><title>Jack McDonough, gas, 2,848 MW</title></circle>
+  <circle class="dot d-coal" cx="92.8" cy="127.8" r="14.0" data-n="Bowen" data-f="coal" data-c="3,499"><title>Bowen, coal, 3,499 MW</title></circle>
+  <circle class="dot d-nuc" cx="438.0" cy="255.3" r="14.1" data-n="Vogtle" data-f="nuclear" data-c="3,544"><title>Vogtle, nuclear, 3,544 MW</title></circle>
+</svg>
+      <div class="maplegend">
+        <span><i style="background:#d0692e"></i>gas</span>
+        <span><i style="background:#6f6a63"></i>coal</span>
+        <span><i style="background:#7d5bb0"></i>nuclear</span>
+        <span><i style="background:#e0b23a"></i>solar</span>
+        <span><i style="background:#5fa05f"></i>biomass</span>
+        <span><i style="background:#3f86c4"></i>hydro</span>
+        <span><i style="background:#9c6b52"></i>oil</span>
+      </div>
+      <p class="src" style="margin-top:14px">Source: EPA eGRID2023, plants of 50 MW and up. Hover for details.</p>
+    </section>
+
+    <section>
       <h2>The storms behind the outages</h2>
       <p>So why does Georgia score high on outages? A second open source helps here. NOAA's Storm Events
       Database logs the severe weather that takes the power down, and Georgia gets a lot of it: hurricanes
@@ -217,6 +339,20 @@
       <a href="https://github.com/tobyn-smith/energyosint">github.com/tobyn-smith/energyosint</a>.</p>
     </div>
   </footer>
+
+  <div class="maptip" id="maptip"></div>
+  <script>
+    const tip = document.getElementById("maptip");
+    document.querySelectorAll(".gamap .dot").forEach((d) => {
+      d.addEventListener("mousemove", (e) => {
+        tip.textContent = `${d.dataset.n} (${d.dataset.f}, ${d.dataset.c} MW)`;
+        tip.style.left = (e.clientX + 12) + "px";
+        tip.style.top = (e.clientY + 14) + "px";
+        tip.style.opacity = "1";
+      });
+      d.addEventListener("mouseleave", () => { tip.style.opacity = "0"; });
+    });
+  </script>
 
 </body>
 </html>
