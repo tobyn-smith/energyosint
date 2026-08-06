@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Georgia: a closer look | Grid Resilience Exposure Index</title>
+  <meta name="description" content="A closer look at Georgia's electricity system, pairing the exposure index with real EIA figures.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper: #f4f3ef; --panel: #faf9f6; --ink: #1a1916; --gray: #6e6d66;
+      --hair: #e0ded6; --accent: #c14625; --maxw: 760px;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --paper: #111110; --panel: #181716; --ink: #ecebe6; --gray: #918f88; --hair: #28271f; --accent: #e0603a; }
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--paper); color: var(--ink);
+      font: 17px/1.65 "Archivo", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+    .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 26px; }
+    a { color: var(--ink); }
+
+    header.bar { border-bottom: 1px solid var(--hair); }
+    header.bar .wrap { display: flex; align-items: center; justify-content: space-between; height: 60px; }
+    .wordmark { font-weight: 600; font-size: .98rem; }
+    header.bar nav a { color: var(--gray); text-decoration: none; font-size: .92rem; margin-left: 20px; }
+    header.bar nav a:hover { color: var(--ink); }
+
+    .hero { padding: 66px 0 14px; }
+    .kicker { font-family: "JetBrains Mono", monospace; font-size: .8rem; letter-spacing: .06em;
+      text-transform: uppercase; color: var(--accent); margin: 0 0 16px; }
+    h1 { font-weight: 700; font-size: clamp(2.2rem, 6vw, 3.4rem); line-height: 1.03; letter-spacing: -.035em; margin: 0 0 20px; }
+    .stand { font-size: 1.22rem; line-height: 1.45; color: var(--gray); margin: 0; }
+
+    section { padding: 40px 0; }
+    section + section { border-top: 1px solid var(--hair); }
+    h2 { font-weight: 600; font-size: 1.45rem; letter-spacing: -.02em; margin: 0 0 14px; }
+    h3 { font-weight: 600; font-size: 1.05rem; margin: 22px 0 4px; }
+    p { margin: 0 0 16px; }
+    .lead { color: var(--gray); }
+
+    .note { border: 1px solid var(--hair); border-left: 2px solid var(--accent); background: var(--panel);
+      padding: 14px 16px; color: var(--gray); font-size: .95rem; }
+
+    .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--hair);
+      border: 1px solid var(--hair); margin: 20px 0; }
+    .stats div { background: var(--paper); padding: 16px 18px; }
+    .stats b { display: block; font-size: 1.5rem; font-weight: 700; letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
+    .stats span { font-size: .86rem; color: var(--gray); }
+    .stats small { color: var(--accent); font-family: "JetBrains Mono", monospace; font-size: .72rem; }
+    @media (max-width: 520px) { .stats { grid-template-columns: 1fr; } }
+
+    .rank { display: flex; flex-wrap: wrap; gap: 26px; margin: 18px 0 0; }
+    .rank div { display: flex; flex-direction: column; }
+    .rank b { font-family: "Archivo"; font-size: 1.7rem; font-weight: 700; line-height: 1; }
+    .rank span { font-size: .82rem; color: var(--gray); margin-top: 6px; }
+
+    footer { border-top: 1px solid var(--hair); padding: 26px 0 52px; }
+    footer p { margin: 0; font-size: .9rem; color: var(--gray); }
+    footer a { color: var(--gray); }
+    ul { padding-left: 20px; } li { margin: 6px 0; }
+  </style>
+</head>
+<body>
+
+  <header class="bar">
+    <div class="wrap">
+      <span class="wordmark">Grid Resilience</span>
+      <nav>
+        <a href="index.html">Back to the index</a>
+        <a href="https://github.com/tobyn-smith/energyosint">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <div class="hero">
+      <p class="kicker">State deep dive</p>
+      <h1>Georgia: a closer look</h1>
+      <p class="stand">A fifty-state index is a blunt tool. Georgia is where I live, so this pairs the
+      project's score with Georgia's real figures from the EIA and asks what actually sits behind them.</p>
+    </div>
+
+    <section>
+      <h2>Where Georgia sits in the index</h2>
+      <p class="lead">In this project's ranking Georgia comes out near the very top, and the reason is
+      specific: not its structure, but how much interruption customers actually see.</p>
+      <div class="rank">
+        <div><b>2nd</b><span>of 51 states and DC</span></div>
+        <div><b>99.5</b><span>exposure score (0 to 100)</span></div>
+        <div><b>Outage burden</b><span>what mostly drives it</span></div>
+        <div><b>South</b><span>census region</span></div>
+      </div>
+      <p style="margin-top:20px">The index scores Georgia high mainly on outage burden (the SAIDI and
+      SAIFI reliability measures), and only middling on concentration and spare capacity. That is a
+      Southeast pattern: storms and heat drive interruptions more than the mix of plants does. These
+      figures come from the project, which runs on sample data, so read them as illustrative.</p>
+    </section>
+
+    <section>
+      <h2>The real numbers</h2>
+      <p class="lead">From the EIA's Georgia electricity profile, 2024. These are the actual figures, not
+      the sample.</p>
+      <div class="stats">
+        <div><b>140 TWh</b><span>net generation a year</span><br><small>8th in the US</small></div>
+        <div><b>39,746 MW</b><span>summer capacity</span><br><small>7th in the US</small></div>
+        <div><b>Natural gas</b><span>largest single source</span><br><small>EIA 2024</small></div>
+        <div><b>11.4&cent;/kWh</b><span>average retail price</span><br><small>26th in the US</small></div>
+        <div><b>150 TWh</b><span>retail sales a year</span><br><small>5th in the US</small></div>
+        <div><b>28 GW</b><span>of that is regulated utilities</span><br><small>the rest is IPPs and CHP</small></div>
+      </div>
+      <p>So Georgia is a big consumer and a big producer, sells more power than all but four states, yet
+      pays a fairly middling price for it. Natural gas does most of the generating, with nuclear the next
+      largest and coal shrinking.</p>
+    </section>
+
+    <section>
+      <h2>The big plants</h2>
+      <p>Georgia's grid leans on a small number of very large stations, which is exactly the kind of
+      single-point concentration the index tries to pick up.</p>
+
+      <h3>Plant Vogtle (nuclear)</h3>
+      <p>Vogtle is now the largest nuclear plant in the country. Its two new reactors, Units 3 and 4,
+      came online in 2023 and 2024, the first newly built US reactors in a generation. They add a big
+      block of steady, low-carbon baseload, which is the sort of thing that eases the "exposure deficit"
+      side of the score even as it deepens the reliance on one site.</p>
+
+      <h3>Plant Scherer (coal)</h3>
+      <p>Scherer, near Juliette, is one of the largest coal-fired plants in the United States. Coal's
+      share has been falling in Georgia as gas and nuclear grow, but a plant this size still shapes both
+      the emissions picture and how much rides on a single asset.</p>
+
+      <p style="margin-top:18px">Most of the state is served by Georgia Power, a Southern Company utility,
+      alongside a large set of electric membership cooperatives and municipal systems.</p>
+    </section>
+
+    <section>
+      <h2>The storms behind the outages</h2>
+      <p>If the index flags Georgia on outage burden, the obvious question is why, and a second open
+      source answers it. NOAA's Storm Events Database records the severe weather that actually knocks the
+      power out, and Georgia gets plenty: hurricanes and tropical systems tracking up from the Gulf and
+      Atlantic, along with summer thunderstorms and the odd ice storm.</p>
+      <p>The clearest recent case is Hurricane Helene in September 2024, which pushed inland across Georgia
+      and left well over a million customers without power, one of the worst outage events in the state's
+      history. That is the kind of event the SAIDI and SAIFI figures are quietly averaging, and it is why
+      Georgia's exposure here is about weather far more than about its fleet of plants.</p>
+    </section>
+
+    <section>
+      <h2>What it means for resilience</h2>
+      <p>Putting the two halves together: the index flags Georgia on <strong>outage burden</strong>, which
+      fits a storm-exposed Southeast far more than it reflects a fragile fleet. Structurally the state is
+      actually fairly well placed. It sells a huge amount of power, keeps prices middling, and has just
+      added a large block of firm nuclear that pushes back on the capacity-margin risk.</p>
+      <p>The real watch-item is <strong>concentration</strong>: a grid resting on a few very large plants
+      is efficient but has more to lose from any single outage or forced retirement. That is the thread a
+      Georgia-specific version of this project would pull on next, using plant-level data (EPA's eGRID, or
+      the HIFLD infrastructure layers), the storm record, and county population, rather than the sample.</p>
+      <p class="note">Two sources are mixed here on purpose and kept apart. The rank and score are from
+      this project's sample-based index. The generation, capacity, price and plant facts are real, from
+      the EIA and public reporting on Georgia's grid.</p>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p>Real figures: EIA Georgia electricity profile
+      (<a href="https://www.eia.gov/electricity/state/georgia/">eia.gov/electricity/state/georgia</a>),
+      2024, and NOAA's Storm Events Database
+      (<a href="https://www.ncdc.noaa.gov/stormevents/">ncdc.noaa.gov/stormevents</a>). Index and code:
+      <a href="https://github.com/tobyn-smith/energyosint">github.com/tobyn-smith/energyosint</a>.</p>
+    </div>
+  </footer>
+
+</body>
+</html>
