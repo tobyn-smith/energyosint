@@ -49,7 +49,7 @@ def run(cfg: dict) -> None:
         normalize=cfg["scoring"]["normalize"],
     )
     keep = [
-        "rank", "state", "exposure_score",
+        "rank", "state", "exposure_score", "driver",
         "outage_burden", "infra_concentration", "exposure_deficit",
         "saidi_minutes", "fuel_hhi", "top_plant_share", "capacity_margin",
     ]

@@ -65,6 +65,9 @@ def score(df: pd.DataFrame, weights: dict, normalize: str = "zscore") -> pd.Data
     # A 0-100 version reads better in a table than raw z-scores.
     comp["exposure_score"] = (_minmax(comp["exposure_index"]) * 100).round(1)
 
+    # The component a state stands highest on is what mostly drives its score.
+    comp["driver"] = comp[cols].idxmax(axis=1)
+
     result = df.merge(comp, on="state")
     # Rank on the underlying index, not the score rounded to one decimal, so two
     # states that happen to round the same do not share a rank.
