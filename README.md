@@ -175,6 +175,7 @@ analysis/
   weight_sensitivity.py  checks how much the weights move the ranking
   regional_summary.py    averages the scores up to US Census regions
   component_overlap.py   checks whether the three parts overlap
+  report.py              writes a short findings summary
 docs/            a small web page version of this project
 config.yaml      the weights and other settings
 METHODOLOGY.md   the longer write-up of the choices and limits
