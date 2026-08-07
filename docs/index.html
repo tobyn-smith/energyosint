@@ -59,8 +59,8 @@
     figcaption { font-size: .9rem; color: var(--gray); margin-top: 12px; line-height: 1.5; }
 
     .usmap { width: 100%; height: auto; display: block; max-width: 640px; margin: 0 auto; }
-    .us-state { stroke: var(--paper); stroke-width: .5; cursor: pointer; transition: stroke .1s; }
-    .us-state:hover { stroke: var(--ink); stroke-width: 1.4; }
+    .us-state { stroke: var(--paper); stroke-width: .5; cursor: pointer; transition: stroke .1s, fill .12s ease; }
+    .us-state:hover, .us-state.hi { stroke: var(--ink); stroke-width: 1.5; }
     .mapscale { display: flex; align-items: center; gap: 10px; justify-content: center; margin: 12px 0 0; font-size: .8rem; color: var(--gray); }
     .mapscale .scale { width: 150px; height: 9px; border-radius: 3px; border: 1px solid var(--hair); background: linear-gradient(90deg, #fff7ec, #fdbb84, #fc8d59, #d7301f, #7f0000); }
     .maptip { position: fixed; pointer-events: none; background: var(--ink); color: var(--paper); padding: 5px 9px; border-radius: 4px; font-size: .8rem; opacity: 0; transition: opacity .1s; z-index: 30; white-space: nowrap; }
@@ -78,6 +78,8 @@
     td.s { font-weight: 600; }
     td.sc { text-align: right; width: 62px; }
     td.b { width: 44%; }
+    tbody tr { cursor: default; }
+    tbody tr.hi td { background: var(--panel); }
     .track { height: 5px; background: var(--hair); border-radius: 3px; overflow: hidden; }
     .track i { display: block; height: 100%; background: var(--accent); transition: width .12s ease; }
 
@@ -184,8 +186,9 @@
 </svg>
         <div class="mapscale"><span>less exposed</span><i class="scale"></i><span>more exposed</span></div>
         <figcaption>Each state is shaded by its score, so darker means more exposed. Hover a state to see
-        its score and what is pushing it up. These numbers use the project's sample data, not a live
-        download, so treat the ranking as an example rather than a real finding.</figcaption>
+        its score and what is pushing it up, and drag the weights further down the page to watch the whole
+        map re-shade. These numbers use the project's sample data, not a live download, so treat the ranking
+        as an example rather than a real finding.</figcaption>
       </figure>
     </section>
 
@@ -254,7 +257,8 @@
           </tbody>
         </table>
         <p class="hint">Showing the top 15. At the default 45 / 30 / 25 this matches the pipeline
-        output. Push the weight onto one part to watch states like West Virginia climb or slide.</p>
+        output. Push the weight onto one part to watch states like West Virginia climb or slide, and the map
+        up top re-shades as you go. Hover a row to find that state on the map.</p>
       </div>
     </section>
 
@@ -299,6 +303,23 @@ python pipeline.py</code></pre>
     const $ = (id) => document.getElementById(id);
     const sO = $("sO"), sC = $("sC"), sD = $("sD"), rows = $("rows");
 
+    // Same OrRd shading the Python map uses, so the two stay in step.
+    const ORRD = ["#fff7ec", "#fee8c8", "#fdd49e", "#fdbb84", "#fc8d59", "#ef6548", "#d7301f", "#b30000", "#7f0000"];
+    function lerp(a, b, t) {
+      const ai = [1, 3, 5].map((i) => parseInt(a.slice(i, i + 2), 16));
+      const bi = [1, 3, 5].map((i) => parseInt(b.slice(i, i + 2), 16));
+      return "#" + ai.map((v, j) => Math.round(v + (bi[j] - v) * t).toString(16).padStart(2, "0")).join("");
+    }
+    function shade(score) {
+      const t = Math.max(0, Math.min(100, score)) / 100 * (ORRD.length - 1);
+      const i = Math.floor(t);
+      return i >= ORRD.length - 1 ? ORRD[ORRD.length - 1] : lerp(ORRD[i], ORRD[i + 1], t - i);
+    }
+
+    // Look up each map path by its state name so the sliders can re-shade it.
+    const stateByName = {};
+    document.querySelectorAll(".usmap .us-state").forEach((st) => { stateByName[st.dataset.n] = st; });
+
     function render() {
       const wo = +sO.value, wc = +sC.value, wd = +sD.value;
       const sum = (wo + wc + wd) || 1;
@@ -313,8 +334,19 @@ python pipeline.py</code></pre>
       for (const s of scored) s.score = ((s.raw - lo) / span) * 100;
       scored.sort((a, b) => b.score - a.score);
 
+      // Re-shade the map and keep each state's hover label current.
+      for (const s of scored) {
+        const st = stateByName[s.n];
+        if (!st) continue;
+        const sc = s.score.toFixed(1);
+        st.setAttribute("fill", shade(s.score));
+        st.dataset.s = sc;
+        const t = st.querySelector("title");
+        if (t) t.textContent = `${s.n}: ${sc}, mostly ${st.dataset.d}`;
+      }
+
       rows.innerHTML = scored.slice(0, 15).map((s, i) =>
-        `<tr><td class="n">${i + 1}</td><td class="s">${s.n}</td>` +
+        `<tr data-n="${s.n}"><td class="n">${i + 1}</td><td class="s">${s.n}</td>` +
         `<td class="sc">${s.score.toFixed(1)}</td>` +
         `<td class="b"><div class="track"><i style="width:${s.score.toFixed(1)}%"></i></div></td></tr>`
       ).join("");
@@ -326,7 +358,7 @@ python pipeline.py</code></pre>
     });
     render();
 
-    // hover tooltip for the map
+    // hover tooltip for the map, plus two-way highlighting with the table
     const mtip = document.getElementById("maptip");
     document.querySelectorAll(".usmap .us-state").forEach((st) => {
       st.addEventListener("mousemove", (e) => {
@@ -335,7 +367,25 @@ python pipeline.py</code></pre>
         mtip.style.top = (e.clientY + 14) + "px";
         mtip.style.opacity = "1";
       });
-      st.addEventListener("mouseleave", () => { mtip.style.opacity = "0"; });
+      st.addEventListener("mouseenter", () => {
+        const row = rows.querySelector(`tr[data-n="${st.dataset.n}"]`);
+        if (row) row.classList.add("hi");
+      });
+      st.addEventListener("mouseleave", () => {
+        mtip.style.opacity = "0";
+        const row = rows.querySelector(".hi");
+        if (row) row.classList.remove("hi");
+      });
+    });
+
+    // hovering a table row lights up its state on the map
+    rows.addEventListener("mouseover", (e) => {
+      const tr = e.target.closest("tr");
+      if (tr && stateByName[tr.dataset.n]) stateByName[tr.dataset.n].classList.add("hi");
+    });
+    rows.addEventListener("mouseout", (e) => {
+      const tr = e.target.closest("tr");
+      if (tr && stateByName[tr.dataset.n]) stateByName[tr.dataset.n].classList.remove("hi");
     });
   </script>
 

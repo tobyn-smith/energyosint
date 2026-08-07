@@ -76,9 +76,17 @@
     .dot:hover { stroke: var(--ink); stroke-width: 1.6; fill-opacity: 1; }
     .d-gas { fill: #d0692e; } .d-coal { fill: #6f6a63; } .d-nuc { fill: #7d5bb0; } .d-sol { fill: #e0b23a; }
     .d-bio { fill: #5fa05f; } .d-hyd { fill: #3f86c4; } .d-oil { fill: #9c6b52; }
-    .maplegend { display: flex; flex-wrap: wrap; gap: 7px 15px; justify-content: center; margin: 14px 0 0; font-size: .84rem; color: var(--gray); }
-    .maplegend span { display: inline-flex; align-items: center; gap: 6px; }
+    .maplegend { display: flex; flex-wrap: wrap; gap: 7px 10px; justify-content: center; margin: 14px 0 0; font-size: .84rem; }
+    .maplegend .lg { display: inline-flex; align-items: center; gap: 6px; font: inherit; color: var(--gray);
+      background: none; border: 1px solid var(--hair); border-radius: 20px; padding: 3px 11px; cursor: pointer; transition: opacity .1s; }
+    .maplegend .lg:hover { border-color: var(--gray); color: var(--ink); }
+    .maplegend .lg[aria-pressed="false"] { opacity: .4; }
     .maplegend i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+    .dot.off { display: none; }
+    .mapcount { text-align: center; font-size: .86rem; color: var(--gray); margin: 12px 0 0; }
+    .mapcount button { font: inherit; font-size: .82rem; color: var(--gray); background: none; border: none;
+      border-bottom: 1px solid var(--hair); cursor: pointer; padding: 0 0 1px; margin-left: 8px; }
+    .mapcount button:hover { color: var(--ink); border-color: var(--ink); }
     .maptip { position: fixed; pointer-events: none; background: var(--ink); color: var(--paper); padding: 5px 9px; border-radius: 4px; font-size: .8rem; opacity: 0; transition: opacity .1s; z-index: 30; white-space: nowrap; }
 
     footer { border-top: 1px solid var(--hair); padding: 26px 0 52px; }
@@ -289,15 +297,17 @@
   <circle class="dot d-nuc" cx="438.0" cy="255.3" r="14.1" data-n="Vogtle" data-f="nuclear" data-c="3,544"><title>Vogtle, nuclear, 3,544 MW</title></circle>
 </svg>
       <div class="maplegend">
-        <span><i style="background:#d0692e"></i>gas</span>
-        <span><i style="background:#6f6a63"></i>coal</span>
-        <span><i style="background:#7d5bb0"></i>nuclear</span>
-        <span><i style="background:#e0b23a"></i>solar</span>
-        <span><i style="background:#5fa05f"></i>biomass</span>
-        <span><i style="background:#3f86c4"></i>hydro</span>
-        <span><i style="background:#9c6b52"></i>oil</span>
+        <button type="button" class="lg" data-fuel="gas" aria-pressed="true"><i style="background:#d0692e"></i>gas</button>
+        <button type="button" class="lg" data-fuel="coal" aria-pressed="true"><i style="background:#6f6a63"></i>coal</button>
+        <button type="button" class="lg" data-fuel="nuclear" aria-pressed="true"><i style="background:#7d5bb0"></i>nuclear</button>
+        <button type="button" class="lg" data-fuel="solar" aria-pressed="true"><i style="background:#e0b23a"></i>solar</button>
+        <button type="button" class="lg" data-fuel="biomass" aria-pressed="true"><i style="background:#5fa05f"></i>biomass</button>
+        <button type="button" class="lg" data-fuel="hydro" aria-pressed="true"><i style="background:#3f86c4"></i>hydro</button>
+        <button type="button" class="lg" data-fuel="oil" aria-pressed="true"><i style="background:#9c6b52"></i>oil</button>
       </div>
-      <p class="src" style="margin-top:14px">Source: EPA eGRID2023, plants of 50 MW and up. Hover for details.</p>
+      <p class="mapcount"><span id="mapcount"></span> <button type="button" id="mapall">show all</button></p>
+      <p class="src" style="margin-top:6px">Source: EPA eGRID2023, plants of 50 MW and up. Click a fuel to
+      show or hide it, and hover a dot for details.</p>
     </section>
 
     <section>
@@ -343,7 +353,8 @@
   <div class="maptip" id="maptip"></div>
   <script>
     const tip = document.getElementById("maptip");
-    document.querySelectorAll(".gamap .dot").forEach((d) => {
+    const dots = [...document.querySelectorAll(".gamap .dot")];
+    dots.forEach((d) => {
       d.addEventListener("mousemove", (e) => {
         tip.textContent = `${d.dataset.n} (${d.dataset.f}, ${d.dataset.c} MW)`;
         tip.style.left = (e.clientX + 12) + "px";
@@ -352,6 +363,37 @@
       });
       d.addEventListener("mouseleave", () => { tip.style.opacity = "0"; });
     });
+
+    // clickable fuel filter with a live plant count and total capacity
+    const legend = [...document.querySelectorAll(".maplegend .lg")];
+    const on = new Set(legend.map((b) => b.dataset.fuel));
+    const mw = (d) => parseInt(d.dataset.c.replace(/,/g, ""), 10) || 0;
+    const fmt = (n) => n.toLocaleString("en-US");
+
+    function apply() {
+      let count = 0, total = 0;
+      dots.forEach((d) => {
+        const show = on.has(d.dataset.f);
+        d.classList.toggle("off", !show);
+        if (show) { count += 1; total += mw(d); }
+      });
+      legend.forEach((b) => b.setAttribute("aria-pressed", on.has(b.dataset.fuel)));
+      const all = on.size === legend.length;
+      document.getElementById("mapcount").textContent =
+        `${count} ${count === 1 ? "plant" : "plants"} shown, ${fmt(total)} MW${all ? " (every fuel)" : ""}`;
+    }
+
+    legend.forEach((b) => b.addEventListener("click", () => {
+      const f = b.dataset.fuel;
+      if (on.has(f)) on.delete(f); else on.add(f);
+      if (on.size === 0) legend.forEach((x) => on.add(x.dataset.fuel)); // never leave it empty
+      apply();
+    }));
+    document.getElementById("mapall").addEventListener("click", () => {
+      legend.forEach((x) => on.add(x.dataset.fuel));
+      apply();
+    });
+    apply();
   </script>
 
 </body>
