@@ -43,9 +43,13 @@ The scaling method also shifts the order a bit. Arizona and Georgia swap the top
 spot depending on which one you use, so the exact ranking depends on a few
 choices made in the settings.
 
-You can try this directly on the
-[project page](https://tobyn-smith.github.io/energyosint/): the three weights are
-sliders there, and the table re-ranks as you move them.
+The [project page](https://tobyn-smith.github.io/energyosint/) is an interactive
+slide deck you can click through with the arrow keys, the dots along the bottom,
+or a swipe on your phone. The three weights are sliders on it, and moving them
+re-ranks the table and re-shades the map live; you can also hover any state to see
+its score and what is driving it. There is a separate, deeper dive on Georgia too,
+which sets the score next to the state's real figures from the EIA, EPA and NOAA
+and includes a map of every large power plant that you can filter by fuel.
 
 ## What you need to install
 
@@ -176,7 +180,7 @@ analysis/
   regional_summary.py    averages the scores up to US Census regions
   component_overlap.py   checks whether the three parts overlap
   report.py              writes a short findings summary
-docs/            a small web page version of this project
+docs/            the interactive slide deck and the Georgia deep dive
 config.yaml      the weights and other settings
 METHODOLOGY.md   the longer write-up of the choices and limits
 ```
