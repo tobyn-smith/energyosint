@@ -187,6 +187,128 @@ def _live_plants(base: str, key: str) -> pd.DataFrame | None:
     return df[["state", "plant_name", "fuel", "capacity_mw", "source"]]
 
 
+def _live_reliability(cfg: dict) -> pd.DataFrame | None:
+    """SAIDI/SAIFI from a local EIA-861 reliability workbook, if present.
+
+    EIA publishes reliability as a spreadsheet (Reliability_YYYY.xlsx) rather than
+    through the API. Point `sources.reliability_workbook` in config.yaml at a
+    downloaded copy, or drop it at data/raw/eia861_reliability.xlsx. We read the
+    two columns we need (with and without major event days both exist; we take
+    the with-MED figures, since storms are the point) and average any duplicate
+    utility rows up to the state. Returns None on anything unexpected so the
+    caller can fall back.
+    """
+    name = cfg["sources"].get("reliability_workbook", "eia861_reliability.xlsx")
+    path = Path(name)
+    if not path.is_absolute():
+        path = RAW_DIR / path
+    if not path.exists():
+        return None
+
+    try:
+        raw = pd.read_excel(path, sheet_name=0, header=None)
+    except Exception:
+        return None
+
+    # The workbook has a few banner rows before the real header, so find the row
+    # that names the columns and re-read from there.
+    header_row = None
+    for i in range(min(12, len(raw))):
+        joined = " ".join(str(x).lower() for x in raw.iloc[i].tolist())
+        if "saidi" in joined and "state" in joined:
+            header_row = i
+            break
+    if header_row is None:
+        return None
+
+    try:
+        df = pd.read_excel(path, sheet_name=0, header=header_row)
+    except Exception:
+        return None
+    df.columns = [str(c).strip().lower() for c in df.columns]
+
+    def _find(*needles: str) -> str | None:
+        for c in df.columns:
+            if all(n in c for n in needles):
+                return c
+        return None
+
+    state_col = _find("state")
+    # Prefer the "with major event days" columns; fall back to any SAIDI/SAIFI.
+    saidi_col = _find("saidi", "with") or _find("saidi")
+    saifi_col = _find("saifi", "with") or _find("saifi")
+    if not (state_col and saidi_col and saifi_col):
+        return None
+
+    out = df[[state_col, saidi_col, saifi_col]].copy()
+    out.columns = ["state", "saidi_minutes", "saifi_events"]
+    out["state"] = out["state"].astype(str).str.strip().str.upper()
+    out = out[out["state"].isin(STATES)]
+    for c in ("saidi_minutes", "saifi_events"):
+        out[c] = pd.to_numeric(out[c], errors="coerce")
+    out = out.dropna(subset=["saidi_minutes", "saifi_events"])
+    if out.empty:
+        return None
+
+    out = out.groupby("state", as_index=False).mean(numeric_only=True)
+    out["saidi_minutes"] = out["saidi_minutes"].round(1)
+    out["saifi_events"] = out["saifi_events"].round(2)
+    out["source"] = "eia"
+    return out
+
+
+def _live_demand(cfg: dict) -> pd.DataFrame | None:
+    """State peak demand from a local file, if one is provided.
+
+    Point `sources.demand_file` in config.yaml at a CSV or spreadsheet, or drop
+    one at data/raw/state_peak_demand.csv. It needs a state column and a peak
+    demand column (megawatts); a net generation column is used if present, else
+    estimated. Column names are matched loosely. Returns None if no usable file
+    is found so the caller can fall back.
+    """
+    name = cfg["sources"].get("demand_file", "state_peak_demand.csv")
+    path = Path(name)
+    if not path.is_absolute():
+        path = RAW_DIR / path
+    if not path.exists():
+        return None
+
+    try:
+        reader = pd.read_excel if path.suffix.lower() in (".xlsx", ".xls") else pd.read_csv
+        df = reader(path)
+    except Exception:
+        return None
+    df.columns = [str(c).strip().lower() for c in df.columns]
+
+    def _find(*needles: str) -> str | None:
+        for c in df.columns:
+            if all(n in c for n in needles):
+                return c
+        return None
+
+    state_col = _find("state")
+    peak_col = _find("peak") or _find("demand")
+    if not (state_col and peak_col):
+        return None
+
+    out = pd.DataFrame({"state": df[state_col].astype(str).str.strip().str.upper()})
+    out["peak_demand_mw"] = pd.to_numeric(df[peak_col], errors="coerce")
+
+    gen_col = _find("net", "generation") or _find("generation")
+    if gen_col:
+        out["net_generation_gwh"] = pd.to_numeric(df[gen_col], errors="coerce")
+    else:
+        # No generation column: leave a clearly-derived stand-in from the peak.
+        out["net_generation_gwh"] = (out["peak_demand_mw"] * 4.5).round(0)
+
+    out = out[out["state"].isin(STATES)].dropna(subset=["peak_demand_mw"])
+    if out.empty:
+        return None
+    out["peak_demand_mw"] = out["peak_demand_mw"].round(1)
+    out["source"] = "eia"
+    return out
+
+
 # --------------------------------------------------------------------------- #
 # Public entry points
 # --------------------------------------------------------------------------- #
@@ -209,14 +331,23 @@ def load_plants(cfg: dict) -> pd.DataFrame:
 
 
 def load_reliability(cfg: dict) -> pd.DataFrame:
-    # A clean EIA-861 reliability endpoint isn't exposed in API v2 the way the
-    # capacity data is; it ships as bulk files. For a live build you'd parse the
-    # EIA-861 reliability workbook here. Until then, synthetic.
+    # EIA-861 reliability has no clean API v2 route; it ships as a bulk workbook.
+    # If the user has dropped that workbook in data/raw, parse it; otherwise fall
+    # back to the synthetic sample.
+    live = _live_reliability(cfg)
+    if live is not None:
+        return _maybe_cache(live, "reliability", cfg)
     _no_synthetic(cfg, "reliability")
     return _maybe_cache(_synthetic_reliability(), "reliability", cfg)
 
 
 def load_demand(cfg: dict, plants: pd.DataFrame) -> pd.DataFrame:
+    # State peak demand is published in EIA's bulk spreadsheets rather than a tidy
+    # API series (the API's hourly demand is keyed by balancing authority, not
+    # state). So, like reliability, read a local file if one is provided.
+    live = _live_demand(cfg)
+    if live is not None:
+        return _maybe_cache(live, "demand", cfg)
     _no_synthetic(cfg, "demand")
     return _maybe_cache(_synthetic_demand(plants), "demand", cfg)
 

@@ -24,9 +24,10 @@ seeded synthetic sample so it still runs end to end. Sample rows are tagged in a
 `source` column. The committed results were produced from the sample, so the
 ranking shown in the repo is illustrative.
 
-EIA-861 reliability ships as bulk spreadsheets rather than a clean API route, so
-the outage component currently uses the synthetic path even when a key is set.
-The code marks where a real loader would slot in.
+EIA-861 reliability and state peak demand ship as bulk spreadsheets rather than a
+clean API route. The pipeline will read a local copy of either if you point
+`config.yaml` at one, and otherwise falls back to the synthetic path for that
+input. So a run can mix real and sample inputs depending on what you have to hand.
 
 State outlines for the maps come from the R `usmap` package and from Natural
 Earth (for the Python version).
@@ -95,9 +96,12 @@ between the z-score and min-max versions.
 - The concentration measures are blunt. They say nothing about the transmission
   network that moves power around, which probably matters at least as much, but
   that data is harder to get cleanly.
-- The outage component uses synthetic data for now, as noted above. Wiring up the
-  real EIA-861 files is the obvious next step.
-- The live EIA-860 path is written but not heavily tested, since it needs a key.
+- The committed results use synthetic data for the outage and demand inputs. The
+  loaders for the real EIA spreadsheets are in place, but I have run them against
+  the sample far more than against the real files, so treat the live paths as
+  lightly tested.
+- The live EIA-860 capacity path is written but not heavily tested either, since
+  it needs a key.
 - The code is written against a generic state column rather than hard-coding the
   US, so in principle it could move to another region, but that has not been
   tried.

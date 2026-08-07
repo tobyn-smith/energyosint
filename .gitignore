@@ -9,6 +9,8 @@ data/interim/
 
 # outputs/ is kept in the repo so the example results and README images show
 # up on GitHub. Delete locally and rerun to regenerate.
+# The SQLite store is a regenerable binary the API reads locally, so skip it.
+outputs/index.db
 
 # Local editor/agent config
 .claude/

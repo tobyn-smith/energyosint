@@ -1,0 +1,8 @@
+# Extra libraries for the JSON API in server.py. The core pipeline does not
+# need these, so they are kept separate from requirements.txt.
+#   pip install -r requirements-api.txt
+#   uvicorn server:app --reload
+fastapi>=0.110
+uvicorn>=0.29
+# httpx is only needed to run the API tests (fastapi's TestClient uses it).
+httpx>=0.27

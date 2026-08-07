@@ -12,42 +12,19 @@ Run the main pipeline first so outputs/exposure_index.csv exists.
 """
 
 import argparse
+import sys
 from pathlib import Path
 
 import matplotlib.pyplot as plt
 import pandas as pd
 
+# let the script find the grid package when run from the analysis folder
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from grid.regions import lookup
+
 INDEX = Path("outputs/exposure_index.csv")
 
-# US Census Bureau regions. DC sits in the South Atlantic division, as the
-# Census groups it.
-CENSUS_REGION = {
-    "Northeast": ["CT", "ME", "MA", "NH", "RI", "VT", "NJ", "NY", "PA"],
-    "Midwest":   ["IL", "IN", "MI", "OH", "WI", "IA", "KS", "MN", "MO", "NE", "ND", "SD"],
-    "South":     ["DE", "DC", "FL", "GA", "MD", "NC", "SC", "VA", "WV",
-                  "AL", "KY", "MS", "TN", "AR", "LA", "OK", "TX"],
-    "West":      ["AZ", "CO", "ID", "MT", "NV", "NM", "UT", "WY", "AK", "CA", "HI", "OR", "WA"],
-}
-
-# The nine Census divisions, which split the four regions further.
-CENSUS_DIVISION = {
-    "New England":        ["CT", "ME", "MA", "NH", "RI", "VT"],
-    "Middle Atlantic":    ["NJ", "NY", "PA"],
-    "East North Central": ["IL", "IN", "MI", "OH", "WI"],
-    "West North Central": ["IA", "KS", "MN", "MO", "NE", "ND", "SD"],
-    "South Atlantic":     ["DE", "DC", "FL", "GA", "MD", "NC", "SC", "VA", "WV"],
-    "East South Central": ["AL", "KY", "MS", "TN"],
-    "West South Central": ["AR", "LA", "OK", "TX"],
-    "Mountain":           ["AZ", "CO", "ID", "MT", "NV", "NM", "UT", "WY"],
-    "Pacific":            ["AK", "CA", "HI", "OR", "WA"],
-}
-
-GROUPINGS = {"region": CENSUS_REGION, "division": CENSUS_DIVISION}
 COMPONENTS = ["outage_burden", "infra_concentration", "exposure_deficit"]
-
-
-def _lookup(grouping):
-    return {st: name for name, states in grouping.items() for st in states}
 
 
 def main():
@@ -60,7 +37,7 @@ def main():
 
     level = args.level
     df = pd.read_csv(INDEX)
-    df[level] = df["state"].map(_lookup(GROUPINGS[level]))
+    df[level] = df["state"].map(lookup(level))
 
     missed = df.loc[df[level].isna(), "state"].tolist()
     if missed:

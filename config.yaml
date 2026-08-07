@@ -10,6 +10,14 @@ sources:
   eia_api_base: https://api.eia.gov/v2
   allow_synthetic_fallback: true   # true falls back to the sample; false errors instead
   cache_raw: true                  # write pulled tables to data/raw
+  # Optional local files for the data EIA ships as spreadsheets rather than a
+  # clean API. Paths are relative to data/raw unless absolute. If a file is
+  # missing the pipeline falls back to the synthetic sample for that input.
+  reliability_workbook: eia861_reliability.xlsx   # SAIDI/SAIFI by state
+  demand_file: state_peak_demand.csv              # state + peak demand (MW)
+
+database:
+  path: outputs/index.db           # SQLite store of each run, read by the API
 
 # Component weights for the composite. These are judgement calls, not gospel.
 # I started even and nudged outage burden up after eyeballing the spread.

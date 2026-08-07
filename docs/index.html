@@ -408,6 +408,20 @@ python pipeline.py</code></pre>
     $("reset").addEventListener("click", () => { sO.value = 45; sC.value = 30; sD.value = 25; render(); });
     render();
 
+    // If the pipeline has published a fresh data file, use it; otherwise the
+    // built-in copy above stands in, so the page still works offline or on a
+    // plain file open.
+    fetch("data/index.json", { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((rows) => {
+        if (Array.isArray(rows) && rows.length) {
+          DATA.length = 0;
+          DATA.push(...rows);
+          render();
+        }
+      })
+      .catch(() => {});
+
     // map hover tooltip, plus two-way highlight with the table
     const mtip = $("maptip");
     document.querySelectorAll(".usmap .us-state").forEach((st) => {

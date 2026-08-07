@@ -161,9 +161,38 @@ data, set `allow_synthetic_fallback: false` in `config.yaml`. The committed
 results in this repo were made with the sample, which is why the ranking should
 be read as an example.
 
-The outage numbers (SAIDI and SAIFI) do not have a clean download endpoint like
-the generation data, so for now they use the sample even when a key is set.
-There is a note in the code marking where a real loader would go.
+Two of the inputs, the outage numbers (SAIDI and SAIFI) and state peak demand, do
+not have a clean API endpoint the way the generation data does. EIA ships them as
+bulk spreadsheets instead. If you download those and point `config.yaml` at them
+(`reliability_workbook` and `demand_file`, either an absolute path or a file in
+`data/raw`), the pipeline reads and uses them; if they are missing it falls back
+to the sample for those two, the same as everything else. So you can mix real and
+sample inputs depending on what you have to hand.
+
+## A JSON API
+
+If you want the numbers as an API rather than files, there is a small optional
+server. It reads whatever the pipeline last saved to the SQLite database and can
+also re-rank the states live for any set of weights, using the same scoring code
+the pipeline uses so the two never disagree.
+
+```
+pip install -r requirements-api.txt
+python pipeline.py            # once, so there is a run to serve
+uvicorn server:app --reload
+```
+
+Then open http://127.0.0.1:8000/docs for the interactive list, or call it directly:
+
+- `GET /api/states` the full scored table, `/api/states/GA` for one state
+- `GET /api/score?wO=60&wC=20&wD=20&top=10` re-ranks live for your own weights
+- `GET /api/regions?level=region` or `division` rolls the scores up
+- `GET /api/runs` and `GET /health` for what is stored
+
+Every pipeline run is also saved to `outputs/index.db` (a SQLite file) and written
+out to `docs/data/index.json`, which is what the web deck reads. A small GitHub
+Action reruns the pipeline and refreshes that data file whenever the analysis code
+changes.
 
 ## How the project is laid out
 
@@ -173,7 +202,10 @@ grid/            the analysis code, split into small steps
   cleaning.py    tidies it up and joins it together
   scoring.py     builds the three pieces and the final score
   plots.py       the bar chart and the Python map
+  store.py       saves each run to a small SQLite database
+  regions.py     census region lookups and state names, shared around
 pipeline.py      runs all the steps in order
+server.py        an optional JSON API over the results (see below)
 analysis/
   exposure_map.R         the R version of the map
   weight_sensitivity.py  checks how much the weights move the ranking
@@ -181,8 +213,11 @@ analysis/
   component_overlap.py   checks whether the three parts overlap
   report.py              writes a short findings summary
 docs/            the interactive slide deck and the Georgia deep dive
+  data/index.json  the per-state data the deck reads, refreshed by the pipeline
 config.yaml      the weights and other settings
+requirements-api.txt  extra libraries for the API only
 METHODOLOGY.md   the longer write-up of the choices and limits
+.github/workflows/build.yml  rebuilds the site data on push
 ```
 
 ## How much the weights matter
