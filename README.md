@@ -47,9 +47,9 @@ The [project page](https://tobyn-smith.github.io/energyosint/) is an interactive
 slide deck you can click through with the arrow keys, the dots along the bottom,
 or a swipe on your phone. The three weights are sliders on it, and moving them
 re-ranks the table and re-shades the map live; you can also hover any state to see
-its score and what is driving it. There is a separate, deeper dive on Georgia too,
-which sets the score next to the state's real figures from the EIA, EPA and NOAA
-and includes a map of every large power plant that you can filter by fuel.
+its score and what is driving it. There is a separate, deeper dive on Georgia too.
+It sets the score next to the state's real figures from the EIA, EPA and NOAA, and
+has a map of every large power plant that you can filter by fuel.
 
 ## What you need to install
 
