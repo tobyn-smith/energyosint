@@ -4,76 +4,79 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Grid Resilience Exposure Index</title>
-  <meta name="description" content="A public-data project ranking US states by how exposed their electricity systems look.">
+  <meta name="description" content="An interactive slide deck ranking US states by how exposed their electricity systems look, built from public data.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
   <script>document.documentElement.classList.add('js');</script>
   <style>
     :root {
-      --paper: #f4f3ef;
-      --panel: #faf9f6;
-      --ink: #1a1916;
-      --gray: #6e6d66;
-      --hair: #e0ded6;
-      --accent: #c14625;
-      --maxw: 720px;
+      --paper: #f4f3ef; --panel: #faf9f6; --ink: #1a1916; --gray: #6e6d66;
+      --hair: #e0ded6; --accent: #c14625; --maxw: 720px;
     }
     @media (prefers-color-scheme: dark) {
-      :root {
-        --paper: #111110; --panel: #181716; --ink: #ecebe6;
-        --gray: #918f88; --hair: #28271f; --accent: #e0603a;
-      }
+      :root { --paper: #111110; --panel: #181716; --ink: #ecebe6; --gray: #918f88; --hair: #28271f; --accent: #e0603a; }
     }
     * { box-sizing: border-box; }
+    html, body { height: 100%; }
     body {
-      margin: 0; background: var(--paper); color: var(--ink);
-      font: 17px/1.65 "Archivo", system-ui, sans-serif;
-      -webkit-font-smoothing: antialiased;
+      margin: 0; overflow: hidden; background: var(--paper); color: var(--ink);
+      font: 17px/1.65 "Archivo", system-ui, sans-serif; -webkit-font-smoothing: antialiased;
     }
     .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 26px; }
     a { color: var(--ink); }
 
-    header.bar { border-bottom: 1px solid var(--hair); }
+    /* thin progress bar across the very top */
+    .progress { position: fixed; top: 0; left: 0; height: 3px; width: 10%; background: var(--accent); z-index: 50; transition: width .35s ease; }
+
+    header.bar { position: fixed; top: 0; left: 0; right: 0; height: 60px; background: var(--paper); border-bottom: 1px solid var(--hair); z-index: 40; }
     header.bar .wrap { display: flex; align-items: center; justify-content: space-between; height: 60px; }
     .wordmark { font-weight: 600; font-size: .98rem; letter-spacing: -.01em; }
-    header.bar nav a { color: var(--gray); text-decoration: none; font-size: .92rem; margin-left: 20px; }
+    header.bar nav { display: flex; align-items: center; gap: 18px; }
+    header.bar nav a { color: var(--gray); text-decoration: none; font-size: .92rem; }
     header.bar nav a:hover { color: var(--ink); }
-    @media (max-width: 560px) { header.bar nav a:not(:last-child) { display: none; } }
+    .counter { font-family: "JetBrains Mono", monospace; font-size: .82rem; color: var(--gray); font-variant-numeric: tabular-nums; }
+    @media (max-width: 540px) { header.bar nav a { display: none; } }
 
-    .hero { padding: 76px 0 18px; }
-    h1 { font-weight: 700; font-size: clamp(2.3rem, 6vw, 3.6rem); line-height: 1.02; letter-spacing: -.035em; margin: 0 0 22px; }
-    .stand { font-size: 1.25rem; line-height: 1.45; color: var(--gray); margin: 0 0 28px; }
-    .hero-links { display: flex; gap: 26px; }
-    .hero-links a { font-size: .98rem; text-decoration: none; border-bottom: 1px solid var(--ink); padding-bottom: 2px; }
-    .hero-links a:hover { color: var(--accent); border-color: var(--accent); }
+    /* the deck: one slide shown at a time */
+    .deck { position: fixed; inset: 0; }
+    .slide { position: absolute; inset: 0; overflow-y: auto; opacity: 0; visibility: hidden;
+      transform: translateY(10px); transition: opacity .35s ease, transform .35s ease, visibility .35s; }
+    .slide.active { opacity: 1; visibility: visible; transform: none; z-index: 1; }
+    .slidewrap { max-width: var(--maxw); margin: 0 auto; padding: 92px 26px 108px;
+      min-height: 100%; display: flex; flex-direction: column; justify-content: center; }
+    @media (prefers-reduced-motion: reduce) { .slide { transition: opacity .01s; transform: none; } .progress { transition: none; } }
 
-    section { padding: 46px 0; }
-    section + section { border-top: 1px solid var(--hair); }
-    h2 { font-weight: 600; font-size: 1.5rem; letter-spacing: -.02em; margin: 0 0 16px; }
+    .kicker { font-family: "JetBrains Mono", monospace; font-size: .8rem; letter-spacing: .06em;
+      text-transform: uppercase; color: var(--accent); margin: 0 0 16px; }
+    h1 { font-weight: 700; font-size: clamp(2.3rem, 6.4vw, 3.8rem); line-height: 1.02; letter-spacing: -.035em; margin: 0 0 22px; }
+    h2 { font-weight: 600; font-size: clamp(1.5rem, 3.6vw, 1.9rem); letter-spacing: -.02em; margin: 0 0 16px; }
+    h3 { font-size: 1.08rem; font-weight: 600; margin: 0 0 4px; }
+    .stand { font-size: 1.28rem; line-height: 1.45; color: var(--gray); margin: 0 0 26px; max-width: 40ch; }
     p { margin: 0 0 16px; }
     .lead { color: var(--gray); }
+    .hint { font-size: .9rem; color: var(--gray); margin-top: 8px; }
+    .cta { display: inline-block; text-decoration: none; border: 1px solid var(--ink); border-radius: 3px;
+      padding: 10px 18px; font-size: .96rem; transition: .12s; }
+    .cta:hover { color: var(--paper); background: var(--ink); }
 
-    figure { margin: 0; }
-    figure img { display: block; width: 100%; height: auto; background: #fff; border: 1px solid var(--hair); border-radius: 3px; }
+    .step { display: grid; grid-template-columns: 30px 1fr; gap: 16px; padding: 16px 0; }
+    .step + .step { border-top: 1px solid var(--hair); }
+    .step .no { color: var(--accent); font-weight: 600; font-size: 1.05rem; font-variant-numeric: tabular-nums; }
+    .step p { margin: 0; color: var(--gray); font-size: .98rem; }
+
+    figure { margin: 8px 0 0; }
     figcaption { font-size: .9rem; color: var(--gray); margin-top: 12px; line-height: 1.5; }
-
-    .usmap { width: 100%; height: auto; display: block; max-width: 640px; margin: 0 auto; }
+    .usmap { width: 100%; height: auto; display: block; max-width: 600px; margin: 0 auto; }
     .us-state { stroke: var(--paper); stroke-width: .5; cursor: pointer; transition: stroke .1s, fill .12s ease; }
     .us-state:hover, .us-state.hi { stroke: var(--ink); stroke-width: 1.5; }
     .mapscale { display: flex; align-items: center; gap: 10px; justify-content: center; margin: 12px 0 0; font-size: .8rem; color: var(--gray); }
     .mapscale .scale { width: 150px; height: 9px; border-radius: 3px; border: 1px solid var(--hair); background: linear-gradient(90deg, #fff7ec, #fdbb84, #fc8d59, #d7301f, #7f0000); }
-    .maptip { position: fixed; pointer-events: none; background: var(--ink); color: var(--paper); padding: 5px 9px; border-radius: 4px; font-size: .8rem; opacity: 0; transition: opacity .1s; z-index: 30; white-space: nowrap; }
-
-    .step { display: grid; grid-template-columns: 28px 1fr; gap: 16px; padding: 18px 0; }
-    .step + .step { border-top: 1px solid var(--hair); }
-    .step .no { color: var(--accent); font-weight: 600; font-variant-numeric: tabular-nums; }
-    .step h3 { font-size: 1.08rem; font-weight: 600; margin: 0 0 4px; }
-    .step p { margin: 0; color: var(--gray); font-size: .98rem; }
+    .maptip { position: fixed; pointer-events: none; background: var(--ink); color: var(--paper); padding: 5px 9px; border-radius: 4px; font-size: .8rem; opacity: 0; transition: opacity .1s; z-index: 60; white-space: nowrap; }
 
     table { width: 100%; border-collapse: collapse; }
     th { text-align: left; font-weight: 500; font-size: .85rem; color: var(--gray); padding: 0 8px 10px; border-bottom: 1px solid var(--ink); }
-    td { padding: 11px 8px; border-bottom: 1px solid var(--hair); font-variant-numeric: tabular-nums; }
+    td { padding: 10px 8px; border-bottom: 1px solid var(--hair); font-variant-numeric: tabular-nums; }
     td.n { color: var(--gray); width: 34px; }
     td.s { font-weight: 600; }
     td.sc { text-align: right; width: 62px; }
@@ -83,54 +86,111 @@
     .track { height: 5px; background: var(--hair); border-radius: 3px; overflow: hidden; }
     .track i { display: block; height: 100%; background: var(--accent); transition: width .12s ease; }
 
-    .explorer .sliders { display: none; gap: 13px; max-width: 430px; margin: 0 0 26px; }
+    .explorer .sliders { display: none; gap: 13px; max-width: 430px; margin: 0 0 24px; }
     html.js .explorer .sliders { display: grid; }
     .explorer label { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 5px 10px; font-size: .92rem; }
     .explorer label span { font-variant-numeric: tabular-nums; color: var(--gray); }
     .explorer input[type=range] { grid-column: 1 / -1; width: 100%; accent-color: var(--accent); margin: 0; }
     .explorer button { justify-self: start; margin-top: 4px; font: inherit; font-size: .85rem; color: var(--gray); background: none; border: 1px solid var(--hair); padding: 5px 12px; cursor: pointer; }
     .explorer button:hover { color: var(--ink); border-color: var(--ink); }
-    .hint { font-size: .85rem; color: var(--gray); margin-top: 16px; }
 
     pre { background: var(--panel); border: 1px solid var(--hair); border-radius: 4px; padding: 16px 18px; overflow-x: auto; margin: 4px 0 16px; font: 13.5px/1.7 "JetBrains Mono", ui-monospace, monospace; }
     pre .cmt { color: var(--gray); }
     code { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: .88em; }
     p code, li code { background: var(--panel); border: 1px solid var(--hair); border-radius: 3px; padding: 1px 5px; }
 
-    footer { border-top: 1px solid var(--hair); padding: 28px 0 52px; }
-    footer p { margin: 0; font-size: .9rem; color: var(--gray); }
-    footer a { color: var(--gray); }
-    footer a:hover { color: var(--ink); }
+    /* bottom navigation */
+    .controls { position: fixed; bottom: 0; left: 0; right: 0; z-index: 40; display: flex; align-items: center;
+      justify-content: center; gap: 18px; padding: 16px 0 22px; background: linear-gradient(to top, var(--paper) 62%, transparent); }
+    .nav-btn { width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--hair); background: var(--panel);
+      color: var(--ink); font-size: 1.2rem; line-height: 1; cursor: pointer; display: grid; place-items: center; transition: .12s; }
+    .nav-btn:hover:not(:disabled) { border-color: var(--ink); }
+    .nav-btn:disabled { opacity: .32; cursor: default; }
+    .dots { display: flex; gap: 8px; }
+    .dots .dot { width: 8px; height: 8px; padding: 0; border: none; border-radius: 50%; background: var(--hair); cursor: pointer; transition: .12s; }
+    .dots .dot.on { background: var(--accent); transform: scale(1.25); }
   </style>
 </head>
 <body>
 
+  <div class="progress" id="pbar"></div>
   <header class="bar">
     <div class="wrap">
       <span class="wordmark">Grid Resilience</span>
       <nav>
-        <a href="#method">Method</a>
-        <a href="#results">Results</a>
-        <a href="#build">Build</a>
+        <span class="counter" id="counter">01 / 10</span>
         <a href="georgia.html">Georgia</a>
         <a href="https://github.com/tobyn-smith/energyosint">GitHub</a>
       </nav>
     </div>
   </header>
 
-  <main class="wrap">
+  <div class="deck" id="deck">
 
-    <div class="hero">
-      <h1>Grid Resilience Exposure Index</h1>
-      <p class="stand">Ranking US states by how exposed their electricity systems look, using nothing but public data.</p>
-      <div class="hero-links">
-        <a href="#results">See the results</a>
-        <a href="https://github.com/tobyn-smith/energyosint">View the code</a>
+    <section class="slide">
+      <div class="slidewrap">
+        <p class="kicker">public-data research sketch</p>
+        <h1>Grid Resilience Exposure Index</h1>
+        <p class="stand">Which US states look most exposed to losing power, and what is driving it. Put
+        together from public data, for anyone who has to think about energy policy rather than wiring.</p>
+        <p class="hint">Use the arrow keys, the dots at the bottom, or swipe on a phone. The numbers here run
+        off a built-in sample, so read the ranking as a worked example, not a finding.</p>
       </div>
-    </div>
+    </section>
 
-    <section>
-      <figure>
+    <section class="slide">
+      <div class="slidewrap">
+        <h2>Why look at this</h2>
+        <p class="lead">Keeping the lights on is quietly one of the bigger infrastructure questions in US
+        policy, and three things are pulling on the grid at once.</p>
+        <div class="step"><div class="no">01</div><div><h3>Weather</h3><p>More frequent and more severe
+        storms, heat and cold snaps are behind most of the large outages.</p></div></div>
+        <div class="step"><div class="no">02</div><div><h3>An ageing network</h3><p>A lot of the wires and
+        substations were built decades ago and are being asked to carry more.</p></div></div>
+        <div class="step"><div class="no">03</div><div><h3>A changing fuel mix</h3><p>Coal is retiring, gas
+        and renewables are growing, and that shifts where the weak spots sit.</p></div></div>
+        <p style="margin-top:22px">Most of the data that speaks to this is public but scattered. This pulls a
+        few open sources into one comparable score per state.</p>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slidewrap">
+        <h2>What it is built on</h2>
+        <p class="lead">Three public inputs, all from the US Energy Information Administration's open forms.
+        No paywalls, no private feeds.</p>
+        <div class="step"><div class="no">1</div><div><h3>How often the power fails</h3><p>The industry
+        reliability measures, SAIDI and SAIFI, for how long and how often customers lose power.</p></div></div>
+        <div class="step"><div class="no">2</div><div><h3>How the supply is built</h3><p>Generating capacity
+        by plant and fuel, which shows how much a state leans on one fuel or one big station.</p></div></div>
+        <div class="step"><div class="no">3</div><div><h3>How much slack there is</h3><p>Installed capacity
+        set against peak demand, so you can see how thin the margin is on a bad day.</p></div></div>
+        <p class="hint" style="margin-top:18px">The committed figures use a seeded sample so the project runs
+        for anyone without a data key, which is why the ranking is illustrative.</p>
+      </div>
+    </section>
+
+    <section class="slide" id="method">
+      <div class="slidewrap">
+        <h2>Turning that into one number</h2>
+        <p class="lead">Every state gets a score from 0 to 100. Higher means it looks more likely to struggle
+        to keep the power on. It is built from three pieces.</p>
+        <div class="step"><div class="no">1</div><div><h3>Outage burden</h3><p>How often the power goes out
+        and for how long, from the SAIDI and SAIFI measures.</p></div></div>
+        <div class="step"><div class="no">2</div><div><h3>Concentration</h3><p>How much of a state's power
+        leans on one fuel type or a single very large plant.</p></div></div>
+        <div class="step"><div class="no">3</div><div><h3>Exposure deficit</h3><p>Whether there is much spare
+        capacity above peak demand, and how varied the supply is.</p></div></div>
+        <p style="margin-top:20px">The three are put on the same scale and blended. The weights live in one
+        settings file, so they are easy to change, which is what the next two slides let you do.</p>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slidewrap">
+        <h2>Most exposed states at a glance</h2>
+        <p class="lead">Darker means more exposed. Hover a state for its score and what is pushing it up.</p>
+        <figure>
 <svg viewBox="0 0 912 886" class="usmap" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="US map shaded by exposure score">
   <path class="us-state" d="M 67.3,800.8 66.8,804.2 55.2,804.3 57.6,797.3 65.5,798.4 67.3,800.8 Z M 47.0,743.7 44.3,746.2 41.7,744.9 42.4,738.0 47.0,743.7 Z M 62.0,708.6 63.9,710.1 63.0,718.1 59.9,716.7 61.0,711.1 59.0,708.5 62.5,705.7 62.0,708.6 Z M 170.6,745.5 120.8,814.3 126.4,821.0 127.2,832.9 138.8,830.2 141.3,845.3 140.8,863.4 145.9,871.8 143.8,877.0 139.5,879.9 135.6,871.4 137.7,863.8 135.5,854.7 137.1,846.1 127.2,840.0 123.9,835.2 121.0,822.7 114.0,812.3 108.7,809.6 103.0,795.3 98.2,794.0 94.8,799.4 77.8,794.8 88.5,785.0 93.7,785.8 94.4,783.4 71.8,786.7 71.0,792.2 63.4,794.1 52.2,792.3 48.5,794.4 40.2,792.5 36.1,794.4 29.6,793.1 28.0,790.1 13.0,785.8 6.0,780.9 6.8,779.3 25.2,783.1 29.6,786.9 42.2,787.0 48.8,786.7 59.9,780.3 54.5,778.5 54.7,776.4 50.7,776.9 52.3,771.6 49.1,772.9 51.5,768.6 46.0,767.7 44.3,765.6 51.5,760.2 52.4,756.0 47.7,752.8 49.4,743.6 53.6,740.5 55.2,735.6 71.1,731.6 73.7,736.6 79.1,736.3 80.0,739.0 84.1,739.4 87.1,733.6 91.5,733.5 86.2,730.1 83.9,730.4 83.9,726.9 80.2,723.4 79.2,717.8 83.9,707.8 97.6,713.5 99.1,715.7 95.0,718.0 99.5,723.5 107.4,703.5 107.7,698.4 112.8,697.2 115.9,701.5 121.5,702.3 131.1,700.2 140.1,703.5 141.2,705.8 147.8,706.0 149.0,710.2 147.2,714.3 149.4,714.1 152.3,717.8 150.6,719.1 152.6,723.1 155.4,724.4 162.7,736.8 166.7,738.0 170.6,745.5 Z" fill="#ef6447" data-n="Alaska" data-s="62.7" data-d="outages"><title>Alaska: 62.7, mostly outages</title></path>
   <path class="us-state" d="M 621.5,355.7 666.8,348.9 683.3,395.9 689.2,405.8 686.7,410.1 686.8,417.2 688.5,428.7 691.4,433.6 642.7,442.9 647.6,449.2 646.2,456.8 629.1,456.8 624.6,423.7 623.3,359.7 621.5,355.7 Z" fill="#fca06b" data-n="Alabama" data-s="44.9" data-d="outages"><title>Alabama: 44.9, mostly outages</title></path>
@@ -184,120 +244,114 @@
   <path class="us-state" d="M 720.4,281.1 717.0,281.5 711.8,276.9 707.6,270.9 706.2,264.4 710.3,262.9 711.8,259.4 712.5,249.4 714.9,249.4 715.6,251.8 716.9,250.6 716.8,244.3 719.7,239.7 725.6,237.2 728.9,231.2 729.7,217.8 728.0,210.1 730.0,208.5 734.5,228.3 751.5,224.1 754.0,235.0 762.9,224.7 767.9,224.3 772.0,219.8 777.5,220.1 780.2,222.6 782.2,225.0 781.4,229.5 771.6,226.0 771.8,232.1 766.0,241.8 764.6,241.3 762.2,250.0 760.0,251.5 754.6,249.5 752.0,262.5 747.9,270.4 748.9,274.9 746.6,277.2 727.2,287.3 721.9,284.6 720.4,281.1 Z" fill="#d42c1d" data-n="West Virginia" data-s="76.0" data-d="outages"><title>West Virginia: 76.0, mostly outages</title></path>
   <path class="us-state" d="M 225.4,226.0 236.8,138.1 344.9,148.4 341.1,237.1 274.8,232.3 225.4,226.0 Z" fill="#f3714d" data-n="Wyoming" data-s="58.8" data-d="concentration"><title>Wyoming: 58.8, mostly concentration</title></path>
 </svg>
-        <div class="mapscale"><span>less exposed</span><i class="scale"></i><span>more exposed</span></div>
-        <figcaption>Each state is shaded by its score, so darker means more exposed. Hover a state to see
-        its score and what is pushing it up, and drag the weights further down the page to watch the whole
-        map re-shade. These numbers use the project's sample data, not a live download, so treat the ranking
-        as an example rather than a real finding.</figcaption>
-      </figure>
-    </section>
-
-    <section id="method">
-      <h2>What the score means</h2>
-      <p class="lead">Every state gets one number from 0 to 100. Higher means it looks more likely to
-      struggle to keep the power on. The number is built from three pieces, all from public figures.</p>
-      <div class="step">
-        <div class="no">1</div>
-        <div>
-          <h3>Outage burden</h3>
-          <p>How often the power goes out and for how long, using the industry measures SAIDI and SAIFI.</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="no">2</div>
-        <div>
-          <h3>Concentration</h3>
-          <p>How much of a state's power leans on one fuel type or a single very large plant.</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="no">3</div>
-        <div>
-          <h3>Exposure deficit</h3>
-          <p>Whether there is much spare capacity above peak demand, and how varied the supply is.</p>
-        </div>
-      </div>
-      <p style="margin-top:22px">The three pieces are put on the same scale and blended. The weights live
-      in one settings file, so they are easy to change and re-run.</p>
-    </section>
-
-    <section id="results">
-      <h2>Most exposed states</h2>
-      <p class="lead">The score blends three parts, and how much each one counts is a judgement
-      call. Drag the weights and the ranking re-sorts live.</p>
-
-      <div class="explorer">
-        <div class="sliders">
-          <label>Outage burden <span id="wO">45%</span>
-            <input type="range" id="sO" min="0" max="100" value="45" step="1" aria-label="Outage burden weight"></label>
-          <label>Concentration <span id="wC">30%</span>
-            <input type="range" id="sC" min="0" max="100" value="30" step="1" aria-label="Concentration weight"></label>
-          <label>Exposure deficit <span id="wD">25%</span>
-            <input type="range" id="sD" min="0" max="100" value="25" step="1" aria-label="Exposure deficit weight"></label>
-          <button id="reset" type="button">Reset to defaults</button>
-        </div>
-        <table>
-          <thead><tr><th>#</th><th>State</th><th>Score</th><th></th></tr></thead>
-          <tbody id="rows">
-            <tr><td class="n">1</td><td class="s">Arizona</td><td class="sc">100.0</td><td class="b"><div class="track"><i style="width:100%"></i></div></td></tr>
-            <tr><td class="n">2</td><td class="s">Georgia</td><td class="sc">99.5</td><td class="b"><div class="track"><i style="width:99.5%"></i></div></td></tr>
-            <tr><td class="n">3</td><td class="s">Mississippi</td><td class="sc">89.2</td><td class="b"><div class="track"><i style="width:89.2%"></i></div></td></tr>
-            <tr><td class="n">4</td><td class="s">New Mexico</td><td class="sc">86.6</td><td class="b"><div class="track"><i style="width:86.6%"></i></div></td></tr>
-            <tr><td class="n">5</td><td class="s">Texas</td><td class="sc">84.7</td><td class="b"><div class="track"><i style="width:84.7%"></i></div></td></tr>
-            <tr><td class="n">6</td><td class="s">Washington</td><td class="sc">80.9</td><td class="b"><div class="track"><i style="width:80.9%"></i></div></td></tr>
-            <tr><td class="n">7</td><td class="s">Michigan</td><td class="sc">79.3</td><td class="b"><div class="track"><i style="width:79.3%"></i></div></td></tr>
-            <tr><td class="n">8</td><td class="s">Nevada</td><td class="sc">79.1</td><td class="b"><div class="track"><i style="width:79.1%"></i></div></td></tr>
-            <tr><td class="n">9</td><td class="s">West Virginia</td><td class="sc">76.0</td><td class="b"><div class="track"><i style="width:76%"></i></div></td></tr>
-            <tr><td class="n">10</td><td class="s">Delaware</td><td class="sc">74.4</td><td class="b"><div class="track"><i style="width:74.4%"></i></div></td></tr>
-            <tr><td class="n">11</td><td class="s">New Hampshire</td><td class="sc">72.7</td><td class="b"><div class="track"><i style="width:72.7%"></i></div></td></tr>
-            <tr><td class="n">12</td><td class="s">Oregon</td><td class="sc">71.6</td><td class="b"><div class="track"><i style="width:71.6%"></i></div></td></tr>
-            <tr><td class="n">13</td><td class="s">Vermont</td><td class="sc">64.6</td><td class="b"><div class="track"><i style="width:64.6%"></i></div></td></tr>
-            <tr><td class="n">14</td><td class="s">South Dakota</td><td class="sc">63.7</td><td class="b"><div class="track"><i style="width:63.7%"></i></div></td></tr>
-            <tr><td class="n">15</td><td class="s">Arkansas</td><td class="sc">62.8</td><td class="b"><div class="track"><i style="width:62.8%"></i></div></td></tr>
-          </tbody>
-        </table>
-        <p class="hint">Showing the top 15. At the default 45 / 30 / 25 this matches the pipeline
-        output. Push the weight onto one part to watch states like West Virginia climb or slide, and the map
-        up top re-shades as you go. Hover a row to find that state on the map.</p>
+          <div class="mapscale"><span>less exposed</span><i class="scale"></i><span>more exposed</span></div>
+          <figcaption>Sample data, so treat this as an example rather than a real finding. Change the weights
+          on the next slide and this map re-shades to match.</figcaption>
+        </figure>
       </div>
     </section>
 
-    <section id="build">
-      <h2>How it was built</h2>
-      <p>The analysis runs in Python: it pulls the public data (or falls back to a built-in sample),
-      cleans and joins it, scores each state, and writes the charts and a results table. The map is
-      drawn in R with the <code>usmap</code> package, which lays out all 50 states including Alaska and
-      Hawaii. The same results are exported as a GeoPackage, so they open in mapping software like QGIS.</p>
-      <p class="lead">Built with pandas, matplotlib, ggplot2 and geopandas. Python and R at an
-      intermediate level; the GIS side is more of a first pass, a shaded state map and an exported
-      layer I can build on later.</p>
+    <section class="slide" id="results">
+      <div class="slidewrap">
+        <h2>The weights are a judgement call</h2>
+        <p class="lead">How much each part counts is a choice, not a fact. Drag the weights and the ranking
+        re-sorts, and the map on the slide before this one re-shades, live.</p>
+        <div class="explorer">
+          <div class="sliders">
+            <label>Outage burden <span id="wO">45%</span>
+              <input type="range" id="sO" min="0" max="100" value="45" step="1" aria-label="Outage burden weight"></label>
+            <label>Concentration <span id="wC">30%</span>
+              <input type="range" id="sC" min="0" max="100" value="30" step="1" aria-label="Concentration weight"></label>
+            <label>Exposure deficit <span id="wD">25%</span>
+              <input type="range" id="sD" min="0" max="100" value="25" step="1" aria-label="Exposure deficit weight"></label>
+            <button id="reset" type="button">Reset to defaults</button>
+          </div>
+          <table>
+            <thead><tr><th>#</th><th>State</th><th>Score</th><th></th></tr></thead>
+            <tbody id="rows"></tbody>
+          </table>
+          <p class="hint">Showing the top 15. At the default 45 / 30 / 25 this matches the pipeline output.
+          Push the weight onto one part to watch states like West Virginia climb or slide. Hover a row to
+          find that state on the map.</p>
+        </div>
+      </div>
     </section>
 
-    <section id="run">
-      <h2>Run it yourself</h2>
-      <p>With Python installed, from the project folder:</p>
-      <pre><code><span class="cmt"># install the libraries, then run the pipeline</span>
+    <section class="slide">
+      <div class="slidewrap">
+        <h2>The same score can mean different things</h2>
+        <p class="lead">This is the part worth carrying into a policy conversation. A high score is not one
+        problem, it is whichever of the three pieces is doing the work, and that changes by region.</p>
+        <div class="step"><div class="no">&rarr;</div><div><h3>Southeast: mostly outages</h3><p>Georgia and
+        Mississippi score high because storms take the power down, not because their plants are fragile. The
+        lever is hardening lines and speeding restoration, not building capacity.</p></div></div>
+        <div class="step"><div class="no">&rarr;</div><div><h3>West: mostly thin margins</h3><p>Arizona rides
+        high on a tight gap between supply and peak demand, which points at capacity and demand instead.</p></div></div>
+        <div class="step"><div class="no">&rarr;</div><div><h3>Concentrated grids</h3><p>Texas and New Mexico
+        lean on a narrow fuel or plant base, so the worry is what happens if one big thing trips.</p></div></div>
+        <p style="margin-top:20px">The driver label under each state on the map is the shorthand for this.</p>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slidewrap">
+        <h2>What this is not</h2>
+        <p class="lead">A few honest limits, which matter more for a policy reader than the ranking itself.</p>
+        <div class="step"><div class="no">!</div><div><h3>It is not operational</h3><p>State-level figures
+        blur a lot. A state can look fine overall and still have fragile pockets inside it.</p></div></div>
+        <div class="step"><div class="no">!</div><div><h3>The outage data is sampled</h3><p>The reliability
+        piece currently runs on synthetic numbers, so the exact ranking is a worked example.</p></div></div>
+        <div class="step"><div class="no">!</div><div><h3>It leaves out the wires</h3><p>The score says
+        nothing about the transmission network that moves power around, which probably matters as much as the
+        plants do.</p></div></div>
+        <p style="margin-top:20px">So the very top and bottom are the interesting bits. Read the middle of the
+        table loosely.</p>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slidewrap">
+        <p class="kicker">state deep dive</p>
+        <h2>A closer look at Georgia</h2>
+        <p class="lead">To show what a fuller version looks like, I paired the score for one state with its
+        actual figures from the EIA, EPA eGRID and NOAA, including an interactive map of every power plant of
+        50 MW and up that you can filter by fuel.</p>
+        <p>Georgia lands near the top of the ranking, and it gets there almost entirely on outages rather than
+        on how its system is built, which fits a storm-prone Southeast.</p>
+        <p style="margin-top:12px"><a class="cta" href="georgia.html">Open the Georgia deep dive</a></p>
+      </div>
+    </section>
+
+    <section class="slide" id="build">
+      <div class="slidewrap">
+        <h2>How it was built, and how to run it</h2>
+        <p>The analysis runs in Python: it pulls the public data (or falls back to a built-in sample), cleans
+        and joins it, scores each state, and writes the charts and a results table. The map is drawn in R with
+        the <code>usmap</code> package, and the same results export as a GeoPackage so they open in mapping
+        software like QGIS.</p>
+        <p class="lead">Built with pandas, matplotlib, ggplot2 and geopandas. With Python installed, from the
+        project folder:</p>
+        <pre><code><span class="cmt"># install the libraries, then run the pipeline</span>
 pip install -r requirements.txt
 python pipeline.py</code></pre>
-      <p>Full setup notes, including the optional R map and how to plug in a live EIA data key, are in
-      the <a href="https://github.com/tobyn-smith/energyosint#readme" style="color:var(--accent)">project README</a>.</p>
+        <p>Full setup notes, including the optional R map and how to plug in a live EIA data key, are in the
+        <a href="https://github.com/tobyn-smith/energyosint#readme" style="color:var(--accent)">project README</a>.</p>
+        <p class="hint" style="margin-top:16px">Data: US EIA open forms 860 and 861. Code and the full
+        write-up are on GitHub.</p>
+      </div>
     </section>
 
-  </main>
+  </div>
 
-  <footer>
-    <div class="wrap">
-      <p>US EIA open data, Forms 860 and 861. Code at
-      <a href="https://github.com/tobyn-smith/energyosint">github.com/tobyn-smith/energyosint</a>.</p>
-    </div>
-  </footer>
+  <div class="controls">
+    <button class="nav-btn" id="prev" aria-label="Previous slide">&lsaquo;</button>
+    <div class="dots" id="dots"></div>
+    <button class="nav-btn" id="next" aria-label="Next slide">&rsaquo;</button>
+  </div>
 
   <div class="maptip" id="maptip"></div>
 
   <script>
-    // Normalised component values per state, straight from exposure_index.csv.
-    // The score is a weighted blend of these three, min-max scaled to 0-100,
-    // which reproduces the Python scoring for any weighting.
     const DATA = [{"s":"AZ","n":"Arizona","o":0.7174,"c":1.5805,"d":2.202},{"s":"GA","n":"Georgia","o":2.9162,"c":0.086,"d":-0.0122},{"s":"MS","n":"Mississippi","o":1.8967,"c":-0.1482,"d":0.9815},{"s":"NM","n":"New Mexico","o":-0.0432,"c":2.6196,"d":0.8654},{"s":"TX","n":"Texas","o":-0.1392,"c":2.3138,"d":1.1984},{"s":"WA","n":"Washington","o":0.1008,"c":1.445,"d":1.4001},{"s":"MI","n":"Michigan","o":0.1157,"c":1.7463,"d":0.8327},{"s":"NV","n":"Nevada","o":1.3509,"c":0.4812,"d":0.1115},{"s":"WV","n":"West Virginia","o":2.326,"c":-1.3918,"d":0.2678},{"s":"DE","n":"Delaware","o":2.4229,"c":-1.1648,"d":-0.3575},{"s":"NH","n":"New Hampshire","o":-0.4745,"c":2.2406,"d":0.5882},{"s":"OR","n":"Oregon","o":0.8495,"c":-0.4086,"d":1.2664},{"s":"VT","n":"Vermont","o":0.3337,"c":0.3594,"d":0.5048},{"s":"SD","n":"South Dakota","o":0.0027,"c":0.2188,"d":1.1807},{"s":"AR","n":"Arkansas","o":0.0262,"c":-0.0726,"d":1.3799},{"s":"AK","n":"Alaska","o":0.4123,"c":0.2149,"d":0.3385},{"s":"WY","n":"Wyoming","o":0.1535,"c":0.3867,"d":0.1721},{"s":"RI","n":"Rhode Island","o":-0.5969,"c":0.7485,"d":0.9714},{"s":"NC","n":"North Carolina","o":-0.413,"c":0.1296,"d":1.2739},{"s":"IL","n":"Illinois","o":-0.5406,"c":1.4059,"d":-0.1406},{"s":"OK","n":"Oklahoma","o":0.9152,"c":-0.7651,"d":-0.1886},{"s":"MA","n":"Massachusetts","o":0.9245,"c":-0.8869,"d":-0.1559},{"s":"NY","n":"New York","o":-0.1556,"c":0.527,"d":-0.012},{"s":"TN","n":"Tennessee","o":1.0842,"c":-0.5677,"d":-1.3334},{"s":"OH","n":"Ohio","o":0.4485,"c":-1.1465,"d":0.4973},{"s":"CA","n":"California","o":0.6993,"c":0.0456,"d":-1.4292},{"s":"NE","n":"Nebraska","o":-0.7123,"c":0.4239,"d":0.6259},{"s":"WI","n":"Wisconsin","o":0.5535,"c":-0.6199,"d":-0.6451},{"s":"LA","n":"Louisiana","o":-1.2707,"c":1.3909,"d":0.1492},{"s":"ME","n":"Maine","o":-0.4021,"c":0.0261,"d":0.1847},{"s":"AL","n":"Alabama","o":1.0616,"c":-0.1976,"d":-2.2739},{"s":"MT","n":"Montana","o":-0.0519,"c":-0.4599,"d":0.0056},{"s":"PA","n":"Pennsylvania","o":-0.2241,"c":-0.2196,"d":-0.2087},{"s":"ID","n":"Idaho","o":-0.8843,"c":-0.2864,"d":1.0067},{"s":"IA","n":"Iowa","o":-0.4513,"c":-0.1433,"d":-0.0851},{"s":"KY","n":"Kentucky","o":-0.7228,"c":-0.0114,"d":0.1468},{"s":"NJ","n":"New Jersey","o":-0.3352,"c":-1.0589,"d":0.409},{"s":"CO","n":"Colorado","o":-0.692,"c":0.2532,"d":-0.7206},{"s":"IN","n":"Indiana","o":-0.6384,"c":-0.0535,"d":-0.5391},{"s":"VA","n":"Virginia","o":-0.3349,"c":-1.3239,"d":-0.0651},{"s":"HI","n":"Hawaii","o":-0.5431,"c":-0.4016,"d":-1.0031},{"s":"MN","n":"Minnesota","o":-1.3968,"c":0.0483,"d":-0.0373},{"s":"DC","n":"District of Columbia","o":-1.1132,"c":-0.3481,"d":-0.3702},{"s":"KS","n":"Kansas","o":-1.0694,"c":-1.019,"d":0.2427},{"s":"CT","n":"Connecticut","o":-1.2183,"c":-0.0142,"d":-0.8089},{"s":"FL","n":"Florida","o":0.198,"c":-1.6648,"d":-1.573},{"s":"MD","n":"Maryland","o":-1.1533,"c":0.0441,"d":-1.3914},{"s":"ND","n":"North Dakota","o":-0.9814,"c":-0.6778,"d":-0.9753},{"s":"UT","n":"Utah","o":-1.3483,"c":-1.407,"d":-0.0626},{"s":"SC","n":"South Carolina","o":-1.7076,"c":-0.3586,"d":-1.0434},{"s":"MO","n":"Missouri","o":0.1052,"c":-1.9182,"d":-3.3708}];
 
     const $ = (id) => document.getElementById(id);
@@ -316,7 +370,6 @@ python pipeline.py</code></pre>
       return i >= ORRD.length - 1 ? ORRD[ORRD.length - 1] : lerp(ORRD[i], ORRD[i + 1], t - i);
     }
 
-    // Look up each map path by its state name so the sliders can re-shade it.
     const stateByName = {};
     document.querySelectorAll(".usmap .us-state").forEach((st) => { stateByName[st.dataset.n] = st; });
 
@@ -334,7 +387,6 @@ python pipeline.py</code></pre>
       for (const s of scored) s.score = ((s.raw - lo) / span) * 100;
       scored.sort((a, b) => b.score - a.score);
 
-      // Re-shade the map and keep each state's hover label current.
       for (const s of scored) {
         const st = stateByName[s.n];
         if (!st) continue;
@@ -353,13 +405,11 @@ python pipeline.py</code></pre>
     }
 
     [sO, sC, sD].forEach((el) => el.addEventListener("input", render));
-    $("reset").addEventListener("click", () => {
-      sO.value = 45; sC.value = 30; sD.value = 25; render();
-    });
+    $("reset").addEventListener("click", () => { sO.value = 45; sC.value = 30; sD.value = 25; render(); });
     render();
 
-    // hover tooltip for the map, plus two-way highlighting with the table
-    const mtip = document.getElementById("maptip");
+    // map hover tooltip, plus two-way highlight with the table
+    const mtip = $("maptip");
     document.querySelectorAll(".usmap .us-state").forEach((st) => {
       st.addEventListener("mousemove", (e) => {
         mtip.textContent = `${st.dataset.n}: ${st.dataset.s}, mostly ${st.dataset.d}`;
@@ -377,8 +427,6 @@ python pipeline.py</code></pre>
         if (row) row.classList.remove("hi");
       });
     });
-
-    // hovering a table row lights up its state on the map
     rows.addEventListener("mouseover", (e) => {
       const tr = e.target.closest("tr");
       if (tr && stateByName[tr.dataset.n]) stateByName[tr.dataset.n].classList.add("hi");
@@ -387,6 +435,62 @@ python pipeline.py</code></pre>
       const tr = e.target.closest("tr");
       if (tr && stateByName[tr.dataset.n]) stateByName[tr.dataset.n].classList.remove("hi");
     });
+
+    // ---- slide deck navigation ----
+    const slides = [...document.querySelectorAll(".slide")];
+    const pbar = $("pbar"), counter = $("counter"), dotsWrap = $("dots");
+    const prevBtn = $("prev"), nextBtn = $("next");
+    const pad = (n) => String(n).padStart(2, "0");
+
+    slides.forEach((_, i) => {
+      const b = document.createElement("button");
+      b.className = "dot"; b.type = "button";
+      b.setAttribute("aria-label", "Go to slide " + (i + 1));
+      b.addEventListener("click", () => go(i));
+      dotsWrap.appendChild(b);
+    });
+    const dots = [...dotsWrap.children];
+    let cur = 0;
+
+    function go(i) {
+      cur = Math.max(0, Math.min(slides.length - 1, i));
+      slides.forEach((s, j) => s.classList.toggle("active", j === cur));
+      dots.forEach((d, j) => d.classList.toggle("on", j === cur));
+      counter.textContent = pad(cur + 1) + " / " + pad(slides.length);
+      pbar.style.width = ((cur + 1) / slides.length * 100) + "%";
+      prevBtn.disabled = cur === 0;
+      nextBtn.disabled = cur === slides.length - 1;
+      slides[cur].scrollTop = 0;
+      if (history.replaceState) history.replaceState(null, "", "#" + (cur + 1));
+    }
+    const next = () => go(cur + 1), prev = () => go(cur - 1);
+    nextBtn.addEventListener("click", next);
+    prevBtn.addEventListener("click", prev);
+
+    window.addEventListener("keydown", (e) => {
+      const t = e.target;
+      if (t && typeof t.matches === "function" && t.matches("input, textarea, select")) return; // let sliders use arrows
+      if (["ArrowRight", "PageDown"].includes(e.key) || e.key === " ") { e.preventDefault(); next(); }
+      else if (["ArrowLeft", "PageUp"].includes(e.key)) { e.preventDefault(); prev(); }
+      else if (e.key === "Home") { e.preventDefault(); go(0); }
+      else if (e.key === "End") { e.preventDefault(); go(slides.length - 1); }
+    });
+
+    // swipe on touch, but not when starting on the map or the sliders
+    let x0 = null;
+    const deck = $("deck");
+    deck.addEventListener("touchstart", (e) => {
+      x0 = e.target.closest("input, .usmap, .explorer, a, button") ? null : e.touches[0].clientX;
+    }, { passive: true });
+    deck.addEventListener("touchend", (e) => {
+      if (x0 === null) return;
+      const dx = e.changedTouches[0].clientX - x0;
+      if (Math.abs(dx) > 55) { dx < 0 ? next() : prev(); }
+      x0 = null;
+    }, { passive: true });
+
+    const start = parseInt((location.hash || "").replace("#", ""), 10);
+    go(Number.isFinite(start) && start >= 1 ? start - 1 : 0);
   </script>
 
 </body>
