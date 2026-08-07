@@ -11,16 +11,25 @@ import sys
 from pathlib import Path
 
 import pandas as pd
+import yaml
 
 # let the script find the grid package when run from the analysis folder
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
 from grid import scoring
 
 STATE_TABLE = Path("data/interim/state_table.csv")
 
-# A handful of defensible weightings, including the default from config.yaml.
-weightings = {
-    "default":         {"outage_burden": 0.45, "infra_concentration": 0.30, "exposure_deficit": 0.25},
+
+def _default_weights() -> dict:
+    """The live default, read from config.yaml so it can't drift out of sync."""
+    with open(ROOT / "config.yaml", encoding="utf-8") as f:
+        return yaml.safe_load(f)["weights"]
+
+
+# The fixed scenarios to push the default against. "default" itself is added in
+# main() from config.yaml, so changing the weights there flows straight through.
+ALT_WEIGHTINGS = {
     "even":            {"outage_burden": 1/3,  "infra_concentration": 1/3,  "exposure_deficit": 1/3},
     "outage_heavy":    {"outage_burden": 0.60, "infra_concentration": 0.20, "exposure_deficit": 0.20},
     "structure_heavy": {"outage_burden": 0.20, "infra_concentration": 0.40, "exposure_deficit": 0.40},
@@ -32,6 +41,8 @@ def main():
         raise SystemExit("run `python pipeline.py` first, the state table is missing")
 
     table = pd.read_csv(STATE_TABLE)
+
+    weightings = {"default": _default_weights(), **ALT_WEIGHTINGS}
 
     ranks = {}
     for name, w in weightings.items():
