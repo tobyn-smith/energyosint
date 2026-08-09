@@ -8,9 +8,14 @@ first so outputs/exposure_index.csv exists.
     python analysis/report.py
 """
 
+import sys
 from pathlib import Path
 
 import pandas as pd
+
+# let the script find the grid package when run from the analysis folder
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from grid.regions import STATE_NAMES
 
 INDEX = Path("outputs/exposure_index.csv")
 OUT = Path("outputs/findings.md")
@@ -21,28 +26,15 @@ DRIVERS = {
     "exposure_deficit": "the exposure deficit",
 }
 
-NAMES = {
-    "AL": "Alabama", "AK": "Alaska", "AZ": "Arizona", "AR": "Arkansas", "CA": "California",
-    "CO": "Colorado", "CT": "Connecticut", "DE": "Delaware", "DC": "District of Columbia",
-    "FL": "Florida", "GA": "Georgia", "HI": "Hawaii", "ID": "Idaho", "IL": "Illinois",
-    "IN": "Indiana", "IA": "Iowa", "KS": "Kansas", "KY": "Kentucky", "LA": "Louisiana",
-    "ME": "Maine", "MD": "Maryland", "MA": "Massachusetts", "MI": "Michigan", "MN": "Minnesota",
-    "MS": "Mississippi", "MO": "Missouri", "MT": "Montana", "NE": "Nebraska", "NV": "Nevada",
-    "NH": "New Hampshire", "NJ": "New Jersey", "NM": "New Mexico", "NY": "New York",
-    "NC": "North Carolina", "ND": "North Dakota", "OH": "Ohio", "OK": "Oklahoma", "OR": "Oregon",
-    "PA": "Pennsylvania", "RI": "Rhode Island", "SC": "South Carolina", "SD": "South Dakota",
-    "TN": "Tennessee", "TX": "Texas", "UT": "Utah", "VT": "Vermont", "VA": "Virginia",
-    "WA": "Washington", "WV": "West Virginia", "WI": "Wisconsin", "WY": "Wyoming",
-}
-
 
 def main():
     if not INDEX.exists():
         raise SystemExit("run `python pipeline.py` first, outputs/exposure_index.csv is missing")
 
     df = pd.read_csv(INDEX).sort_values("rank")
-    df["name"] = df["state"].map(NAMES)
-    df["driver"] = df[list(DRIVERS)].idxmax(axis=1).map(DRIVERS)
+    df["name"] = df["state"].map(STATE_NAMES)
+    # The pipeline already works out each state's driver; just make it readable.
+    df["driver"] = df["driver"].map(DRIVERS)
 
     lines = ["# Findings", ""]
     lines.append("Generated from the sample data, so this is illustrative rather than a real result.")
@@ -65,6 +57,15 @@ def main():
     lines.append("## What tends to drive exposure")
     lines.append("")
     lines.append(f"Across the 51 states, the standout signal is: {split}.")
+    lines.append("")
+
+    lines.append("## Reading it for policy")
+    lines.append("")
+    lines.append("The driver matters more than the rank, because each one points at a different lever:")
+    lines.append("")
+    lines.append("- Outage burden is a weather and wires problem. The lever is hardening and restoration, not new plants.")
+    lines.append("- Concentration is a single-point-of-failure problem. The lever is diversifying what the state leans on.")
+    lines.append("- An exposure deficit is a headroom problem. The lever is capacity, storage or demand-side work.")
     lines.append("")
 
     lines.append("## Caveats")

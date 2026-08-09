@@ -51,6 +51,11 @@ its score and what is driving it. There is a separate, deeper dive on Georgia to
 It sets the score next to the state's real figures from the EIA, EPA and NOAA, and
 has a map of every large power plant that you can filter by fuel.
 
+Nothing in the scoring is US-specific, by the way. Given the same three inputs it
+would run on any country's regions or provinces. It is written against the US
+because the EIA publishes enough open data to build the whole thing from, which
+few statistical agencies anywhere do.
+
 ## What you need to install
 
 You do not have to be a programmer to run this, but you do need two free tools.
