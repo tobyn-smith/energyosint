@@ -1,25 +1,41 @@
-# Grid Resilience Exposure Index
+<h1 align="center">Grid Resilience Exposure Index</h1>
 
-[![build](https://github.com/tobyn-smith/energyosint/actions/workflows/build.yml/badge.svg)](https://github.com/tobyn-smith/energyosint/actions/workflows/build.yml)
-[![licence: MIT](https://img.shields.io/badge/licence-MIT-blue.svg)](LICENSE)
+<p align="center">
+  Which US states look most exposed to losing power, and what is driving it.<br>
+  Every state gets one score from 0 to 100, built only from public government data.
+</p>
 
-Which US states look most exposed to losing power, and what is driving it. Every
-state gets one score from 0 to 100, built only from public government data.
+<p align="center">
+  <a href="https://github.com/tobyn-smith/energyosint/actions/workflows/build.yml"><img alt="build" src="https://github.com/tobyn-smith/energyosint/actions/workflows/build.yml/badge.svg"></a>
+  <a href="LICENSE"><img alt="licence: MIT" src="https://img.shields.io/badge/licence-MIT-blue.svg"></a>
+</p>
 
-**[Open the interactive deck](https://tobyn-smith.github.io/energyosint/)** ·
-[Georgia deep dive](https://tobyn-smith.github.io/energyosint/georgia.html) ·
-[Methodology](METHODOLOGY.md)
+<p align="center">
+  <b><a href="https://tobyn-smith.github.io/energyosint/">Open the interactive deck</a></b> ·
+  <a href="https://tobyn-smith.github.io/energyosint/georgia.html">Georgia deep dive</a> ·
+  <a href="METHODOLOGY.md">Methodology</a>
+</p>
+
+![Map of exposure scores by state](outputs/exposure_map.png)
 
 I am an international affairs student who codes, so this sits between the two:
 the analysis is a proper pipeline, and the write-up is aimed at someone who has
 to think about energy policy rather than wiring. It works at the state level, so
 it is a broad lens rather than anything operational.
 
-![Map of exposure scores by state](outputs/exposure_map.png)
+> **On the numbers.** The outage figures are real (EIA-861, 2023). Capacity and
+> peak demand still come from a built-in sample, so the ranking is part worked
+> example. The pipeline prints which inputs were real on every run.
 
-Note: the outage figures behind this are real (EIA-861, 2023). Capacity and peak
-demand still come from a built-in sample, so the ranking is part worked example.
-The pipeline prints which inputs were real on every run. More on that below.
+**Contents** ·
+[What it found](#what-it-found) ·
+[Under the hood](#what-is-under-the-hood) ·
+[How the score works](#how-the-score-works) ·
+[Quick start](#quick-start) ·
+[Data](#data-and-the-sample-fallback) ·
+[Validation](#does-the-outage-data-hold-up) ·
+[API](#a-json-api) ·
+[Layout](#how-the-project-is-laid-out)
 
 ## What it found
 
@@ -42,22 +58,34 @@ policy conversation, and the last is the one I did not expect.
   NOAA's storm records, how much damaging weather a state gets barely predicts how
   many outage minutes it loses to storms (rank correlation 0.21). Texas and Georgia
   log the most storm events in the country and lose few minutes; Maine logs a
-  fraction as many and lost the most. See below.
+  fraction as many and lost the most. [More below](#does-the-outage-data-hold-up).
+
+The top ten as it currently stands, straight from `outputs/exposure_index.csv`:
+
+| # | State | Score | Mostly driven by | Outage minutes, 2023 |
+|---:|---|---:|---|---:|
+| 1 | Maine | 100.0 | outages | 1,863 |
+| 2 | Michigan | 89.1 | concentration | 1,128 |
+| 3 | Texas | 83.5 | concentration | 583 |
+| 4 | New Hampshire | 75.9 | concentration | 591 |
+| 5 | Arkansas | 73.9 | outages | 915 |
+| 6 | Mississippi | 72.1 | outages | 878 |
+| 7 | Louisiana | 69.2 | concentration | 663 |
+| 8 | Oklahoma | 67.3 | outages | 1,339 |
+| 9 | New Mexico | 66.8 | concentration | 156 |
+| 10 | Arizona | 65.1 | thin spare capacity | 104 |
 
 ## What is under the hood
 
-- A Python pipeline (pandas, numpy) that ingests, cleans, scores and plots, with
-  a seeded sample so it runs for anyone with no API key.
-- Tests and a GitHub Action that reruns the pipeline and refreshes the site data
-  on every change to the analysis code.
-- Mapping in both languages: a Python choropleth via geopandas and an R map via
-  `usmap`, plus a GeoPackage export that opens in QGIS.
-- A SQLite store of every run, and an optional FastAPI service that re-ranks the
-  states live for any set of weights using the same scoring code as the pipeline.
-- A front end with no JavaScript libraries: the deck, the two interactive maps and
-  the weight explorer are hand-written SVG and vanilla JS.
+| | |
+|---|---|
+| **Pipeline** | Python (pandas, numpy) that ingests, cleans, scores and plots, with a seeded sample so it runs for anyone with no API key |
+| **Testing** | A test suite and a GitHub Action that reruns the pipeline and refreshes the site data on every change to the analysis code |
+| **Mapping** | Done in both languages: a Python choropleth via geopandas and an R map via `usmap`, plus a GeoPackage export that opens in QGIS |
+| **Storage** | A SQLite store of every run, and an optional FastAPI service that re-ranks the states live for any weights, using the same scoring code as the pipeline |
+| **Front end** | No JavaScript libraries: the deck, the two interactive maps and the weight explorer are hand-written SVG and vanilla JS |
 
-## The short version
+## How the score works
 
 Every state gets one number, an "exposure score" from 0 to 100. A higher score
 means the state looks more exposed, meaning more likely to have trouble keeping
@@ -91,24 +119,43 @@ so the exact position of a middling state depends on choices made in the setting
 The [project page](https://tobyn-smith.github.io/energyosint/) is an interactive
 slide deck. If you would rather not click through it, the "read view" button in
 the corner lays the same slides out as one continuous page, and printing does the
-same thing. You can click through it with the arrow keys, the marks along the bottom,
-or a swipe on your phone. The three weights are sliders on it, and moving them
-re-ranks the table and re-shades the map live; you can also hover any state to see
-its score and what is driving it. There is a separate, deeper dive on Georgia too.
-It sets the score next to the state's real figures from the EIA, EPA and NOAA, and
-has a map of every large power plant that you can filter by fuel.
+same thing. You can click through it with the arrow keys, the marks along the
+bottom, or a swipe on your phone. The three weights are sliders on it, and moving
+them re-ranks the table and re-shades the map live; you can also hover any state
+to see its score and what is driving it. There is a separate, deeper dive on
+Georgia too. It sets the score next to the state's real figures from the EIA, EPA
+and NOAA, and has a map of every large power plant that you can filter by fuel.
 
 Nothing in the scoring is US-specific, by the way. Given the same three inputs it
 would run on any country's regions or provinces. It is written against the US
 because the EIA publishes enough open data to build the whole thing from, which
 few statistical agencies anywhere do.
 
-## What you need to install
+## Quick start
 
-You do not have to be a programmer to run this, but you do need two free tools.
-If you only want the analysis and the charts, you only need the first one.
+With Python installed, from the project folder:
 
-**Python** (runs the main analysis):
+```bash
+pip install -r requirements.txt
+python pipeline.py
+```
+
+That is the whole thing. It prints its progress, shows the most exposed states,
+and writes its results into the `outputs` folder.
+
+Two settings can be changed without editing any files. `--normalize` switches the
+scaling method and `--top-n` sets how many states show up in the bar chart:
+
+```bash
+python pipeline.py --normalize minmax --top-n 10
+```
+
+<details>
+<summary><b>Never installed Python before?</b></summary>
+
+<br>
+
+You do not have to be a programmer to run this, but you do need one free tool.
 
 1. Go to https://www.python.org/downloads and install Python 3.
 2. On Windows, during the installer, tick the box that says
@@ -117,72 +164,62 @@ If you only want the analysis and the charts, you only need the first one.
    Windows, Terminal on Mac) and type `python --version`. You should see a
    version number.
 
-**R** (optional, only if you want to redraw the map yourself):
+The steps above assume you have opened a terminal and moved into the project
+folder. If you are not sure how to move into the folder, the usual command is
+`cd` followed by the path, for example `cd Downloads/energyosint`.
 
-1. Go to https://cran.r-project.org and install R.
-2. The map needs two R packages, usmap and ggplot2. Install them with the one
-   line shown in step 3 below.
+</details>
 
-## How to run it
+<details>
+<summary><b>Drawing the map in R (optional)</b></summary>
 
-These steps assume you have opened a terminal and moved into the project folder.
-If you are not sure how to move into the folder, the usual command is `cd`
-followed by the path, for example `cd Downloads/energyosint`.
+<br>
 
-**Step 1. Install the Python add-ons the project uses.** This reads the list in
-`requirements.txt` and installs everything in one go.
+The R map is optional; the Python one is what the README shows. If you want it,
+install R from https://cran.r-project.org, then run this once to get the
+packages:
 
-```
-pip install -r requirements.txt
-```
-
-**Step 2. Run the analysis.**
-
-```
-python pipeline.py
-```
-
-That is the whole thing. It will print its progress, show the most exposed
-states, and write its results into the `outputs` folder.
-
-If you want to change a setting without editing files, there are two options you
-can add:
-
-```
-python pipeline.py --normalize minmax --top-n 10
-```
-
-`--normalize` switches the scaling method, and `--top-n` sets how many states
-show up in the bar chart.
-
-**Step 3 (optional). Redraw the map in R.** If you installed R and want the R
-version of the map, run this once to get the add-ons:
-
-```
+```bash
 Rscript -e "install.packages(c('usmap','ggplot2'))"
 ```
 
 Then draw the map:
 
-```
+```bash
 Rscript analysis/exposure_map.R
 ```
 
-The other scripts in `analysis/` (the weight, regional and overlap checks) read
-what the pipeline writes, so run `python pipeline.py` before any of them.
+</details>
 
-## What you get
+<details>
+<summary><b>The other analysis scripts</b></summary>
+
+<br>
+
+These all read what the pipeline writes, so run `python pipeline.py` first.
+
+```bash
+python analysis/weight_sensitivity.py   # how much the weights move the ranking
+python analysis/regional_summary.py     # roll the scores up to census regions
+python analysis/component_overlap.py    # do the three parts measure the same thing
+python analysis/validate_outages.py     # check the outage data against NOAA storms
+python analysis/report.py               # write a short findings summary
+```
+
+</details>
+
+### What you get
 
 After running, look in the `outputs` folder:
 
-- `exposure_index.csv` is the main result. Open it in Excel or Google Sheets.
-  It has every state, its score, its rank, and the three pieces that went into
-  the score.
-- `ranked_states.png` is a bar chart of the most exposed states.
-- `exposure_map.png` is the map drawn by Python (the one shown at the top).
-- `exposure_map_r.png` is the same map drawn by R, if you have run the R script.
-- `exposure_states.gpkg` is the map data in a format you can open in free
-  mapping software like QGIS, if you want to explore it as a real map layer.
+| File | What it is |
+|---|---|
+| `exposure_index.csv` | The main result. Every state, its score, its rank, and the three pieces behind it. Opens in Excel or Google Sheets. |
+| `ranked_states.png` | A bar chart of the most exposed states. |
+| `exposure_map.png` | The map drawn by Python (the one at the top of this page). |
+| `exposure_map_r.png` | The same map drawn by R, if you have run the R script. |
+| `exposure_states.gpkg` | The map data as a GeoPackage, so it opens in QGIS as a real map layer. |
+| `index.db` | A SQLite record of every run, which the API reads. |
 
 The Python map and the GeoPackage need an extra library called geopandas. If you
 want them, run `pip install geopandas` first. Without it the pipeline still runs
@@ -200,7 +237,7 @@ The real generation data comes from the EIA open data service. Using it needs a
 free key. You request one at https://www.eia.gov/opendata, then save it where
 the project can find it:
 
-```
+```bash
 setx EIA_API_KEY your_key_here     # Windows
 export EIA_API_KEY=your_key_here   # Mac or Linux
 ```
@@ -265,6 +302,58 @@ that, but it is a real result and it is reported as it came out.
 
 ![Storms against storm-driven outages](outputs/validation_storms.png)
 
+## Digging further
+
+<details>
+<summary><b>How much the weights matter</b></summary>
+
+<br>
+
+The weights are a judgement call, so `analysis/weight_sensitivity.py` re-scores
+the states under a few different weightings and prints which ones stay in the top
+10. Seven states (AR, LA, ME, MI, MS, NH, TX) land in the top 10 no matter how the
+weights are set, while others move around a lot. West Virginia, for instance, runs
+from 13th under an outage-heavy weighting to 28th under a structure-heavy one. So
+the very top of the table is fairly stable, but the middle depends on the choices,
+which is worth keeping in mind when reading it.
+
+The full reasoning behind the components, the weights, and the limitations is
+written up in [METHODOLOGY.md](METHODOLOGY.md).
+
+</details>
+
+<details>
+<summary><b>A regional view</b></summary>
+
+<br>
+
+`analysis/regional_summary.py` averages the state scores up to the four US Census
+regions, which is often an easier way to read the pattern. The Northeast and the
+South come out highest, and the telling part is that each region gets there for a
+different reason: the South through actual outages, the West through tight
+capacity margins, and the Northeast and Midwest through how concentrated their
+supply is. It writes `outputs/regional_summary.csv` and the chart below. Run it
+with `--level division` for the finer nine-way census split.
+
+![Average exposure by US Census region](outputs/regional_exposure.png)
+
+</details>
+
+<details>
+<summary><b>Do the three parts overlap?</b></summary>
+
+<br>
+
+`analysis/component_overlap.py` checks how much the three components correlate,
+since adding them up only makes sense if they are not all measuring the same
+thing. Outage burden turns out to be its own signal, but concentration and the
+exposure deficit move together (about 0.5): a state with a concentrated supply
+also tends to have a tighter, less varied one. So the index leans on that
+structural side of things a little twice, which is worth flagging rather than
+hiding.
+
+</details>
+
 ## A JSON API
 
 If you want the numbers as an API rather than files, there is a small optional
@@ -272,7 +361,7 @@ server. It reads whatever the pipeline last saved to the SQLite database and can
 also re-rank the states live for any set of weights, using the same scoring code
 the pipeline uses so the two never disagree.
 
-```
+```bash
 pip install -r requirements-api.txt
 python pipeline.py            # once, so there is a run to serve
 uvicorn server:app --reload
@@ -280,10 +369,12 @@ uvicorn server:app --reload
 
 Then open http://127.0.0.1:8000/docs for the interactive list, or call it directly:
 
-- `GET /api/states` the full scored table, `/api/states/GA` for one state
-- `GET /api/score?wO=60&wC=20&wD=20&top=10` re-ranks live for your own weights
-- `GET /api/regions?level=region` or `division` rolls the scores up
-- `GET /api/runs` and `GET /health` for what is stored
+| Endpoint | What it gives you |
+|---|---|
+| `GET /api/states` | The full scored table, or `/api/states/GA` for one state |
+| `GET /api/score?wO=60&wC=20&wD=20&top=10` | Re-ranks live for your own weights |
+| `GET /api/regions?level=region` | Rolls the scores up, or `level=division` |
+| `GET /api/runs`, `GET /health` | What is stored |
 
 Every pipeline run is also saved to `outputs/index.db` (a SQLite file) and written
 out to `docs/data/index.json`, which is what the web deck reads. A small GitHub
@@ -301,7 +392,7 @@ grid/            the analysis code, split into small steps
   store.py       saves each run to a small SQLite database
   regions.py     census region lookups and state names, shared around
 pipeline.py      runs all the steps in order
-server.py        an optional JSON API over the results (see below)
+server.py        an optional JSON API over the results
 analysis/
   exposure_map.R         the R version of the map
   weight_sensitivity.py  checks how much the weights move the ranking
@@ -319,43 +410,12 @@ METHODOLOGY.md   the longer write-up of the choices and limits
 .github/workflows/build.yml  rebuilds the site data on push
 ```
 
-## How much the weights matter
-
-The weights are a judgement call, so `analysis/weight_sensitivity.py` re-scores
-the states under a few different weightings and prints which ones stay in the top
-10. Seven states (AR, LA, ME, MI, MS, NH, TX) land in the top 10 no matter how the
-weights are set, while others move around a lot. West Virginia, for instance, runs
-from 13th under an outage-heavy weighting to 28th under a structure-heavy one. So
-the very top of the table is fairly stable, but the middle depends on the choices,
-which is worth keeping in mind when reading it.
-
-The full reasoning behind the components, the weights, and the limitations is
-written up in [METHODOLOGY.md](METHODOLOGY.md).
-
-## A regional view
-
-`analysis/regional_summary.py` averages the state scores up to the four US Census
-regions, which is often an easier way to read the pattern. The Northeast and the
-South come out highest, and the telling part is that each region gets there for a
-different reason: the South through actual outages, the West through tight capacity
-margins, and the Northeast and Midwest through how concentrated their supply is. It writes `outputs/regional_summary.csv` and the chart below. Run it
-with `--level division` for the finer nine-way census split.
-
-![Average exposure by US Census region](outputs/regional_exposure.png)
-
-## Do the three parts overlap?
-
-`analysis/component_overlap.py` checks how much the three components correlate,
-since adding them up only makes sense if they are not all measuring the same
-thing. Outage burden turns out to be its own signal, but concentration and the
-exposure deficit move together (about 0.5 on the sample data): a state with a
-concentrated supply also tends to have a tighter, less varied one. So the index
-leans on that structural side of things a little twice, which is worth flagging
-rather than hiding.
-
 ## Sources
 
 - EIA Open Data, Forms 860 and 861, https://www.eia.gov/opendata
+- EIA-861 reliability, https://www.eia.gov/electricity/data/eia861/
+- NOAA Storm Events Database, https://www.ncei.noaa.gov/stormevents/
+- EPA eGRID, https://www.epa.gov/egrid (used on the Georgia page)
 - State map shapes: the R `usmap` package, and Natural Earth boundaries for the
   Python map
 
