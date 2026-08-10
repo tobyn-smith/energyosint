@@ -1,16 +1,54 @@
 # Grid Resilience Exposure Index
 
-This is a small data project I put together to look at which US states have the
-most exposed or least resilient electricity systems, using only public data.
-Everything here comes from open government sources, mostly the US Energy
-Information Administration (EIA). It works at the state level, so it is meant as
-a rough overview rather than anything precise or operational.
+[![build](https://github.com/tobyn-smith/energyosint/actions/workflows/build.yml/badge.svg)](https://github.com/tobyn-smith/energyosint/actions/workflows/build.yml)
+[![licence: MIT](https://img.shields.io/badge/licence-MIT-blue.svg)](LICENSE)
+
+Which US states look most exposed to losing power, and what is driving it. Every
+state gets one score from 0 to 100, built only from public government data.
+
+**[Open the interactive deck](https://tobyn-smith.github.io/energyosint/)** ·
+[Georgia deep dive](https://tobyn-smith.github.io/energyosint/georgia.html) ·
+[Methodology](METHODOLOGY.md)
+
+I am an international affairs student who codes, so this sits between the two:
+the analysis is a proper pipeline, and the write-up is aimed at someone who has
+to think about energy policy rather than wiring. It works at the state level, so
+it is a broad lens rather than anything operational.
 
 ![Map of exposure scores by state](outputs/exposure_map_r.png)
 
 Note: the map above uses the built-in sample data, not a live download. So the
 ranking is just an example of what comes out, not a real result. More on that
 below.
+
+## What it found
+
+On the sample data, three things stand out, and the second is the one I would
+actually carry into a policy conversation.
+
+- **The top of the table is stable.** Six states (AZ, GA, MS, NM, TX, WA) stay in
+  the top 10 under every weighting I tried. The middle moves a lot, so it should
+  be read loosely.
+- **The same score means different things in different places.** The South scores
+  high on actual outages, the West on thin capacity margins, and the Northeast and
+  Midwest on how concentrated their supply is. That changes the policy lever:
+  hardening lines is not the same job as adding capacity.
+- **Two of the three parts overlap.** Concentration and the exposure deficit
+  correlate at about 0.5, so the structural side is counted a little twice. That
+  is a weakness of the index, and it is flagged rather than buried.
+
+## What is under the hood
+
+- A Python pipeline (pandas, numpy) that ingests, cleans, scores and plots, with
+  a seeded sample so it runs for anyone with no API key.
+- Tests and a GitHub Action that reruns the pipeline and refreshes the site data
+  on every change to the analysis code.
+- Mapping in both languages: a Python choropleth via geopandas and an R map via
+  `usmap`, plus a GeoPackage export that opens in QGIS.
+- A SQLite store of every run, and an optional FastAPI service that re-ranks the
+  states live for any set of weights using the same scoring code as the pipeline.
+- A front end with no JavaScript libraries: the deck, the two interactive maps and
+  the weight explorer are hand-written SVG and vanilla JS.
 
 ## The short version
 
@@ -217,8 +255,10 @@ analysis/
   regional_summary.py    averages the scores up to US Census regions
   component_overlap.py   checks whether the three parts overlap
   report.py              writes a short findings summary
+  social_card.py         draws the link preview image for the site
 docs/            the interactive slide deck and the Georgia deep dive
   data/index.json  the per-state data the deck reads, refreshed by the pipeline
+  assets/og.png    the link preview image
 config.yaml      the weights and other settings
 requirements-api.txt  extra libraries for the API only
 METHODOLOGY.md   the longer write-up of the choices and limits

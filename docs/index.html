@@ -5,6 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Grid Resilience Exposure Index</title>
   <meta name="description" content="An interactive slide deck ranking US states by how exposed their electricity systems look, built from public data.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2317181a'/><rect x='6' y='19' width='5' height='7' fill='%23f6f4ef'/><rect x='13.5' y='13' width='5' height='13' fill='%23e08a63'/><rect x='21' y='7' width='5' height='19' fill='%23b5462f'/></svg>">
+  <meta name="theme-color" content="#f6f4ef">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Grid Resilience Exposure Index">
+  <meta property="og:description" content="Which US states look most exposed to losing power, and what is driving it. An interactive deck built from open EIA data.">
+  <meta property="og:url" content="https://tobyn-smith.github.io/energyosint/">
+  <meta property="og:image" content="https://tobyn-smith.github.io/energyosint/assets/og.png">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -116,6 +124,20 @@
     .rail .tick:hover { background: var(--gray); }
     .rail .tick.on { background: var(--accent); }
     @media (max-width: 460px) { .rail .tick { width: 12px; } }
+
+    /* printing (or saving to PDF) lays the deck out as a document, one slide a page */
+    @media print {
+      html, body { height: auto; overflow: visible; background: #fff; color: #000; }
+      header.bar, .controls, .maptip { display: none !important; }
+      .deck { position: static; }
+      .slide { position: static; opacity: 1 !important; visibility: visible !important;
+        transform: none !important; overflow: visible; break-after: page; }
+      .slide:last-child { break-after: auto; }
+      .slidewrap { display: block; min-height: 0; max-width: none; padding: 0 0 24px; }
+      .usmap { max-width: 460px; }
+      .explorer .sliders { display: none !important; }
+      a { text-decoration: none; color: #000; }
+    }
   </style>
 </head>
 <body>
