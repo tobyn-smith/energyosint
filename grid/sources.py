@@ -250,12 +250,20 @@ def _live_reliability(cfg: dict) -> pd.DataFrame | None:
     if not path.exists():
         return None
 
+    # From here the file exists, so a failure means we could not read something we
+    # were asked to read. Say so instead of quietly handing back sample data: a
+    # silent fallback here looks exactly like success from the outside.
     src = _reliability_sheet(path)
     if src is None:
+        print(f"  [sources] {path.name} has no reliability sheet in it, using the sample instead")
         return None
     try:
         book = pd.ExcelFile(src)
-    except Exception:
+    except ImportError:
+        print("  [sources] reading .xlsx needs openpyxl (pip install openpyxl), using the sample instead")
+        return None
+    except Exception as err:
+        print(f"  [sources] could not open {path.name} ({err}), using the sample instead")
         return None
 
     # Prefer the sheet EIA has already aggregated to states.

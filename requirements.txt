@@ -3,6 +3,9 @@ numpy>=1.24
 requests>=2.28
 pyyaml>=6.0
 matplotlib>=3.7
+# reads the EIA-861 reliability workbook; without it that input silently falls
+# back to the sample, so it belongs in the hard requirements
+openpyxl>=3.1
 
 # Optional: enables the choropleth in plots.py. The pipeline falls back to a
 # bar chart if it isn't installed, so it's left out of the hard requirements.
