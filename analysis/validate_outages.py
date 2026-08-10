@@ -163,7 +163,8 @@ def main():
         ("damage_per_customer", "storm_gap", "how bad, per customer"),
         ("storm_events", "saidi_with", "storm events vs total outage minutes"),
     ]
-    print(f"states compared: {len(df)}")
+    dropped = sorted((set(saidi["state"]) | set(storms["state"])) - set(df["state"]))
+    print(f"states compared: {len(df)}" + (f" (dropped: {', '.join(dropped)})" if dropped else ""))
     print(f"NOAA file: {storms_path.name}\nEIA file:  {rel_path.name}\n")
     # Spearman is just Pearson on the ranks, and doing it that way avoids pulling
     # in scipy for one number. Ranks also keep outliers like Maine from dominating.

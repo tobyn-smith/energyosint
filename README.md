@@ -250,8 +250,9 @@ storm days and once excluding them, so the difference is the part storms account
 for. If the weather story is right, that gap should track how much damaging
 weather a state actually had.
 
-It mostly does not. Across the fifty states the rank correlation is 0.21 against
-the number of damaging storms and 0.24 against how much damage they did. Texas and
+It mostly does not. Across the fifty places that report both figures (all but
+Hawaii, which only publishes the one), the rank correlation is 0.21 against the
+number of damaging storms and 0.24 against how much damage they did. Texas and
 Georgia record the most power-relevant storm events in the country and lose few
 minutes to them; Maine records a fraction as many and lost more than anyone.
 
