@@ -62,7 +62,7 @@ def main():
     order = summary.index[::-1]
     height = 3.4 if level == "region" else 0.5 * len(order) + 1.0
     fig, ax = plt.subplots(figsize=(7, height))
-    ax.barh(order, summary.loc[order, "exposure_score"], color="#c14625")
+    ax.barh(order, summary.loc[order, "exposure_score"], color="#b5462f")
     ax.set_xlabel("Average exposure score")
     ax.set_title(f"Average exposure by US Census {level}")
     for i, v in enumerate(summary.loc[order, "exposure_score"]):

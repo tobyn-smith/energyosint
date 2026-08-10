@@ -7,68 +7,70 @@
   <meta name="description" content="A closer look at Georgia's electricity system, pairing the exposure index with real EIA figures.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     :root {
-      --paper: #f4f3ef; --panel: #faf9f6; --ink: #1a1916; --gray: #6e6d66;
-      --hair: #e0ded6; --accent: #c14625; --maxw: 760px;
+      --paper: #f6f4ef; --panel: #fbfaf6; --ink: #17181a; --gray: #64655f;
+      --hair: #ddd9d0; --accent: #2d4f63; --warm: #b5462f; --maxw: 720px;
     }
     @media (prefers-color-scheme: dark) {
-      :root { --paper: #111110; --panel: #181716; --ink: #ecebe6; --gray: #918f88; --hair: #28271f; --accent: #e0603a; }
+      :root { --paper: #121316; --panel: #191a1d; --ink: #e9e7e1; --gray: #97968f;
+              --hair: #2a2b2e; --accent: #8ab4cc; --warm: #d9633f; }
     }
     * { box-sizing: border-box; }
     body { margin: 0; background: var(--paper); color: var(--ink);
-      font: 17px/1.65 "Archivo", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+      font: 17.5px/1.7 "Source Serif 4", Georgia, serif; -webkit-font-smoothing: antialiased; }
     .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 26px; }
     a { color: var(--ink); }
 
     header.bar { border-bottom: 1px solid var(--hair); }
     header.bar .wrap { display: flex; align-items: center; justify-content: space-between; height: 60px; }
-    .wordmark { font-weight: 600; font-size: .98rem; }
-    header.bar nav a { color: var(--gray); text-decoration: none; font-size: .92rem; margin-left: 20px; }
+    .wordmark { font-weight: 600; font-size: 1rem; }
+    header.bar nav a { color: var(--gray); text-decoration: none; font-size: .95rem; margin-left: 20px; }
     header.bar nav a:hover { color: var(--ink); }
 
-    .hero { padding: 66px 0 14px; }
-    .kicker { font-family: "JetBrains Mono", monospace; font-size: .8rem; letter-spacing: .06em;
-      text-transform: uppercase; color: var(--accent); margin: 0 0 16px; }
-    h1 { font-weight: 700; font-size: clamp(2.2rem, 6vw, 3.4rem); line-height: 1.03; letter-spacing: -.035em; margin: 0 0 20px; }
-    .stand { font-size: 1.22rem; line-height: 1.45; color: var(--gray); margin: 0; }
+    .hero { padding: 62px 0 14px; }
+    h1 { font-weight: 700; font-size: clamp(2.1rem, 5.6vw, 3.1rem); line-height: 1.1; letter-spacing: -.018em; margin: 0 0 20px; }
+    .stand { font-size: 1.2rem; line-height: 1.5; color: var(--gray); margin: 0; }
 
-    section { padding: 40px 0; }
+    section { padding: 38px 0; }
     section + section { border-top: 1px solid var(--hair); }
-    h2 { font-weight: 600; font-size: 1.45rem; letter-spacing: -.02em; margin: 0 0 14px; }
-    h3 { font-weight: 600; font-size: 1.05rem; margin: 22px 0 4px; }
+    h2 { font-weight: 600; font-size: 1.42rem; line-height: 1.25; letter-spacing: -.012em;
+      margin: 0 0 16px; padding-bottom: 11px; border-bottom: 1px solid var(--hair); }
+    h3 { font-weight: 600; font-size: 1.04rem; margin: 22px 0 4px; }
     p { margin: 0 0 16px; }
     .lead { color: var(--gray); }
 
-    .note { border: 1px solid var(--hair); border-left: 2px solid var(--accent); background: var(--panel);
-      padding: 14px 16px; color: var(--gray); font-size: .95rem; }
+    .note { border-top: 1px solid var(--hair); padding-top: 14px; color: var(--gray); font-size: .95rem; }
 
-    .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--hair);
-      border: 1px solid var(--hair); margin: 20px 0; }
-    .stats div { background: var(--paper); padding: 16px 18px; }
-    .stats b { display: block; font-size: 1.5rem; font-weight: 700; letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
-    .stats span { font-size: .86rem; color: var(--gray); }
-    .stats small { color: var(--accent); font-family: "JetBrains Mono", monospace; font-size: .72rem; }
-    @media (max-width: 520px) { .stats { grid-template-columns: 1fr; } }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px 26px; margin: 24px 0; }
+    .stats div { border-top: 1px solid var(--ink); padding-top: 11px; }
+    .stats br { display: none; }
+    .stats b { display: block; font-size: 1.36rem; font-weight: 700; line-height: 1.15; font-variant-numeric: tabular-nums; }
+    .stats span { display: block; font-size: .88rem; color: var(--gray); margin-top: 3px; }
+    .stats small { display: block; margin-top: 6px; color: var(--accent);
+      font-family: "JetBrains Mono", monospace; font-size: .68rem; letter-spacing: .03em; }
+    @media (max-width: 560px) { .stats { grid-template-columns: repeat(2, 1fr); } }
 
-    .rank { display: flex; flex-wrap: wrap; gap: 26px; margin: 18px 0 0; }
-    .rank div { display: flex; flex-direction: column; }
-    .rank b { font-family: "Archivo"; font-size: 1.7rem; font-weight: 700; line-height: 1; }
-    .rank span { font-size: .82rem; color: var(--gray); margin-top: 6px; }
+    .rank { display: flex; flex-wrap: wrap; gap: 26px; margin: 20px 0 0; }
+    .rank div { display: flex; flex-direction: column; border-top: 1px solid var(--ink); padding-top: 10px; min-width: 118px; }
+    .rank b { font-size: 1.6rem; font-weight: 700; line-height: 1.1; }
+    .rank span { font-size: .82rem; color: var(--gray); margin-top: 4px; }
 
-    .mix { margin: 18px 0 0; }
-    .mix .row { display: grid; grid-template-columns: 92px 1fr 44px; align-items: center; gap: 10px; margin: 7px 0; font-size: .95rem; }
-    .mix .track { height: 8px; background: var(--hair); border-radius: 3px; overflow: hidden; }
-    .mix .track i { display: block; height: 100%; background: var(--accent); }
-    .mix .pct { font-variant-numeric: tabular-nums; color: var(--gray); text-align: right; font-size: .88rem; }
+    .mix { margin: 20px 0 0; }
+    .mix .row { display: grid; grid-template-columns: 92px 1fr 44px; align-items: center; gap: 12px; margin: 8px 0; font-size: .95rem; }
+    .mix .track { height: 7px; background: var(--hair); overflow: hidden; }
+    .mix .track i { display: block; height: 100%; background: var(--warm); }
+    .mix .pct { font-family: "JetBrains Mono", monospace; font-variant-numeric: tabular-nums; color: var(--gray); text-align: right; font-size: .8rem; }
 
-    table.plants { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: .92rem; }
-    table.plants th { text-align: left; font-weight: 500; font-size: .76rem; letter-spacing: .02em; color: var(--gray); padding: 0 8px 8px; border-bottom: 1px solid var(--ink); }
+    .tablewrap { overflow-x: auto; margin: 22px 0; }
+    table.plants { width: 100%; border-collapse: collapse; min-width: 430px; font-size: .94rem; }
+    table.plants th { text-align: left; font-family: "JetBrains Mono", monospace; font-weight: 400; font-size: .7rem;
+      letter-spacing: .04em; text-transform: uppercase; color: var(--gray); padding: 0 8px 9px; border-bottom: 1px solid var(--ink); }
     table.plants td { padding: 9px 8px; border-bottom: 1px solid var(--hair); font-variant-numeric: tabular-nums; }
     table.plants td.name { font-weight: 600; font-variant-numeric: normal; }
     table.plants td.fuel { color: var(--gray); font-variant-numeric: normal; }
-    .src { font-family: "JetBrains Mono", monospace; font-size: .74rem; letter-spacing: .04em; color: var(--gray); }
+    .src { font-family: "JetBrains Mono", monospace; font-size: .72rem; letter-spacing: .03em; line-height: 1.6; color: var(--gray); }
 
     .gamap { width: 100%; max-width: 400px; height: auto; display: block; margin: 10px auto 0; }
     .ga-outline { fill: var(--panel); stroke: var(--gray); stroke-width: 1.1; }
@@ -76,18 +78,20 @@
     .dot:hover { stroke: var(--ink); stroke-width: 1.6; fill-opacity: 1; }
     .d-gas { fill: #d0692e; } .d-coal { fill: #6f6a63; } .d-nuc { fill: #7d5bb0; } .d-sol { fill: #e0b23a; }
     .d-bio { fill: #5fa05f; } .d-hyd { fill: #3f86c4; } .d-oil { fill: #9c6b52; }
-    .maplegend { display: flex; flex-wrap: wrap; gap: 7px 10px; justify-content: center; margin: 14px 0 0; font-size: .84rem; }
-    .maplegend .lg { display: inline-flex; align-items: center; gap: 6px; font: inherit; color: var(--gray);
-      background: none; border: 1px solid var(--hair); border-radius: 20px; padding: 3px 11px; cursor: pointer; transition: opacity .1s; }
+    .maplegend { display: flex; flex-wrap: wrap; gap: 7px 8px; justify-content: center; margin: 16px 0 0; }
+    .maplegend .lg { display: inline-flex; align-items: center; gap: 6px; font-family: "JetBrains Mono", monospace;
+      font-size: .72rem; letter-spacing: .02em; color: var(--gray);
+      background: none; border: 1px solid var(--hair); padding: 4px 10px; cursor: pointer; transition: opacity .1s; }
     .maplegend .lg:hover { border-color: var(--gray); color: var(--ink); }
-    .maplegend .lg[aria-pressed="false"] { opacity: .4; }
-    .maplegend i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+    .maplegend .lg[aria-pressed="false"] { opacity: .38; }
+    .maplegend i { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
     .dot.off { display: none; }
-    .mapcount { text-align: center; font-size: .86rem; color: var(--gray); margin: 12px 0 0; }
-    .mapcount button { font: inherit; font-size: .82rem; color: var(--gray); background: none; border: none;
-      border-bottom: 1px solid var(--hair); cursor: pointer; padding: 0 0 1px; margin-left: 8px; }
+    .mapcount { text-align: center; font-family: "JetBrains Mono", monospace; font-size: .74rem; color: var(--gray); margin: 14px 0 0; }
+    .mapcount button { font: inherit; color: var(--gray); background: none; border: none;
+      border-bottom: 1px solid var(--hair); cursor: pointer; padding: 0 0 1px; margin-left: 10px; }
     .mapcount button:hover { color: var(--ink); border-color: var(--ink); }
-    .maptip { position: fixed; pointer-events: none; background: var(--ink); color: var(--paper); padding: 5px 9px; border-radius: 4px; font-size: .8rem; opacity: 0; transition: opacity .1s; z-index: 30; white-space: nowrap; }
+    .maptip { position: fixed; pointer-events: none; background: var(--ink); color: var(--paper); padding: 5px 9px;
+      font-family: "JetBrains Mono", monospace; font-size: .74rem; opacity: 0; transition: opacity .1s; z-index: 30; white-space: nowrap; }
 
     footer { border-top: 1px solid var(--hair); padding: 26px 0 52px; }
     footer p { margin: 0; font-size: .9rem; color: var(--gray); }
@@ -110,7 +114,6 @@
   <main class="wrap">
 
     <div class="hero">
-      <p class="kicker">State deep dive</p>
       <h1>Georgia: a closer look</h1>
       <p class="stand">Georgia is where I live, so I wanted to look at it more closely than a fifty-state
       ranking lets you. This puts the project's score for Georgia next to the state's real numbers from the
@@ -170,6 +173,7 @@
       <p>A lot of Georgia's power comes from a handful of very big stations, which is the sort of thing the
       concentration part of the score is meant to catch. The five largest, from eGRID:</p>
 
+      <div class="tablewrap">
       <table class="plants">
         <thead><tr><th>Plant</th><th>Fuel</th><th>Capacity</th><th>Generation</th><th>CO2</th></tr></thead>
         <tbody>
@@ -180,6 +184,7 @@
           <tr><td class="name">Hatch</td><td class="fuel">nuclear</td><td>1,848 MW</td><td>14.3 TWh</td><td>none</td></tr>
         </tbody>
       </table>
+      </div>
       <p class="src">Source: EPA eGRID2023. Generation in terawatt-hours; CO2 in millions of tons a year.</p>
 
       <h3>Plant Vogtle (nuclear)</h3>

@@ -7,35 +7,33 @@
   <meta name="description" content="An interactive slide deck ranking US states by how exposed their electricity systems look, built from public data.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script>document.documentElement.classList.add('js');</script>
   <style>
     :root {
-      --paper: #f4f3ef; --panel: #faf9f6; --ink: #1a1916; --gray: #6e6d66;
-      --hair: #e0ded6; --accent: #c14625; --maxw: 720px;
+      --paper: #f6f4ef; --panel: #fbfaf6; --ink: #17181a; --gray: #64655f;
+      --hair: #ddd9d0; --accent: #2d4f63; --warm: #b5462f; --maxw: 700px;
     }
     @media (prefers-color-scheme: dark) {
-      :root { --paper: #111110; --panel: #181716; --ink: #ecebe6; --gray: #918f88; --hair: #28271f; --accent: #e0603a; }
+      :root { --paper: #121316; --panel: #191a1d; --ink: #e9e7e1; --gray: #97968f;
+              --hair: #2a2b2e; --accent: #8ab4cc; --warm: #d9633f; }
     }
     * { box-sizing: border-box; }
     html, body { height: 100%; }
     body {
       margin: 0; overflow: hidden; background: var(--paper); color: var(--ink);
-      font: 17px/1.65 "Archivo", system-ui, sans-serif; -webkit-font-smoothing: antialiased;
+      font: 17.5px/1.7 "Source Serif 4", Georgia, serif; -webkit-font-smoothing: antialiased;
     }
     .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 26px; }
     a { color: var(--ink); }
 
-    /* thin progress bar across the very top */
-    .progress { position: fixed; top: 0; left: 0; height: 3px; width: 10%; background: var(--accent); z-index: 50; transition: width .35s ease; }
-
-    header.bar { position: fixed; top: 0; left: 0; right: 0; height: 60px; background: var(--paper); border-bottom: 1px solid var(--hair); z-index: 40; }
-    header.bar .wrap { display: flex; align-items: center; justify-content: space-between; height: 60px; }
-    .wordmark { font-weight: 600; font-size: .98rem; letter-spacing: -.01em; }
-    header.bar nav { display: flex; align-items: center; gap: 18px; }
-    header.bar nav a { color: var(--gray); text-decoration: none; font-size: .92rem; }
+    header.bar { position: fixed; top: 0; left: 0; right: 0; height: 58px; background: var(--paper); border-bottom: 1px solid var(--hair); z-index: 40; }
+    header.bar .wrap { display: flex; align-items: center; justify-content: space-between; height: 58px; }
+    .wordmark { font-weight: 600; font-size: 1rem; }
+    header.bar nav { display: flex; align-items: center; gap: 20px; }
+    header.bar nav a { color: var(--gray); text-decoration: none; font-size: .95rem; }
     header.bar nav a:hover { color: var(--ink); }
-    .counter { font-family: "JetBrains Mono", monospace; font-size: .82rem; color: var(--gray); font-variant-numeric: tabular-nums; }
+    .counter { font-family: "JetBrains Mono", monospace; font-size: .78rem; color: var(--gray); font-variant-numeric: tabular-nums; }
     @media (max-width: 540px) { header.bar nav a { display: none; } }
 
     /* the deck: one slide shown at a time */
@@ -45,75 +43,83 @@
     .slide.active { opacity: 1; visibility: visible; transform: none; z-index: 1; }
     .slidewrap { max-width: var(--maxw); margin: 0 auto; padding: 92px 26px 108px;
       min-height: 100%; display: flex; flex-direction: column; justify-content: center; }
-    @media (prefers-reduced-motion: reduce) { .slide { transition: opacity .01s; transform: none; } .progress { transition: none; } }
+    @media (prefers-reduced-motion: reduce) { .slide { transition: opacity .01s; transform: none; } }
 
-    .kicker { font-family: "JetBrains Mono", monospace; font-size: .8rem; letter-spacing: .06em;
-      text-transform: uppercase; color: var(--accent); margin: 0 0 16px; }
-    h1 { font-weight: 700; font-size: clamp(2.3rem, 6.4vw, 3.8rem); line-height: 1.02; letter-spacing: -.035em; margin: 0 0 22px; }
-    h2 { font-weight: 600; font-size: clamp(1.5rem, 3.6vw, 1.9rem); letter-spacing: -.02em; margin: 0 0 16px; }
-    h3 { font-size: 1.08rem; font-weight: 600; margin: 0 0 4px; }
-    .stand { font-size: 1.28rem; line-height: 1.45; color: var(--gray); margin: 0 0 26px; max-width: 40ch; }
+    h1 { font-weight: 700; font-size: clamp(2.2rem, 6vw, 3.4rem); line-height: 1.08; letter-spacing: -.018em; margin: 0 0 20px; }
+    h2 { font-weight: 600; font-size: clamp(1.45rem, 3.4vw, 1.8rem); line-height: 1.2; letter-spacing: -.012em;
+      margin: 0 0 18px; padding-bottom: 12px; border-bottom: 1px solid var(--hair); }
+    h3 { font-size: 1.06rem; font-weight: 600; margin: 0 0 4px; }
+    .stand { font-size: 1.22rem; line-height: 1.5; color: var(--gray); margin: 0 0 26px; max-width: 42ch; }
     p { margin: 0 0 16px; }
     .lead { color: var(--gray); }
-    .hint { font-size: .9rem; color: var(--gray); margin-top: 8px; }
-    .cta { display: inline-block; text-decoration: none; border: 1px solid var(--ink); border-radius: 3px;
-      padding: 10px 18px; font-size: .96rem; transition: .12s; }
+    .hint { font-size: .93rem; line-height: 1.6; color: var(--gray); margin-top: 14px; }
+    .byline { font-family: "JetBrains Mono", monospace; font-size: .74rem; letter-spacing: .02em;
+      color: var(--gray); margin: 0 0 26px; padding-top: 16px; border-top: 1px solid var(--hair); }
+    .cta { display: inline-block; text-decoration: none; border: 1px solid var(--ink);
+      padding: 9px 17px; font-size: .97rem; transition: .12s; }
     .cta:hover { color: var(--paper); background: var(--ink); }
 
-    .step { display: grid; grid-template-columns: 30px 1fr; gap: 16px; padding: 16px 0; }
+    .step { display: grid; grid-template-columns: 26px 1fr; gap: 18px; padding: 15px 0; }
     .step + .step { border-top: 1px solid var(--hair); }
-    .step .no { color: var(--accent); font-weight: 600; font-size: 1.05rem; font-variant-numeric: tabular-nums; }
-    .step p { margin: 0; color: var(--gray); font-size: .98rem; }
+    .step .no { font-family: "JetBrains Mono", monospace; font-size: .82rem; color: var(--accent);
+      font-variant-numeric: tabular-nums; padding-top: .35em; }
+    .step p { margin: 0; color: var(--gray); font-size: 1rem; }
 
     figure { margin: 8px 0 0; }
-    figcaption { font-size: .9rem; color: var(--gray); margin-top: 12px; line-height: 1.5; }
+    figcaption { font-size: .92rem; color: var(--gray); margin-top: 14px; line-height: 1.55;
+      padding-top: 12px; border-top: 1px solid var(--hair); }
     .usmap { width: 100%; height: auto; display: block; max-width: 600px; margin: 0 auto; }
     .us-state { stroke: var(--paper); stroke-width: .5; cursor: pointer; transition: stroke .1s, fill .12s ease; }
     .us-state:hover, .us-state.hi { stroke: var(--ink); stroke-width: 1.5; }
-    .mapscale { display: flex; align-items: center; gap: 10px; justify-content: center; margin: 12px 0 0; font-size: .8rem; color: var(--gray); }
-    .mapscale .scale { width: 150px; height: 9px; border-radius: 3px; border: 1px solid var(--hair); background: linear-gradient(90deg, #fff7ec, #fdbb84, #fc8d59, #d7301f, #7f0000); }
-    .maptip { position: fixed; pointer-events: none; background: var(--ink); color: var(--paper); padding: 5px 9px; border-radius: 4px; font-size: .8rem; opacity: 0; transition: opacity .1s; z-index: 60; white-space: nowrap; }
+    .mapscale { display: flex; align-items: center; gap: 10px; justify-content: center; margin: 14px 0 0;
+      font-family: "JetBrains Mono", monospace; font-size: .72rem; letter-spacing: .02em; color: var(--gray); }
+    .mapscale .scale { width: 150px; height: 8px; border: 1px solid var(--hair); background: linear-gradient(90deg, #fff7ec, #fdbb84, #fc8d59, #d7301f, #7f0000); }
+    .maptip { position: fixed; pointer-events: none; background: var(--ink); color: var(--paper); padding: 5px 9px;
+      font-family: "JetBrains Mono", monospace; font-size: .74rem; opacity: 0; transition: opacity .1s; z-index: 60; white-space: nowrap; }
 
     table { width: 100%; border-collapse: collapse; }
-    th { text-align: left; font-weight: 500; font-size: .85rem; color: var(--gray); padding: 0 8px 10px; border-bottom: 1px solid var(--ink); }
-    td { padding: 10px 8px; border-bottom: 1px solid var(--hair); font-variant-numeric: tabular-nums; }
-    td.n { color: var(--gray); width: 34px; }
+    th { text-align: left; font-family: "JetBrains Mono", monospace; font-weight: 400; font-size: .72rem;
+      letter-spacing: .04em; text-transform: uppercase; color: var(--gray); padding: 0 8px 9px; border-bottom: 1px solid var(--ink); }
+    td { padding: 9px 8px; border-bottom: 1px solid var(--hair); font-variant-numeric: tabular-nums; }
+    td.n { font-family: "JetBrains Mono", monospace; font-size: .8rem; color: var(--gray); width: 34px; }
     td.s { font-weight: 600; }
-    td.sc { text-align: right; width: 62px; }
+    td.sc { text-align: right; width: 62px; font-family: "JetBrains Mono", monospace; font-size: .84rem; }
     td.b { width: 44%; }
     tbody tr { cursor: default; }
     tbody tr.hi td { background: var(--panel); }
-    .track { height: 5px; background: var(--hair); border-radius: 3px; overflow: hidden; }
-    .track i { display: block; height: 100%; background: var(--accent); transition: width .12s ease; }
+    .track { height: 4px; background: var(--hair); overflow: hidden; }
+    .track i { display: block; height: 100%; background: var(--warm); transition: width .12s ease; }
 
     .explorer .sliders { display: none; gap: 13px; max-width: 430px; margin: 0 0 24px; }
     html.js .explorer .sliders { display: grid; }
-    .explorer label { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 5px 10px; font-size: .92rem; }
-    .explorer label span { font-variant-numeric: tabular-nums; color: var(--gray); }
-    .explorer input[type=range] { grid-column: 1 / -1; width: 100%; accent-color: var(--accent); margin: 0; }
-    .explorer button { justify-self: start; margin-top: 4px; font: inherit; font-size: .85rem; color: var(--gray); background: none; border: 1px solid var(--hair); padding: 5px 12px; cursor: pointer; }
+    .explorer label { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 5px 10px; font-size: .96rem; }
+    .explorer label span { font-family: "JetBrains Mono", monospace; font-size: .78rem; font-variant-numeric: tabular-nums; color: var(--gray); }
+    .explorer input[type=range] { grid-column: 1 / -1; width: 100%; accent-color: var(--warm); margin: 0; }
+    .explorer button { justify-self: start; margin-top: 4px; font-family: "JetBrains Mono", monospace; font-size: .76rem;
+      color: var(--gray); background: none; border: 1px solid var(--hair); padding: 6px 12px; cursor: pointer; }
     .explorer button:hover { color: var(--ink); border-color: var(--ink); }
 
-    pre { background: var(--panel); border: 1px solid var(--hair); border-radius: 4px; padding: 16px 18px; overflow-x: auto; margin: 4px 0 16px; font: 13.5px/1.7 "JetBrains Mono", ui-monospace, monospace; }
+    pre { background: var(--panel); border: 1px solid var(--hair); padding: 15px 17px; overflow-x: auto; margin: 4px 0 16px; font: 13px/1.7 "JetBrains Mono", ui-monospace, monospace; }
     pre .cmt { color: var(--gray); }
-    code { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: .88em; }
-    p code, li code { background: var(--panel); border: 1px solid var(--hair); border-radius: 3px; padding: 1px 5px; }
+    code { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: .85em; }
+    p code, li code { background: var(--panel); border: 1px solid var(--hair); padding: 1px 5px; }
 
-    /* bottom navigation */
+    /* bottom navigation: a segmented rail rather than carousel dots */
     .controls { position: fixed; bottom: 0; left: 0; right: 0; z-index: 40; display: flex; align-items: center;
-      justify-content: center; gap: 18px; padding: 16px 0 22px; background: linear-gradient(to top, var(--paper) 62%, transparent); }
-    .nav-btn { width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--hair); background: var(--panel);
-      color: var(--ink); font-size: 1.2rem; line-height: 1; cursor: pointer; display: grid; place-items: center; transition: .12s; }
-    .nav-btn:hover:not(:disabled) { border-color: var(--ink); }
-    .nav-btn:disabled { opacity: .32; cursor: default; }
-    .dots { display: flex; gap: 8px; }
-    .dots .dot { width: 8px; height: 8px; padding: 0; border: none; border-radius: 50%; background: var(--hair); cursor: pointer; transition: .12s; }
-    .dots .dot.on { background: var(--accent); transform: scale(1.25); }
+      justify-content: center; gap: 20px; padding: 18px 0 24px; background: linear-gradient(to top, var(--paper) 62%, transparent); }
+    .nav-btn { font-family: "JetBrains Mono", monospace; font-size: .76rem; letter-spacing: .04em;
+      color: var(--gray); background: none; border: none; padding: 4px 2px; cursor: pointer; transition: color .12s; }
+    .nav-btn:hover:not(:disabled) { color: var(--ink); }
+    .nav-btn:disabled { opacity: .3; cursor: default; }
+    .rail { display: flex; gap: 5px; }
+    .rail .tick { width: 18px; height: 3px; padding: 0; border: none; background: var(--hair); cursor: pointer; transition: background .12s; }
+    .rail .tick:hover { background: var(--gray); }
+    .rail .tick.on { background: var(--accent); }
+    @media (max-width: 460px) { .rail .tick { width: 12px; } }
   </style>
 </head>
 <body>
 
-  <div class="progress" id="pbar"></div>
   <header class="bar">
     <div class="wrap">
       <span class="wordmark">Grid Resilience</span>
@@ -129,12 +135,13 @@
 
     <section class="slide">
       <div class="slidewrap">
-        <p class="kicker">public-data research sketch</p>
         <h1>Grid Resilience Exposure Index</h1>
         <p class="stand">Which US states look most exposed to losing power, and what is driving it. Put
         together from public data, for anyone who has to think about energy policy rather than wiring.</p>
-        <p class="hint">Use the arrow keys, the dots at the bottom, or swipe on a phone. The numbers here run
-        off a built-in sample, so read the ranking as a worked example, not a finding.</p>
+        <p class="byline">Tobyn Smith / built from open EIA data</p>
+        <p class="hint">Move through it with the arrow keys, the marks along the bottom, or a swipe on a
+        phone. The numbers run off a built-in sample, so read the ranking as a worked example rather than
+        a finding.</p>
       </div>
     </section>
 
@@ -143,11 +150,11 @@
         <h2>Why look at this</h2>
         <p class="lead">Keeping the lights on is quietly one of the bigger infrastructure questions in US
         policy, and a few things are pulling on the grid at the same time.</p>
-        <div class="step"><div class="no">01</div><div><h3>Weather</h3><p>More frequent and more severe
+        <div class="step"><div class="no">1</div><div><h3>Weather</h3><p>More frequent and more severe
         storms, heat and cold snaps are behind most of the large outages.</p></div></div>
-        <div class="step"><div class="no">02</div><div><h3>An ageing network</h3><p>A lot of the wires and
+        <div class="step"><div class="no">2</div><div><h3>An ageing network</h3><p>A lot of the wires and
         substations were built decades ago and are being asked to carry more.</p></div></div>
-        <div class="step"><div class="no">03</div><div><h3>A changing fuel mix</h3><p>Coal is retiring, gas
+        <div class="step"><div class="no">3</div><div><h3>A changing fuel mix</h3><p>Coal is retiring, gas
         and renewables are growing, and that shifts where the weak spots sit.</p></div></div>
         <p style="margin-top:22px">Most of the data that speaks to this is public but scattered. This pulls a
         few open sources into one comparable score per state.</p>
@@ -282,12 +289,12 @@
         <h2>The same score can mean different things</h2>
         <p class="lead">This is the part worth carrying into a policy conversation. A high score is not one
         problem, it is whichever of the three pieces is doing the work, and that changes by region.</p>
-        <div class="step"><div class="no">&rarr;</div><div><h3>Southeast: mostly outages</h3><p>Georgia and
+        <div class="step"><div class="no">1</div><div><h3>Southeast: mostly outages</h3><p>Georgia and
         Mississippi score high because storms take the power down, not because their plants are fragile. The
         lever is hardening lines and speeding restoration, not building capacity.</p></div></div>
-        <div class="step"><div class="no">&rarr;</div><div><h3>West: mostly thin margins</h3><p>Arizona rides
+        <div class="step"><div class="no">2</div><div><h3>West: mostly thin margins</h3><p>Arizona rides
         high on a tight gap between supply and peak demand, which points at capacity and demand instead.</p></div></div>
-        <div class="step"><div class="no">&rarr;</div><div><h3>Concentrated grids</h3><p>Texas and New Mexico
+        <div class="step"><div class="no">3</div><div><h3>Concentrated grids</h3><p>Texas and New Mexico
         lean on a narrow fuel or plant base, so the worry is what happens if one big thing trips.</p></div></div>
         <p style="margin-top:20px">The driver label under each state on the map is the shorthand for this.</p>
       </div>
@@ -297,11 +304,11 @@
       <div class="slidewrap">
         <h2>What this is not</h2>
         <p class="lead">A few honest limits. For a policy reader these matter more than the ranking itself.</p>
-        <div class="step"><div class="no">!</div><div><h3>It is not operational</h3><p>State-level figures
+        <div class="step"><div class="no">1</div><div><h3>It is not operational</h3><p>State-level figures
         blur a lot. A state can look fine overall and still have fragile pockets inside it.</p></div></div>
-        <div class="step"><div class="no">!</div><div><h3>The outage data is sampled</h3><p>The reliability
+        <div class="step"><div class="no">2</div><div><h3>The outage data is sampled</h3><p>The reliability
         piece currently runs on synthetic numbers, so the exact ranking is a worked example.</p></div></div>
-        <div class="step"><div class="no">!</div><div><h3>It leaves out the wires</h3><p>The score says
+        <div class="step"><div class="no">3</div><div><h3>It leaves out the wires</h3><p>The score says
         nothing about the transmission network that moves power around, which probably matters as much as the
         plants do.</p></div></div>
         <p style="margin-top:20px">So the very top and bottom are the interesting bits. Read the middle of the
@@ -314,25 +321,24 @@
         <h2>The view from abroad</h2>
         <p class="lead">This is a US project, but the question is not a US question, and reading it from an
         international angle changes what counts as normal.</p>
-        <div class="step"><div class="no">&rarr;</div><div><h3>The gap is real</h3><p>In much of western
+        <div class="step"><div class="no">1</div><div><h3>The gap is real</h3><p>In much of western
         Europe a typical customer loses power for minutes a year. In the US, once storms are counted, it is
         hours. Countries measure this differently, so the exact figures do not line up neatly, but the gap is
         too wide to be a measurement artefact.</p></div></div>
-        <div class="step"><div class="no">&rarr;</div><div><h3>Different systems, different trade-offs</h3>
+        <div class="step"><div class="no">2</div><div><h3>Different systems, different trade-offs</h3>
         <p>Countries that score well tend to bury more of their lines and pay for it in their bills. The US
         runs long overhead lines through forest and hurricane country, which is cheaper right up until the
         weather arrives.</p></div></div>
-        <div class="step"><div class="no">&rarr;</div><div><h3>The method travels</h3><p>Nothing in the
+        <div class="step"><div class="no">3</div><div><h3>The method travels</h3><p>Nothing in the
         scoring is US-specific. Given capacity, reliability and demand data, the same three components would
         run on German L&auml;nder or Indian states. The hard part abroad is the data, not the method.</p></div></div>
-        <p style="margin-top:20px">Which is the quiet lesson of the open-data angle: the US publishes enough
-        to build all of this from. Few countries do.</p>
+        <p style="margin-top:20px">That is the quiet upside of the open-data side of this: the US publishes
+        enough for anyone to build all of it from scratch, and not many countries do.</p>
       </div>
     </section>
 
     <section class="slide">
       <div class="slidewrap">
-        <p class="kicker">state deep dive</p>
         <h2>A closer look at Georgia</h2>
         <p class="lead">To show what a fuller version looks like, I paired the score for one state with its
         actual figures from the EIA, EPA eGRID and NOAA, including an interactive map of every power plant of
@@ -365,9 +371,9 @@ python pipeline.py</code></pre>
   </div>
 
   <div class="controls">
-    <button class="nav-btn" id="prev" aria-label="Previous slide">&lsaquo;</button>
-    <div class="dots" id="dots"></div>
-    <button class="nav-btn" id="next" aria-label="Next slide">&rsaquo;</button>
+    <button class="nav-btn" id="prev" aria-label="Previous slide">&lsaquo; back</button>
+    <div class="rail" id="dots"></div>
+    <button class="nav-btn" id="next" aria-label="Next slide">next &rsaquo;</button>
   </div>
 
   <div class="maptip" id="maptip"></div>
@@ -394,6 +400,16 @@ python pipeline.py</code></pre>
     const stateByName = {};
     document.querySelectorAll(".usmap .us-state").forEach((st) => { stateByName[st.dataset.n] = st; });
 
+    // Which of the three parts a state stands highest on. Worked out from the
+    // data rather than read off the map, so it stays right if the data changes.
+    const DRIVER_LABEL = { o: "outages", c: "concentration", d: "thin spare capacity" };
+    function driverOf(x) {
+      let key = "o";
+      if (x.c > x[key]) key = "c";
+      if (x.d > x[key]) key = "d";
+      return DRIVER_LABEL[key];
+    }
+
     function render() {
       const wo = +sO.value, wc = +sC.value, wd = +sD.value;
       const sum = (wo + wc + wd) || 1;
@@ -401,7 +417,9 @@ python pipeline.py</code></pre>
       $("wC").textContent = Math.round((wc / sum) * 100) + "%";
       $("wD").textContent = Math.round((wd / sum) * 100) + "%";
 
-      const scored = DATA.map((x) => ({ n: x.n, raw: (wo * x.o + wc * x.c + wd * x.d) / sum }));
+      const scored = DATA.map((x) => ({
+        n: x.n, drv: driverOf(x), raw: (wo * x.o + wc * x.c + wd * x.d) / sum,
+      }));
       let lo = Infinity, hi = -Infinity;
       for (const s of scored) { if (s.raw < lo) lo = s.raw; if (s.raw > hi) hi = s.raw; }
       const span = (hi - lo) || 1;
@@ -414,8 +432,9 @@ python pipeline.py</code></pre>
         const sc = s.score.toFixed(1);
         st.setAttribute("fill", shade(s.score));
         st.dataset.s = sc;
+        st.dataset.d = s.drv;
         const t = st.querySelector("title");
-        if (t) t.textContent = `${s.n}: ${sc}, mostly ${st.dataset.d}`;
+        if (t) t.textContent = `${s.n}: ${sc}, mostly ${s.drv}`;
       }
 
       rows.innerHTML = scored.slice(0, 15).map((s, i) =>
@@ -473,13 +492,13 @@ python pipeline.py</code></pre>
 
     // ---- slide deck navigation ----
     const slides = [...document.querySelectorAll(".slide")];
-    const pbar = $("pbar"), counter = $("counter"), dotsWrap = $("dots");
+    const counter = $("counter"), dotsWrap = $("dots");
     const prevBtn = $("prev"), nextBtn = $("next");
     const pad = (n) => String(n).padStart(2, "0");
 
     slides.forEach((_, i) => {
       const b = document.createElement("button");
-      b.className = "dot"; b.type = "button";
+      b.className = "tick"; b.type = "button";
       b.setAttribute("aria-label", "Go to slide " + (i + 1));
       b.addEventListener("click", () => go(i));
       dotsWrap.appendChild(b);
@@ -492,7 +511,6 @@ python pipeline.py</code></pre>
       slides.forEach((s, j) => s.classList.toggle("active", j === cur));
       dots.forEach((d, j) => d.classList.toggle("on", j === cur));
       counter.textContent = pad(cur + 1) + " / " + pad(slides.length);
-      pbar.style.width = ((cur + 1) / slides.length * 100) + "%";
       prevBtn.disabled = cur === 0;
       nextBtn.disabled = cur === slides.length - 1;
       slides[cur].scrollTop = 0;

@@ -44,7 +44,7 @@ spot depending on which one you use, so the exact ranking depends on a few
 choices made in the settings.
 
 The [project page](https://tobyn-smith.github.io/energyosint/) is an interactive
-slide deck you can click through with the arrow keys, the dots along the bottom,
+slide deck you can click through with the arrow keys, the marks along the bottom,
 or a swipe on your phone. The three weights are sliders on it, and moving them
 re-ranks the table and re-shades the map live; you can also hover any state to see
 its score and what is driving it. There is a separate, deeper dive on Georgia too.
