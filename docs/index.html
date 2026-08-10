@@ -17,34 +17,12 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script>document.documentElement.classList.add('js');</script>
+  <link rel="stylesheet" href="style.css">
   <style>
-    :root {
-      --paper: #f6f4ef; --panel: #fbfaf6; --ink: #17181a; --gray: #64655f;
-      --hair: #ddd9d0; --accent: #2d4f63; --warm: #b5462f; --maxw: 700px;
-    }
-    @media (prefers-color-scheme: dark) {
-      :root { --paper: #121316; --panel: #191a1d; --ink: #e9e7e1; --gray: #97968f;
-              --hair: #2a2b2e; --accent: #8ab4cc; --warm: #d9633f; }
-    }
-    * { box-sizing: border-box; }
+    /* deck-specific layout: one slide on screen at a time */
     html, body { height: 100%; }
-    body {
-      margin: 0; overflow: hidden; background: var(--paper); color: var(--ink);
-      font: 17.5px/1.7 "Source Serif 4", Georgia, serif; -webkit-font-smoothing: antialiased;
-    }
-    .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 26px; }
-    a { color: var(--ink); }
+    body { overflow: hidden; }
 
-    header.bar { position: fixed; top: 0; left: 0; right: 0; height: 58px; background: var(--paper); border-bottom: 1px solid var(--hair); z-index: 40; }
-    header.bar .wrap { display: flex; align-items: center; justify-content: space-between; height: 58px; }
-    .wordmark { font-weight: 600; font-size: 1rem; }
-    header.bar nav { display: flex; align-items: center; gap: 20px; }
-    header.bar nav a { color: var(--gray); text-decoration: none; font-size: .95rem; }
-    header.bar nav a:hover { color: var(--ink); }
-    .counter { font-family: "JetBrains Mono", monospace; font-size: .78rem; color: var(--gray); font-variant-numeric: tabular-nums; }
-    @media (max-width: 540px) { header.bar nav a { display: none; } }
-
-    /* the deck: one slide shown at a time */
     .deck { position: fixed; inset: 0; }
     .slide { position: absolute; inset: 0; overflow-y: auto; opacity: 0; visibility: hidden;
       transform: translateY(10px); transition: opacity .35s ease, transform .35s ease, visibility .35s; }
@@ -53,50 +31,19 @@
       min-height: 100%; display: flex; flex-direction: column; justify-content: center; }
     @media (prefers-reduced-motion: reduce) { .slide { transition: opacity .01s; transform: none; } }
 
-    h1 { font-weight: 700; font-size: clamp(2.2rem, 6vw, 3.4rem); line-height: 1.08; letter-spacing: -.018em; margin: 0 0 20px; }
-    h2 { font-weight: 600; font-size: clamp(1.45rem, 3.4vw, 1.8rem); line-height: 1.2; letter-spacing: -.012em;
-      margin: 0 0 18px; padding-bottom: 12px; border-bottom: 1px solid var(--hair); }
-    h3 { font-size: 1.06rem; font-weight: 600; margin: 0 0 4px; }
-    .stand { font-size: 1.22rem; line-height: 1.5; color: var(--gray); margin: 0 0 26px; max-width: 42ch; }
-    p { margin: 0 0 16px; }
-    .lead { color: var(--gray); }
-    .hint { font-size: .93rem; line-height: 1.6; color: var(--gray); margin-top: 14px; }
-    .byline { font-family: "JetBrains Mono", monospace; font-size: .74rem; letter-spacing: .02em;
-      color: var(--gray); margin: 0 0 26px; padding-top: 16px; border-top: 1px solid var(--hair); }
-    .cta { display: inline-block; text-decoration: none; border: 1px solid var(--ink);
-      padding: 9px 17px; font-size: .97rem; transition: .12s; }
-    .cta:hover { color: var(--paper); background: var(--ink); }
-
-    .step { display: grid; grid-template-columns: 26px 1fr; gap: 18px; padding: 15px 0; }
-    .step + .step { border-top: 1px solid var(--hair); }
-    .step .no { font-family: "JetBrains Mono", monospace; font-size: .82rem; color: var(--accent);
-      font-variant-numeric: tabular-nums; padding-top: .35em; }
-    .step p { margin: 0; color: var(--gray); font-size: 1rem; }
-
-    figure { margin: 8px 0 0; }
-    figcaption { font-size: .92rem; color: var(--gray); margin-top: 14px; line-height: 1.55;
-      padding-top: 12px; border-top: 1px solid var(--hair); }
     .usmap { width: 100%; height: auto; display: block; max-width: 600px; margin: 0 auto; }
     .us-state { stroke: var(--paper); stroke-width: .5; cursor: pointer; transition: stroke .1s, fill .12s ease; }
     .us-state:hover, .us-state.hi { stroke: var(--ink); stroke-width: 1.5; }
     .mapscale { display: flex; align-items: center; gap: 10px; justify-content: center; margin: 14px 0 0;
       font-family: "JetBrains Mono", monospace; font-size: .72rem; letter-spacing: .02em; color: var(--gray); }
     .mapscale .scale { width: 150px; height: 8px; border: 1px solid var(--hair); background: linear-gradient(90deg, #fff7ec, #fdbb84, #fc8d59, #d7301f, #7f0000); }
-    .maptip { position: fixed; pointer-events: none; background: var(--ink); color: var(--paper); padding: 5px 9px;
-      font-family: "JetBrains Mono", monospace; font-size: .74rem; opacity: 0; transition: opacity .1s; z-index: 60; white-space: nowrap; }
 
-    table { width: 100%; border-collapse: collapse; }
-    th { text-align: left; font-family: "JetBrains Mono", monospace; font-weight: 400; font-size: .72rem;
-      letter-spacing: .04em; text-transform: uppercase; color: var(--gray); padding: 0 8px 9px; border-bottom: 1px solid var(--ink); }
-    td { padding: 9px 8px; border-bottom: 1px solid var(--hair); font-variant-numeric: tabular-nums; }
     td.n { font-family: "JetBrains Mono", monospace; font-size: .8rem; color: var(--gray); width: 34px; }
     td.s { font-weight: 600; }
     td.sc { text-align: right; width: 62px; font-family: "JetBrains Mono", monospace; font-size: .84rem; }
     td.b { width: 44%; }
     tbody tr { cursor: default; }
     tbody tr.hi td { background: var(--panel); }
-    .track { height: 4px; background: var(--hair); overflow: hidden; }
-    .track i { display: block; height: 100%; background: var(--warm); transition: width .12s ease; }
 
     .explorer .sliders { display: none; gap: 13px; max-width: 430px; margin: 0 0 24px; }
     html.js .explorer .sliders { display: grid; }
@@ -106,11 +53,6 @@
     .explorer button { justify-self: start; margin-top: 4px; font-family: "JetBrains Mono", monospace; font-size: .76rem;
       color: var(--gray); background: none; border: 1px solid var(--hair); padding: 6px 12px; cursor: pointer; }
     .explorer button:hover { color: var(--ink); border-color: var(--ink); }
-
-    pre { background: var(--panel); border: 1px solid var(--hair); padding: 15px 17px; overflow-x: auto; margin: 4px 0 16px; font: 13px/1.7 "JetBrains Mono", ui-monospace, monospace; }
-    pre .cmt { color: var(--gray); }
-    code { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: .85em; }
-    p code, li code { background: var(--panel); border: 1px solid var(--hair); padding: 1px 5px; }
 
     /* bottom navigation: a segmented rail rather than carousel dots */
     .controls { position: fixed; bottom: 0; left: 0; right: 0; z-index: 40; display: flex; align-items: center;
@@ -125,17 +67,25 @@
     .rail .tick.on { background: var(--accent); }
     @media (max-width: 460px) { .rail .tick { width: 12px; } }
 
-    /* printing (or saving to PDF) lays the deck out as a document, one slide a page */
+    /* read view: the same slides laid out as one continuous document. Printing
+       borrows this, so the layout only has to be described once. */
+    html.read, html.read body { height: auto; overflow: visible; }
+    html.read .deck { position: static; }
+    html.read .slide { position: static; opacity: 1; visibility: visible; transform: none;
+      overflow: visible; transition: none; }
+    html.read .slide + .slide { border-top: 1px solid var(--hair); }
+    html.read .slidewrap { display: block; min-height: 0; padding: 44px 26px; }
+    html.read .controls, html.read .counter { display: none; }
+
     @media print {
-      html, body { height: auto; overflow: visible; background: #fff; color: #000; }
       header.bar, .controls, .maptip { display: none !important; }
-      .deck { position: static; }
-      .slide { position: static; opacity: 1 !important; visibility: visible !important;
-        transform: none !important; overflow: visible; break-after: page; }
-      .slide:last-child { break-after: auto; }
-      .slidewrap { display: block; min-height: 0; max-width: none; padding: 0 0 24px; }
-      .usmap { max-width: 460px; }
+      html.read .deck { padding-top: 0; }
+      html.read .slide { break-after: page; border-top: none; }
+      html.read .slide:last-child { break-after: auto; }
+      html.read .slidewrap { padding: 0 0 24px; max-width: none; }
       .explorer .sliders { display: none !important; }
+      .usmap { max-width: 460px; }
+      body { background: #fff; color: #000; }
       a { text-decoration: none; color: #000; }
     }
   </style>
@@ -147,6 +97,7 @@
       <span class="wordmark">Grid Resilience</span>
       <nav>
         <span class="counter" id="counter">01 / 11</span>
+        <button class="viewtoggle" id="viewtoggle" type="button" aria-pressed="false">read view</button>
         <a href="georgia.html">Georgia</a>
         <a href="https://github.com/tobyn-smith/energyosint">GitHub</a>
       </nav>
@@ -274,6 +225,7 @@
   <path class="us-state" d="M 225.4,226.0 236.8,138.1 344.9,148.4 341.1,237.1 274.8,232.3 225.4,226.0 Z" fill="#f3714d" data-n="Wyoming" data-s="58.8" data-d="concentration"><title>Wyoming: 58.8, mostly concentration</title></path>
 </svg>
           <div class="mapscale"><span>less exposed</span><i class="scale"></i><span>more exposed</span></div>
+          <p class="readout" id="readout">Hover or tap a state to see its score.</p>
           <figcaption>Sample data, so treat this as an example rather than a real finding. Change the weights
           on the next slide and this map re-shades to match.</figcaption>
         </figure>
@@ -404,6 +356,7 @@ python pipeline.py</code></pre>
     const DATA = [{"s":"AZ","n":"Arizona","o":0.7174,"c":1.5805,"d":2.202},{"s":"GA","n":"Georgia","o":2.9162,"c":0.086,"d":-0.0122},{"s":"MS","n":"Mississippi","o":1.8967,"c":-0.1482,"d":0.9815},{"s":"NM","n":"New Mexico","o":-0.0432,"c":2.6196,"d":0.8654},{"s":"TX","n":"Texas","o":-0.1392,"c":2.3138,"d":1.1984},{"s":"WA","n":"Washington","o":0.1008,"c":1.445,"d":1.4001},{"s":"MI","n":"Michigan","o":0.1157,"c":1.7463,"d":0.8327},{"s":"NV","n":"Nevada","o":1.3509,"c":0.4812,"d":0.1115},{"s":"WV","n":"West Virginia","o":2.326,"c":-1.3918,"d":0.2678},{"s":"DE","n":"Delaware","o":2.4229,"c":-1.1648,"d":-0.3575},{"s":"NH","n":"New Hampshire","o":-0.4745,"c":2.2406,"d":0.5882},{"s":"OR","n":"Oregon","o":0.8495,"c":-0.4086,"d":1.2664},{"s":"VT","n":"Vermont","o":0.3337,"c":0.3594,"d":0.5048},{"s":"SD","n":"South Dakota","o":0.0027,"c":0.2188,"d":1.1807},{"s":"AR","n":"Arkansas","o":0.0262,"c":-0.0726,"d":1.3799},{"s":"AK","n":"Alaska","o":0.4123,"c":0.2149,"d":0.3385},{"s":"WY","n":"Wyoming","o":0.1535,"c":0.3867,"d":0.1721},{"s":"RI","n":"Rhode Island","o":-0.5969,"c":0.7485,"d":0.9714},{"s":"NC","n":"North Carolina","o":-0.413,"c":0.1296,"d":1.2739},{"s":"IL","n":"Illinois","o":-0.5406,"c":1.4059,"d":-0.1406},{"s":"OK","n":"Oklahoma","o":0.9152,"c":-0.7651,"d":-0.1886},{"s":"MA","n":"Massachusetts","o":0.9245,"c":-0.8869,"d":-0.1559},{"s":"NY","n":"New York","o":-0.1556,"c":0.527,"d":-0.012},{"s":"TN","n":"Tennessee","o":1.0842,"c":-0.5677,"d":-1.3334},{"s":"OH","n":"Ohio","o":0.4485,"c":-1.1465,"d":0.4973},{"s":"CA","n":"California","o":0.6993,"c":0.0456,"d":-1.4292},{"s":"NE","n":"Nebraska","o":-0.7123,"c":0.4239,"d":0.6259},{"s":"WI","n":"Wisconsin","o":0.5535,"c":-0.6199,"d":-0.6451},{"s":"LA","n":"Louisiana","o":-1.2707,"c":1.3909,"d":0.1492},{"s":"ME","n":"Maine","o":-0.4021,"c":0.0261,"d":0.1847},{"s":"AL","n":"Alabama","o":1.0616,"c":-0.1976,"d":-2.2739},{"s":"MT","n":"Montana","o":-0.0519,"c":-0.4599,"d":0.0056},{"s":"PA","n":"Pennsylvania","o":-0.2241,"c":-0.2196,"d":-0.2087},{"s":"ID","n":"Idaho","o":-0.8843,"c":-0.2864,"d":1.0067},{"s":"IA","n":"Iowa","o":-0.4513,"c":-0.1433,"d":-0.0851},{"s":"KY","n":"Kentucky","o":-0.7228,"c":-0.0114,"d":0.1468},{"s":"NJ","n":"New Jersey","o":-0.3352,"c":-1.0589,"d":0.409},{"s":"CO","n":"Colorado","o":-0.692,"c":0.2532,"d":-0.7206},{"s":"IN","n":"Indiana","o":-0.6384,"c":-0.0535,"d":-0.5391},{"s":"VA","n":"Virginia","o":-0.3349,"c":-1.3239,"d":-0.0651},{"s":"HI","n":"Hawaii","o":-0.5431,"c":-0.4016,"d":-1.0031},{"s":"MN","n":"Minnesota","o":-1.3968,"c":0.0483,"d":-0.0373},{"s":"DC","n":"District of Columbia","o":-1.1132,"c":-0.3481,"d":-0.3702},{"s":"KS","n":"Kansas","o":-1.0694,"c":-1.019,"d":0.2427},{"s":"CT","n":"Connecticut","o":-1.2183,"c":-0.0142,"d":-0.8089},{"s":"FL","n":"Florida","o":0.198,"c":-1.6648,"d":-1.573},{"s":"MD","n":"Maryland","o":-1.1533,"c":0.0441,"d":-1.3914},{"s":"ND","n":"North Dakota","o":-0.9814,"c":-0.6778,"d":-0.9753},{"s":"UT","n":"Utah","o":-1.3483,"c":-1.407,"d":-0.0626},{"s":"SC","n":"South Carolina","o":-1.7076,"c":-0.3586,"d":-1.0434},{"s":"MO","n":"Missouri","o":0.1052,"c":-1.9182,"d":-3.3708}];
 
     const $ = (id) => document.getElementById(id);
+    const root = document.documentElement;
     const sO = $("sO"), sC = $("sC"), sD = $("sD"), rows = $("rows");
 
     // Same OrRd shading the Python map uses, so the two stay in step.
@@ -486,12 +439,19 @@ python pipeline.py</code></pre>
 
     // map hover tooltip, plus two-way highlight with the table
     const mtip = $("maptip");
+    const readout = $("readout");
+    function report(st) {
+      readout.innerHTML = `<b>${st.dataset.n}</b> &nbsp;score ${st.dataset.s} &nbsp;mostly ${st.dataset.d}`;
+    }
     document.querySelectorAll(".usmap .us-state").forEach((st) => {
+      // a tap has no hover, so clicking fills in the readout instead
+      st.addEventListener("click", () => report(st));
       st.addEventListener("mousemove", (e) => {
         mtip.textContent = `${st.dataset.n}: ${st.dataset.s}, mostly ${st.dataset.d}`;
         mtip.style.left = (e.clientX + 12) + "px";
         mtip.style.top = (e.clientY + 14) + "px";
         mtip.style.opacity = "1";
+        report(st);
       });
       st.addEventListener("mouseenter", () => {
         const row = rows.querySelector(`tr[data-n="${st.dataset.n}"]`);
@@ -543,6 +503,7 @@ python pipeline.py</code></pre>
     prevBtn.addEventListener("click", prev);
 
     window.addEventListener("keydown", (e) => {
+      if (root.classList.contains("read")) return;   // reading: let the page scroll normally
       const t = e.target;
       const canMatch = t && typeof t.matches === "function";
       // Space activates a focused button or link, so only advance with it when
@@ -565,7 +526,7 @@ python pipeline.py</code></pre>
       x0 = e.target.closest("input, .usmap, .explorer, a, button") ? null : e.touches[0].clientX;
     }, { passive: true });
     deck.addEventListener("touchend", (e) => {
-      if (x0 === null) return;
+      if (x0 === null || root.classList.contains("read")) return;
       const dx = e.changedTouches[0].clientX - x0;
       if (Math.abs(dx) > 55) { dx < 0 ? next() : prev(); }
       x0 = null;
@@ -573,6 +534,42 @@ python pipeline.py</code></pre>
 
     const start = parseInt((location.hash || "").replace("#", ""), 10);
     go(Number.isFinite(start) && start >= 1 ? start - 1 : 0);
+
+    // Two ways to read the same slides: as a deck, or as one continuous page.
+    // The choice is remembered, and can be forced with ?view=read.
+    const viewBtn = $("viewtoggle");
+    function setView(mode, remember) {
+      const reading = mode === "read";
+      root.classList.toggle("read", reading);
+      viewBtn.textContent = reading ? "deck view" : "read view";
+      viewBtn.setAttribute("aria-pressed", String(reading));
+      if (remember) { try { localStorage.setItem("view", mode); } catch (err) { /* private mode */ } }
+      if (reading) {
+        slides[cur].scrollIntoView({ block: "start" });
+      } else {
+        go(cur);
+        window.scrollTo(0, 0);
+      }
+    }
+    viewBtn.addEventListener("click", () => {
+      setView(root.classList.contains("read") ? "deck" : "read", true);
+    });
+
+    let asked = new URLSearchParams(location.search).get("view");
+    if (asked !== "read" && asked !== "deck") {
+      try { asked = localStorage.getItem("view"); } catch (err) { asked = null; }
+    }
+    setView(asked === "read" ? "read" : "deck", false);
+
+    // Printing uses the reading layout, then puts the view back as it was.
+    let wasReading = false;
+    window.addEventListener("beforeprint", () => {
+      wasReading = root.classList.contains("read");
+      root.classList.add("read");
+    });
+    window.addEventListener("afterprint", () => {
+      if (!wasReading) root.classList.remove("read");
+    });
   </script>
 
 </body>

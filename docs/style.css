@@ -1,0 +1,85 @@
+/* Shared look for both pages. Kept in one file so the deck and the Georgia
+   write-up cannot drift apart when the theme changes. Page-specific layout
+   stays in each page's own <style> block. */
+
+:root {
+  --paper: #f6f4ef; --panel: #fbfaf6; --ink: #17181a; --gray: #64655f;
+  --hair: #ddd9d0; --accent: #2d4f63; --warm: #b5462f; --maxw: 700px;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --paper: #121316; --panel: #191a1d; --ink: #e9e7e1; --gray: #97968f;
+          --hair: #2a2b2e; --accent: #8ab4cc; --warm: #d9633f; }
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--paper); color: var(--ink);
+  font: 17.5px/1.7 "Source Serif 4", Georgia, serif; -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 26px; }
+a { color: var(--ink); }
+
+/* masthead: a double rule under the bar, the way a paper sets its title off */
+/* sticky rather than fixed, so it holds a place in the flow on the scrolling
+   page and still sits over the deck, where the body does not scroll */
+header.bar { position: sticky; top: 0; height: 58px;
+  background: var(--paper); border-bottom: 3px double var(--hair); z-index: 40; }
+header.bar .wrap { display: flex; align-items: center; justify-content: space-between; height: 55px; }
+.wordmark { font-weight: 700; font-size: 1.02rem; letter-spacing: .005em; }
+header.bar nav { display: flex; align-items: center; gap: 18px; }
+header.bar nav a { color: var(--gray); text-decoration: none; font-size: .95rem; }
+header.bar nav a:hover { color: var(--ink); }
+.counter { font-family: "JetBrains Mono", monospace; font-size: .78rem; color: var(--gray); font-variant-numeric: tabular-nums; }
+.viewtoggle { font-family: "JetBrains Mono", monospace; font-size: .72rem; letter-spacing: .03em;
+  color: var(--gray); background: none; border: 1px solid var(--hair); padding: 4px 10px; cursor: pointer; transition: .12s; }
+.viewtoggle:hover { color: var(--ink); border-color: var(--ink); }
+@media (max-width: 600px) { header.bar nav a { display: none; } }
+
+h1 { font-weight: 700; font-size: clamp(2.2rem, 6vw, 3.4rem); line-height: 1.08; letter-spacing: -.018em; margin: 0 0 20px; }
+h2 { font-weight: 600; font-size: clamp(1.45rem, 3.4vw, 1.8rem); line-height: 1.2; letter-spacing: -.012em;
+  margin: 0 0 18px; padding-bottom: 12px; border-bottom: 1px solid var(--hair); }
+h3 { font-size: 1.06rem; font-weight: 600; margin: 0 0 4px; }
+p { margin: 0 0 16px; }
+.stand { font-size: 1.22rem; line-height: 1.5; color: var(--gray); margin: 0 0 26px; max-width: 42ch; }
+.lead { color: var(--gray); }
+.hint { font-size: .93rem; line-height: 1.6; color: var(--gray); margin-top: 14px; }
+.byline { font-family: "JetBrains Mono", monospace; font-size: .74rem; letter-spacing: .02em;
+  color: var(--gray); margin: 0 0 26px; padding-top: 16px; border-top: 1px solid var(--hair); }
+.cta { display: inline-block; text-decoration: none; border: 1px solid var(--ink);
+  padding: 9px 17px; font-size: .97rem; transition: .12s; }
+.cta:hover { color: var(--paper); background: var(--ink); }
+
+.step { display: grid; grid-template-columns: 26px 1fr; gap: 18px; padding: 15px 0; }
+.step + .step { border-top: 1px solid var(--hair); }
+.step .no { font-family: "JetBrains Mono", monospace; font-size: .82rem; color: var(--accent);
+  font-variant-numeric: tabular-nums; padding-top: .35em; }
+.step p { margin: 0; color: var(--gray); font-size: 1rem; }
+
+figure { margin: 8px 0 0; }
+figcaption { font-size: .92rem; color: var(--gray); margin-top: 14px; line-height: 1.55;
+  padding-top: 12px; border-top: 1px solid var(--hair); }
+.maptip { position: fixed; pointer-events: none; background: var(--ink); color: var(--paper); padding: 5px 9px;
+  font-family: "JetBrains Mono", monospace; font-size: .74rem; opacity: 0; transition: opacity .1s; z-index: 60; white-space: nowrap; }
+/* a readout under each map, so the maps still say something when there is no
+   mouse to hover with (a tap fills this in on a phone) */
+.readout { text-align: center; font-family: "JetBrains Mono", monospace; font-size: .76rem;
+  color: var(--gray); margin: 12px 0 0; min-height: 1.5em; line-height: 1.5; }
+.readout b { color: var(--ink); font-weight: 600; }
+
+table { width: 100%; border-collapse: collapse; }
+th { text-align: left; font-family: "JetBrains Mono", monospace; font-weight: 400; font-size: .72rem;
+  letter-spacing: .04em; text-transform: uppercase; color: var(--gray); padding: 0 8px 9px; border-bottom: 1px solid var(--ink); }
+td { padding: 9px 8px; border-bottom: 1px solid var(--hair); font-variant-numeric: tabular-nums; }
+.track { height: 4px; background: var(--hair); overflow: hidden; }
+.track i { display: block; height: 100%; background: var(--warm); transition: width .12s ease; }
+
+pre { background: var(--panel); border: 1px solid var(--hair); padding: 15px 17px; overflow-x: auto;
+  margin: 4px 0 16px; font: 13px/1.7 "JetBrains Mono", ui-monospace, monospace; }
+pre .cmt { color: var(--gray); }
+code { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: .85em; }
+p code, li code { background: var(--panel); border: 1px solid var(--hair); padding: 1px 5px; }
+
+footer { border-top: 1px solid var(--hair); padding: 26px 0 52px; }
+footer p { margin: 0; font-size: .9rem; color: var(--gray); }
+footer a { color: var(--gray); }
+footer a:hover { color: var(--ink); }
