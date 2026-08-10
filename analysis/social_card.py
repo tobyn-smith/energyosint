@@ -62,7 +62,7 @@ def main():
              family="serif", weight="bold", va="top")
     fig.text(0.055, 0.50, "Which US states look most exposed\nto losing power, and what is\ndriving it.",
              fontsize=19, color=GRAY, family="serif", va="top", linespacing=1.45)
-    fig.text(0.055, 0.17, "Built from open EIA data", fontsize=13.5, color=ACCENT,
+    fig.text(0.055, 0.17, "Built from open EIA and EPA data", fontsize=13.5, color=ACCENT,
              family="monospace", va="top")
     fig.text(0.055, 0.10, "Python  ·  R  ·  SQLite  ·  FastAPI", fontsize=12, color=GRAY,
              family="monospace", va="top")

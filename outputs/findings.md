@@ -1,6 +1,6 @@
 # Findings
 
-Generated from the sample data, so this is illustrative rather than a real result.
+Generated from real outage figures and plant capacity, with peak demand still coming from the built-in sample, so the ranking is part worked example.
 
 ## Most exposed states
 
@@ -37,6 +37,6 @@ The driver matters more than the rank, because each one points at a different le
 
 ## Caveats
 
-- The numbers are from the sample data, not a live pull.
+- Peak demand is still a sample figure, not a real one.
 - The weights are a judgement call, so the middle of the table shifts if you change them.
 - Concentration and the exposure deficit partly overlap, so the structural side is counted a little twice.

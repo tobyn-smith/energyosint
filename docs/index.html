@@ -9,7 +9,7 @@
   <meta name="theme-color" content="#f6f4ef">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Grid Resilience Exposure Index">
-  <meta property="og:description" content="Which US states look most exposed to losing power, and what is driving it. An interactive deck built from open EIA data.">
+  <meta property="og:description" content="Which US states look most exposed to losing power, and what is driving it. An interactive deck built from open EIA, EPA and NOAA data.">
   <meta property="og:url" content="https://tobyn-smith.github.io/energyosint/">
   <meta property="og:image" content="https://tobyn-smith.github.io/energyosint/assets/og.png">
   <meta name="twitter:card" content="summary_large_image">
@@ -111,7 +111,7 @@
         <h1>Grid Resilience Exposure Index</h1>
         <p class="stand">Which US states look most exposed to losing power, and what is driving it. Put
         together from public data, for anyone who has to think about energy policy rather than wiring.</p>
-        <p class="byline">Tobyn Smith / built from open EIA data</p>
+        <p class="byline">Tobyn Smith / built from open EIA, EPA and NOAA data</p>
         <p class="hint">Move through it with the arrow keys, the marks along the bottom, or a swipe on a
         phone. The numbers run off a built-in sample, so read the ranking as a worked example rather than
         a finding.</p>
@@ -137,12 +137,13 @@
     <section class="slide">
       <div class="slidewrap">
         <h2>What it is built on</h2>
-        <p class="lead">Three public inputs, all from the US Energy Information Administration's open forms.
-        No paywalls, no private feeds.</p>
+        <p class="lead">Three public inputs, from two different federal agencies. No paywalls, no private
+        feeds, and nothing that needs a login.</p>
         <div class="step"><div class="no">1</div><div><h3>How often the power fails</h3><p>The industry
         reliability measures, SAIDI and SAIFI, for how long and how often customers lose power.</p></div></div>
         <div class="step"><div class="no">2</div><div><h3>How the supply is built</h3><p>Generating capacity
-        by plant and fuel, which shows how much a state leans on one fuel or one big station.</p></div></div>
+        by plant and fuel, from EPA's eGRID, which shows how much a state leans on one fuel or one big
+        station.</p></div></div>
         <div class="step"><div class="no">3</div><div><h3>How much slack there is</h3><p>Installed capacity
         set against peak demand, so you can see how thin the margin is on a bad day.</p></div></div>
         <p class="hint" style="margin-top:18px">The outage figures are real: EIA-861 for 2023, every state.
@@ -370,7 +371,7 @@ pip install -r requirements.txt
 python pipeline.py</code></pre>
         <p>Full setup notes, including the optional R map and how to plug in a live EIA data key, are in the
         <a href="https://github.com/tobyn-smith/energyosint#readme" style="color:var(--accent)">project README</a>.</p>
-        <p class="hint" style="margin-top:16px">Data: US EIA open forms 860 and 861. Code and the full
+        <p class="hint" style="margin-top:16px">Data: EIA forms 860 and 861, EPA eGRID, NOAA storm records. Code and the full
         write-up are on GitHub.</p>
       </div>
     </section>

@@ -27,6 +27,54 @@ DRIVERS = {
 }
 
 
+# Which input each cached table feeds, for the provenance note.
+INPUTS = {
+    "plants": "plant capacity",
+    "reliability": "outage figures",
+    "demand": "peak demand",
+}
+RAW = Path("data/raw")
+
+
+def _sources() -> dict:
+    """Read the `source` column each loader stamped on its cached table, so the
+    report describes the run it actually came from rather than a guess."""
+    found = {}
+    for name, label in INPUTS.items():
+        path = RAW / f"{name}.csv"
+        if not path.exists():
+            continue
+        try:
+            col = pd.read_csv(path, usecols=["source"])["source"]
+        except (ValueError, KeyError, OSError):
+            continue
+        if not col.empty:
+            found[label] = str(col.iloc[0])
+    return found
+
+
+def provenance_line() -> str:
+    found = _sources()
+    if not found:
+        return ("Provenance could not be read from data/raw, so treat these figures as "
+                "illustrative unless you know how the run was made.")
+    real = sorted(l for l, s in found.items() if s != "synthetic")
+    sample = sorted(l for l, s in found.items() if s == "synthetic")
+    if not sample:
+        return "Generated from real data throughout."
+    if not real:
+        return "Generated from the sample data, so this is illustrative rather than a real result."
+    return (f"Generated from real {' and '.join(real)}, with {' and '.join(sample)} still "
+            f"coming from the built-in sample, so the ranking is part worked example.")
+
+
+def sample_caveats() -> list:
+    sample = sorted(l for l, s in _sources().items() if s == "synthetic")
+    if not sample:
+        return ["- Every input is real data."]
+    return [f"- {s.capitalize()} is still a sample figure, not a real one." for s in sample]
+
+
 def main():
     if not INDEX.exists():
         raise SystemExit("run `python pipeline.py` first, outputs/exposure_index.csv is missing")
@@ -37,7 +85,7 @@ def main():
     df["driver"] = df["driver"].map(DRIVERS)
 
     lines = ["# Findings", ""]
-    lines.append("Generated from the sample data, so this is illustrative rather than a real result.")
+    lines.append(provenance_line())
     lines.append("")
 
     lines.append("## Most exposed states")
@@ -70,7 +118,8 @@ def main():
 
     lines.append("## Caveats")
     lines.append("")
-    lines.append("- The numbers are from the sample data, not a live pull.")
+    for note in sample_caveats():
+        lines.append(note)
     lines.append("- The weights are a judgement call, so the middle of the table shifts if you change them.")
     lines.append("- Concentration and the exposure deficit partly overlap, so the structural side is counted a little twice.")
     lines.append("")
