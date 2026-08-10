@@ -4,28 +4,28 @@ Generated from the sample data, so this is illustrative rather than a real resul
 
 ## Most exposed states
 
-1. Maine (100.0), driven mostly by outage burden
-2. Michigan (89.1), driven mostly by concentration
-3. Texas (83.5), driven mostly by concentration
-4. New Hampshire (75.9), driven mostly by concentration
-5. Arkansas (73.9), driven mostly by outage burden
-6. Mississippi (72.1), driven mostly by outage burden
-7. Louisiana (69.2), driven mostly by concentration
-8. Oklahoma (67.3), driven mostly by outage burden
-9. New Mexico (66.8), driven mostly by concentration
-10. Arizona (65.1), driven mostly by the exposure deficit
+1. West Virginia (100.0), driven mostly by concentration
+2. Mississippi (99.4), driven mostly by concentration
+3. Maine (93.0), driven mostly by outage burden
+4. Oklahoma (76.6), driven mostly by outage burden
+5. Arkansas (72.6), driven mostly by the exposure deficit
+6. Kentucky (67.1), driven mostly by outage burden
+7. Rhode Island (64.5), driven mostly by concentration
+8. Louisiana (62.1), driven mostly by outage burden
+9. Hawaii (60.2), driven mostly by concentration
+10. Michigan (53.9), driven mostly by outage burden
 
 ## Least exposed
 
-- District of Columbia (23.0)
-- Utah (20.5)
-- Delaware (19.5)
-- Florida (8.2)
-- Missouri (0.0)
+- Maryland (12.6)
+- Illinois (5.1)
+- Colorado (2.8)
+- Missouri (1.5)
+- California (0.0)
 
 ## What tends to drive exposure
 
-Across the 51 states, the standout signal is: 17 by outage burden, 17 by concentration, 17 by the exposure deficit.
+Across the 51 states, the standout signal is: 18 by the exposure deficit, 17 by outage burden, 16 by concentration.
 
 ## Reading it for policy
 

@@ -23,9 +23,9 @@ the analysis is a proper pipeline, and the write-up is aimed at someone who has
 to think about energy policy rather than wiring. It works at the state level, so
 it is a broad lens rather than anything operational.
 
-> **On the numbers.** The outage figures are real (EIA-861, 2023). Capacity and
-> peak demand still come from a built-in sample, so the ranking is part worked
-> example. The pipeline prints which inputs were real on every run.
+> **On the numbers.** Outage figures are real (EIA-861, 2023) and plant capacity
+> is real (EPA eGRID2023). Only peak demand still comes from a built-in sample.
+> The pipeline prints which inputs were real on every run.
 
 **Contents** ·
 [What it found](#what-it-found) ·
@@ -42,45 +42,49 @@ it is a broad lens rather than anything operational.
 Four things stand out. The second is the one I would actually carry into a
 policy conversation, and the last is the one I did not expect.
 
-- **The top of the table is fairly stable.** Seven states (AR, LA, ME, MI, MS, NH,
-  TX) stay in the top 10 under every weighting I tried. The middle moves a lot, so
-  it should be read loosely. Maine is first by a distance: its customers averaged
-  over thirty hours without power in 2023.
-- **The same score means different things in different places.** The South scores
-  high on actual outages, the West on thin capacity margins, and the Northeast and
-  Midwest on how concentrated their supply is. That changes the policy lever:
-  hardening lines is not the same job as adding capacity. Arizona has some of the
-  best outage figures in the country and still lands tenth.
-- **Two of the three parts overlap.** Concentration and the exposure deficit
-  correlate at about 0.5, so the structural side is counted a little twice. That
-  is a weakness of the index, and it is flagged rather than buried.
+- **The top of the table is stable.** Six states (AR, KY, LA, MS, OK, WV) stay in
+  the top 10 under every weighting I tried, and West Virginia and Mississippi come
+  first and second whichever way the scaling is done. The middle moves a lot, so it
+  should be read loosely.
+- **The same score means different things in different places.** Mississippi and
+  West Virginia have the two most fuel-concentrated supplies in the country, one
+  leaning on gas and the other on coal, and they take the top two places on that
+  alone. Maine is third for the opposite reason: it has the least concentrated fuel
+  mix of any state and still lost its customers thirty one hours of power in 2023.
+  That changes the policy lever, because spreading a fuel mix is not the same job as
+  hardening lines.
+- **Two of the three parts overlap, though less than they used to.** Concentration
+  and the exposure deficit correlate at about 0.33, so the structural side is still
+  counted a little twice. On the earlier synthetic capacity data that figure was
+  0.5, so real plant data pulled the two measures further apart.
 - **The weather story does not hold up as neatly as expected.** Checked against
   NOAA's storm records, how much damaging weather a state gets barely predicts how
   many outage minutes it loses to storms (rank correlation 0.21). Texas and Georgia
   log the most storm events in the country and lose few minutes; Maine logs a
   fraction as many and lost the most. [More below](#does-the-outage-data-hold-up).
+  This one is unaffected by the capacity data, since both sides come from elsewhere.
 
 The top ten as it currently stands, straight from `outputs/exposure_index.csv`:
 
 | # | State | Score | Mostly driven by | Outage minutes, 2023 |
 |---:|---|---:|---|---:|
-| 1 | Maine | 100.0 | outages | 1,863 |
-| 2 | Michigan | 89.1 | concentration | 1,128 |
-| 3 | Texas | 83.5 | concentration | 583 |
-| 4 | New Hampshire | 75.9 | concentration | 591 |
-| 5 | Arkansas | 73.9 | outages | 915 |
-| 6 | Mississippi | 72.1 | outages | 878 |
-| 7 | Louisiana | 69.2 | concentration | 663 |
-| 8 | Oklahoma | 67.3 | outages | 1,339 |
-| 9 | New Mexico | 66.8 | concentration | 156 |
-| 10 | Arizona | 65.1 | thin spare capacity | 104 |
+| 1 | West Virginia | 100.0 | concentration | 752 |
+| 2 | Mississippi | 99.4 | concentration | 878 |
+| 3 | Maine | 93.0 | outages | 1,863 |
+| 4 | Oklahoma | 76.6 | outages | 1,339 |
+| 5 | Arkansas | 72.6 | thin spare capacity | 915 |
+| 6 | Kentucky | 67.1 | outages | 862 |
+| 7 | Rhode Island | 64.5 | concentration | 105 |
+| 8 | Louisiana | 62.1 | outages | 663 |
+| 9 | Hawaii | 60.2 | concentration | 249 |
+| 10 | Michigan | 53.9 | outages | 1,128 |
 
 ## What is under the hood
 
 | | |
 |---|---|
 | **Pipeline** | Python (pandas, numpy) that ingests, cleans, scores and plots, with a seeded sample so it runs for anyone with no API key |
-| **Testing** | A test suite and a GitHub Action that reruns the pipeline and refreshes the site data on every change to the analysis code |
+| **Testing** | 29 tests covering the scoring maths, the spreadsheet loaders and the API, run by a GitHub Action on every change to the analysis code |
 | **Mapping** | Done in both languages: a Python choropleth via geopandas and an R map via `usmap`, plus a GeoPackage export that opens in QGIS |
 | **Storage** | A SQLite store of every run, and an optional FastAPI service that re-ranks the states live for any weights, using the same scoring code as the pipeline |
 | **Front end** | No JavaScript libraries: the deck, the two interactive maps and the weight explorer are hand-written SVG and vanilla JS |
@@ -113,7 +117,7 @@ how often the power really fails is the most direct evidence. The other two are
 more about the underlying setup.
 
 The scaling method barely shifts the top of the table: z-score and min-max both
-put Maine, Michigan and Texas in the first three. Further down it matters more,
+put West Virginia, Mississippi and Maine in the first three. Further down it matters more,
 so the exact position of a middling state depends on choices made in the settings.
 
 The [project page](https://tobyn-smith.github.io/energyosint/) is an interactive
@@ -311,9 +315,9 @@ that, but it is a real result and it is reported as it came out.
 
 The weights are a judgement call, so `analysis/weight_sensitivity.py` re-scores
 the states under a few different weightings and prints which ones stay in the top
-10. Seven states (AR, LA, ME, MI, MS, NH, TX) land in the top 10 no matter how the
-weights are set, while others move around a lot. West Virginia, for instance, runs
-from 13th under an outage-heavy weighting to 28th under a structure-heavy one. So
+10. Six states (AR, KY, LA, MS, OK, WV) land in the top 10 no matter how the
+weights are set, while others move around a lot. Tennessee, for instance, runs
+from 10th under an outage-heavy weighting to 42nd under a structure-heavy one. So
 the very top of the table is fairly stable, but the middle depends on the choices,
 which is worth keeping in mind when reading it.
 
@@ -328,11 +332,10 @@ written up in [METHODOLOGY.md](METHODOLOGY.md).
 <br>
 
 `analysis/regional_summary.py` averages the state scores up to the four US Census
-regions, which is often an easier way to read the pattern. The Northeast and the
-South come out highest, and the telling part is that each region gets there for a
-different reason: the South through actual outages, the West through tight
-capacity margins, and the Northeast and Midwest through how concentrated their
-supply is. It writes `outputs/regional_summary.csv` and the chart below. Run it
+regions, which is often an easier way to read the pattern. The South comes out
+highest, then the Northeast, and the telling part is that they get there for
+different reasons: the South and Midwest through actual outages, the Northeast and
+West through how concentrated their supply is. It writes `outputs/regional_summary.csv` and the chart below. Run it
 with `--level division` for the finer nine-way census split.
 
 ![Average exposure by US Census region](outputs/regional_exposure.png)
@@ -347,10 +350,11 @@ with `--level division` for the finer nine-way census split.
 `analysis/component_overlap.py` checks how much the three components correlate,
 since adding them up only makes sense if they are not all measuring the same
 thing. Outage burden turns out to be its own signal, but concentration and the
-exposure deficit move together (about 0.5): a state with a concentrated supply
+exposure deficit move together (about 0.33): a state with a concentrated supply
 also tends to have a tighter, less varied one. So the index leans on that
 structural side of things a little twice, which is worth flagging rather than
-hiding.
+hiding. That overlap was 0.5 while capacity came from the synthetic sample, so
+swapping in real plant data pulled the two apart a fair way.
 
 </details>
 
@@ -377,9 +381,10 @@ Then open http://127.0.0.1:8000/docs for the interactive list, or call it direct
 | `GET /api/runs`, `GET /health` | What is stored |
 
 Every pipeline run is also saved to `outputs/index.db` (a SQLite file) and written
-out to `docs/data/index.json`, which is what the web deck reads. A small GitHub
-Action reruns the pipeline and refreshes that data file whenever the analysis code
-changes.
+out to `docs/data/index.json`, which is what the web deck reads. That file is
+refreshed locally rather than in CI: the real figures come from agency workbooks
+that are too large to commit and not mine to redistribute, so a runner without them
+would fall back to the sample and quietly overwrite the real numbers.
 
 ## How the project is laid out
 
@@ -415,7 +420,7 @@ METHODOLOGY.md   the longer write-up of the choices and limits
 - EIA Open Data, Forms 860 and 861, https://www.eia.gov/opendata
 - EIA-861 reliability, https://www.eia.gov/electricity/data/eia861/
 - NOAA Storm Events Database, https://www.ncei.noaa.gov/stormevents/
-- EPA eGRID, https://www.epa.gov/egrid (used on the Georgia page)
+- EPA eGRID, https://www.epa.gov/egrid (plant capacity, and the Georgia page)
 - State map shapes: the R `usmap` package, and Natural Earth boundaries for the
   Python map
 

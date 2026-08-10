@@ -1,5 +1,5 @@
 region,exposure_score,outage_burden,infra_concentration,exposure_deficit,top_driver
-Northeast,49.53,0.16,0.19,0.16,infra_concentration
-South,46.68,0.44,-0.24,-0.19,outage_burden
-West,43.9,-0.41,0.31,0.32,exposure_deficit
-Midwest,37.31,-0.3,-0.14,-0.2,infra_concentration
+South,48.85,0.44,0.2,0.17,outage_burden
+Northeast,45.72,0.16,0.26,0.26,infra_concentration
+West,31.44,-0.41,0.04,-0.01,infra_concentration
+Midwest,23.32,-0.3,-0.53,-0.42,outage_burden

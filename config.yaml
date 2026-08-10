@@ -14,6 +14,7 @@ sources:
   # clean API. Paths are relative to data/raw unless absolute. If a file is
   # missing the pipeline falls back to the synthetic sample for that input.
   reliability_workbook: f8612023.zip            # EIA-861 annual zip, or the Reliability_YYYY.xlsx inside it
+  plants_workbook: egrid2023.xlsx               # EPA eGRID, for real plant capacity by fuel
   demand_file: state_peak_demand.csv              # state + peak demand (MW)
 
 database:

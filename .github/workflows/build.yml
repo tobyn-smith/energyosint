@@ -1,28 +1,38 @@
-name: rebuild site data
+name: tests
 
-# Re-run the pipeline whenever the analysis code changes and commit the refreshed
-# data file the web deck reads. The commit only touches docs/data, which is not in
-# the trigger paths below, so it does not set the workflow off again.
+# Runs the test suite on every change to the analysis code.
+#
+# This deliberately does not rebuild docs/data/index.json. The committed results
+# are built from EIA-861 and EPA eGRID workbooks, which are large agency files
+# that are not redistributable and so are not in the repo. A runner without them
+# falls back to the synthetic sample, and committing that would quietly replace
+# the real figures on the site with sample ones. The data file is refreshed
+# locally instead, by running the pipeline with those files in data/raw.
 on:
   push:
     branches: [main]
     paths:
       - "grid/**"
       - "analysis/**"
+      - "tests/**"
       - "pipeline.py"
+      - "server.py"
       - "config.yaml"
       - "requirements.txt"
+      - "requirements-api.txt"
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: rebuild-site-data
-  cancel-in-progress: false
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -30,6 +40,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+          cache: pip
 
       - name: Install dependencies
         run: |
@@ -39,17 +50,5 @@ jobs:
       - name: Run tests
         run: pytest -q
 
-      - name: Rebuild data
+      - name: Check the pipeline runs end to end on the sample
         run: python pipeline.py
-
-      - name: Commit refreshed site data
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add docs/data/index.json
-          if git diff --cached --quiet; then
-            echo "site data unchanged"
-          else
-            git commit -m "rebuild site data [skip ci]"
-            git push
-          fi

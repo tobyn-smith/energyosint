@@ -397,13 +397,72 @@ def _no_synthetic(cfg: dict, what: str) -> None:
 
 
 def load_plants(cfg: dict) -> pd.DataFrame:
+    # Preference order: the EIA API if a key is set, then EPA's eGRID workbook if
+    # it has been downloaded, then the synthetic sample.
     key = _eia_key()
     if key:
         live = _live_plants(cfg["sources"]["eia_api_base"], key)
         if live is not None:
             return _maybe_cache(live, "plants", cfg)
+    egrid = _egrid_plants(cfg)
+    if egrid is not None:
+        return _maybe_cache(egrid, "plants", cfg)
     _no_synthetic(cfg, "capacity")
     return _maybe_cache(_synthetic_plants(), "plants", cfg)
+
+
+def _egrid_plants(cfg: dict) -> pd.DataFrame | None:
+    """Plant capacity by fuel from EPA's eGRID workbook, if it has been downloaded.
+
+    eGRID is the other half of the open-data picture: EPA publishes a row for every
+    generating plant in the country with its state, primary fuel category and
+    nameplate capacity, which is exactly what the concentration measures need. It
+    is a different agency from EIA, so it is also a useful independent source.
+
+    Grab eGRID2023 from https://www.epa.gov/egrid and drop the .xlsx in data/raw.
+    Returns None on anything unexpected so the caller can fall back.
+    """
+    name = cfg["sources"].get("plants_workbook", "egrid2023.xlsx")
+    path = Path(name)
+    if not path.is_absolute():
+        path = RAW_DIR / path
+    if not path.exists():
+        return None
+
+    # The plant sheet is named for the data year (PLNT23 for eGRID2023), so find it
+    # rather than hard-coding, and the real header sits on the second row.
+    try:
+        book = pd.ExcelFile(path)
+        sheet = next((s for s in book.sheet_names if s.upper().startswith("PLNT")), None)
+        if sheet is None:
+            return None
+        df = pd.read_excel(book, sheet_name=sheet, header=1)
+    except Exception:
+        return None
+
+    cols = {"PSTATABB": "state", "PNAME": "plant_name",
+            "PLFUELCT": "fuel", "NAMEPCAP": "capacity_mw"}
+    if not set(cols).issubset(df.columns):
+        return None
+
+    out = df[list(cols)].rename(columns=cols)
+    out["state"] = out["state"].astype(str).str.strip().str.upper()
+    out = out[out["state"].isin(STATES)]
+    out["capacity_mw"] = pd.to_numeric(out["capacity_mw"], errors="coerce")
+    # Retired and proposed plants sit in the sheet with no or zero capacity.
+    out = out[out["capacity_mw"] > 0].dropna(subset=["fuel"])
+    if out.empty:
+        return None
+
+    # eGRID's categories are close to ours already; fold them to the same names so
+    # the fuel counts line up with the synthetic sample.
+    rename_fuel = {"GAS": "natural_gas", "OFSL": "other_fossil", "OTHF": "other"}
+    out["fuel"] = out["fuel"].astype(str).str.strip().str.lower()
+    out["fuel"] = out["fuel"].replace({k.lower(): v for k, v in rename_fuel.items()})
+    out["plant_name"] = out["plant_name"].astype(str).str.strip()
+    out["capacity_mw"] = out["capacity_mw"].round(1)
+    out["source"] = "egrid"
+    return out[["state", "plant_name", "fuel", "capacity_mw", "source"]].reset_index(drop=True)
 
 
 def load_reliability(cfg: dict) -> pd.DataFrame:

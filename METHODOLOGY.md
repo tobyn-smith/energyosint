@@ -14,8 +14,9 @@ public data, so it is a broad lens, not a precise or operational measure.
 
 Three inputs, each keyed on the state:
 
-- **Generation capacity** by plant and fuel, from EIA Form 860 (the open API).
-  Used for the concentration measures and the capacity margin.
+- **Generation capacity** by plant and fuel, from EPA's eGRID workbook, or from
+  EIA Form 860 over the open API if a key is set. Used for the concentration
+  measures and the capacity margin.
 - **Reliability**, the SAIDI and SAIFI outage metrics, from EIA Form 861.
 - **Peak demand and net generation**, used for the capacity margin.
 
@@ -24,14 +25,16 @@ seeded synthetic sample so it still runs end to end. Sample rows are tagged in a
 `source` column, and each input falls back on its own, so a run can mix real and
 sample data. The pipeline prints which it used for each.
 
-The committed results use the real EIA-861 reliability figures for 2023 and the
-sample for capacity and peak demand. Since outage burden carries the largest
-weight, the biggest single part of the score is now real, but the ranking is still
-part illustrative and is labelled that way throughout.
+The committed results use the real EIA-861 reliability figures for 2023 and real
+plant capacity from EPA's eGRID2023, leaving peak demand as the only sample input.
+Two of the three components are therefore built on real data, and the third, the
+exposure deficit, is part real: the installed capacity side of the margin is real
+and only the peak demand it is divided by is not.
 
-EIA-861 reliability and state peak demand ship as bulk spreadsheets rather than a
-clean API route. The pipeline will read a local copy of either if you point
-`config.yaml` at one, and otherwise falls back to the synthetic path for that input.
+EIA-861 reliability, eGRID capacity and state peak demand all ship as bulk
+spreadsheets rather than a clean API route. The pipeline will read a local copy of
+any of them if you point `config.yaml` at it, and otherwise falls back to the
+synthetic path for that input alone.
 
 The reliability workbook takes some care to read. It carries two stacked header
 rows, repeats the same column names under "IEEE Standard" and again under "Any
@@ -92,14 +95,14 @@ where they are easy to change.
 
 Because the weights are subjective, `analysis/weight_sensitivity.py` re-scores
 the states under a few different weightings and checks how steady the top of the
-table is. Seven states (AR, LA, ME, MI, MS, NH, TX) stay in the top 10 under every
-weighting, while others move a lot. West Virginia, for example, runs from 13th
-under an outage-heavy weighting to 28th under a structure-heavy one. So the very
-top is fairly stable, but the middle of the table should be read with that
-movement in mind.
+table is. Six states (AR, KY, LA, MS, OK, WV) stay in the top 10 under every
+weighting, while others move a lot. Tennessee, for example, runs from 10th under an
+outage-heavy weighting to 42nd under a structure-heavy one. So the very top is
+fairly stable, but the middle of the table should be read with that movement in
+mind.
 
-The choice of normalisation matters less at the top than it did on sample data:
-z-score and min-max both give Maine, Michigan and Texas as the first three. It
+The choice of normalisation matters little at the top: z-score and min-max both
+give West Virginia, Mississippi and Maine as the first three. It
 still moves the middle around, and it changes which component is named as a
 state's driver quite a lot, which is worth knowing before quoting that label.
 
@@ -110,11 +113,11 @@ state's driver quite a lot, which is worth knowing before quoting that label.
 - The concentration measures are blunt. They say nothing about the transmission
   network that moves power around, which probably matters at least as much, but
   that data is harder to get cleanly.
-- Capacity and peak demand are still sample figures, so two of the three
-  components are illustrative. Outage burden, which carries the most weight, is
-  real.
-- The live EIA-860 capacity path is written but not heavily tested, since it needs
-  a key. The reliability loader is tested against a fixture shaped like the real
+- Peak demand is still a sample figure, so the capacity margin inside the
+  exposure deficit is illustrative. Outage burden and concentration are both built
+  entirely on real data.
+- The live EIA-860 API path is written but not heavily tested, since it needs a
+  key. In practice eGRID covers the same ground without one. The reliability loader is tested against a fixture shaped like the real
   workbook, and has been run against the real 2023 file.
 - Checked against NOAA storm records, the outage data does not line up with
   severe weather as neatly as the framing here assumes. See the validation section
