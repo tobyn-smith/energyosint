@@ -14,7 +14,9 @@ the output (`source` column) so nobody mistakes it for the real thing.
 
 from __future__ import annotations
 
+import io
 import os
+import zipfile
 import zlib
 from pathlib import Path
 
@@ -187,16 +189,59 @@ def _live_plants(base: str, key: str) -> pd.DataFrame | None:
     return df[["state", "plant_name", "fuel", "capacity_mw", "source"]]
 
 
-def _live_reliability(cfg: dict) -> pd.DataFrame | None:
-    """SAIDI/SAIFI from a local EIA-861 reliability workbook, if present.
+def _reliability_sheet(path: Path):
+    """Open the EIA-861 reliability workbook, straight or from inside the annual zip.
 
-    EIA publishes reliability as a spreadsheet (Reliability_YYYY.xlsx) rather than
-    through the API. Point `sources.reliability_workbook` in config.yaml at a
-    downloaded copy, or drop it at data/raw/eia861_reliability.xlsx. We read the
-    two columns we need (with and without major event days both exist; we take
-    the with-MED figures, since storms are the point) and average any duplicate
-    utility rows up to the state. Returns None on anything unexpected so the
-    caller can fall back.
+    EIA ships reliability as Reliability_YYYY.xlsx, usually bundled in f861YYYY.zip.
+    Accepting either saves unpacking it by hand. Returns an open file object or a
+    path that pandas can read, or None.
+    """
+    if path.suffix.lower() == ".zip":
+        try:
+            zf = zipfile.ZipFile(path)
+        except (zipfile.BadZipFile, OSError):
+            return None
+        for member in zf.namelist():
+            if "reliab" in member.lower() and member.lower().endswith((".xlsx", ".xls")):
+                return io.BytesIO(zf.read(member))
+        return None
+    return path
+
+
+def combined_header(head: pd.DataFrame, header_row: int) -> list[str]:
+    """Flatten the workbook's stacked header rows into one name per column.
+
+    Every row above the names is a grouping level, and they matter: the sheet
+    repeats the same column names under "IEEE Standard" and again under "Any
+    Standard", so only the top row tells the two blocks apart.
+    """
+    levels = [head.iloc[i].ffill() for i in range(header_row)]
+    names = head.iloc[header_row]
+    out = []
+    for j in range(len(names)):
+        parts = [str(lv.iloc[j]).strip().lower() for lv in levels]
+        parts = [p for p in parts if p and p != "nan"]
+        parts.append(str(names.iloc[j]).strip().lower())
+        out.append(" | ".join(parts))
+    return out
+
+
+def _live_reliability(cfg: dict) -> pd.DataFrame | None:
+    """State SAIDI and SAIFI from a local EIA-861 reliability workbook, if present.
+
+    EIA publishes this as a spreadsheet rather than through the API, so point
+    `sources.reliability_workbook` in config.yaml at a downloaded copy (either
+    Reliability_YYYY.xlsx or the f861YYYY.zip it comes in). Returns None on
+    anything unexpected so the caller falls back to the sample.
+
+    Two things about the real file are worth knowing. It carries two stacked
+    header rows, the upper one naming groups like "All Events (With Major Event
+    Days)", so the two are combined before looking for a column. And it already
+    has a State Totals sheet, which is what we want: rolling the per-utility sheet
+    up by hand would weight a tiny co-op the same as a utility serving millions.
+
+    We take the figures that include major event days, because storms are most of
+    what this project is about.
     """
     name = cfg["sources"].get("reliability_workbook", "eia861_reliability.xlsx")
     path = Path(name)
@@ -205,45 +250,68 @@ def _live_reliability(cfg: dict) -> pd.DataFrame | None:
     if not path.exists():
         return None
 
+    src = _reliability_sheet(path)
+    if src is None:
+        return None
     try:
-        raw = pd.read_excel(path, sheet_name=0, header=None)
+        book = pd.ExcelFile(src)
     except Exception:
         return None
 
-    # The workbook has a few banner rows before the real header, so find the row
-    # that names the columns and re-read from there.
+    # Prefer the sheet EIA has already aggregated to states.
+    sheet = next((s for s in book.sheet_names if "state" in s.lower() and "total" in s.lower()), None)
+    if sheet is None:
+        sheet = next((s for s in book.sheet_names if "state" in s.lower()), None)
+    if sheet is None:
+        return None
+
+    try:
+        head = pd.read_excel(book, sheet_name=sheet, header=None, nrows=6)
+    except Exception:
+        return None
+
+    # Find the row holding the real column names, then fold the group row above it
+    # in, so "SAIDI" can be told apart from the same name under another group.
     header_row = None
-    for i in range(min(12, len(raw))):
-        joined = " ".join(str(x).lower() for x in raw.iloc[i].tolist())
+    for i in range(len(head)):
+        joined = " ".join(str(x).lower() for x in head.iloc[i].tolist())
         if "saidi" in joined and "state" in joined:
             header_row = i
             break
     if header_row is None:
         return None
 
+    combined = combined_header(head, header_row)
+
     try:
-        df = pd.read_excel(path, sheet_name=0, header=header_row)
+        df = pd.read_excel(book, sheet_name=sheet, header=header_row)
     except Exception:
         return None
-    df.columns = [str(c).strip().lower() for c in df.columns]
+    if len(combined) != len(df.columns):
+        return None
+    df.columns = combined
 
-    def _find(*needles: str) -> str | None:
-        for c in df.columns:
+    def _find(*needles: str) -> int | None:
+        # by position, because the combined names are not unique
+        for i, c in enumerate(combined):
             if all(n in c for n in needles):
-                return c
+                return i
         return None
 
     state_col = _find("state")
-    # Prefer the "with major event days" columns; fall back to any SAIDI/SAIFI.
-    saidi_col = _find("saidi", "with") or _find("saidi")
-    saifi_col = _find("saifi", "with") or _find("saifi")
-    if not (state_col and saidi_col and saifi_col):
+    # Prefer the IEEE-standard series: it is the like-for-like one across
+    # utilities. Within it, take the figures including major event days, since
+    # storms are most of what this project is about.
+    saidi_col = _find("ieee", "with major event", "saidi") or _find("saidi")
+    saifi_col = _find("ieee", "with major event", "saifi") or _find("saifi")
+    if state_col is None or saidi_col is None or saifi_col is None:
         return None
 
-    out = df[[state_col, saidi_col, saifi_col]].copy()
+    out = df.iloc[:, [state_col, saidi_col, saifi_col]].copy()
     out.columns = ["state", "saidi_minutes", "saifi_events"]
     out["state"] = out["state"].astype(str).str.strip().str.upper()
     out = out[out["state"].isin(STATES)]
+    # Missing entries come through as "." rather than blank, so coerce and drop.
     for c in ("saidi_minutes", "saifi_events"):
         out[c] = pd.to_numeric(out[c], errors="coerce")
     out = out.dropna(subset=["saidi_minutes", "saifi_events"])
@@ -252,8 +320,8 @@ def _live_reliability(cfg: dict) -> pd.DataFrame | None:
 
     out = out.groupby("state", as_index=False).mean(numeric_only=True)
     out["saidi_minutes"] = out["saidi_minutes"].round(1)
-    out["saifi_events"] = out["saifi_events"].round(2)
-    out["source"] = "eia"
+    out["saifi_events"] = out["saifi_events"].round(3)
+    out["source"] = "eia861"
     return out
 
 

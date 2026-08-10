@@ -21,13 +21,25 @@ Three inputs, each keyed on the state:
 
 When there is no EIA API key, or a request fails, the pipeline falls back to a
 seeded synthetic sample so it still runs end to end. Sample rows are tagged in a
-`source` column. The committed results were produced from the sample, so the
-ranking shown in the repo is illustrative.
+`source` column, and each input falls back on its own, so a run can mix real and
+sample data. The pipeline prints which it used for each.
+
+The committed results use the real EIA-861 reliability figures for 2023 and the
+sample for capacity and peak demand. Since outage burden carries the largest
+weight, the biggest single part of the score is now real, but the ranking is still
+part illustrative and is labelled that way throughout.
 
 EIA-861 reliability and state peak demand ship as bulk spreadsheets rather than a
 clean API route. The pipeline will read a local copy of either if you point
-`config.yaml` at one, and otherwise falls back to the synthetic path for that
-input. So a run can mix real and sample inputs depending on what you have to hand.
+`config.yaml` at one, and otherwise falls back to the synthetic path for that input.
+
+The reliability workbook takes some care to read. It carries two stacked header
+rows, repeats the same column names under "IEEE Standard" and again under "Any
+Standard", and writes missing values as ".". I take the IEEE series because it is
+the like-for-like one across utilities, including major event days because storms
+are the point, and I use the sheet EIA has already aggregated to states. Rolling
+the per-utility sheet up by hand would weight a co-op with a few thousand customers
+the same as a utility serving millions.
 
 State outlines for the maps come from the R `usmap` package and from Natural
 Earth (for the Python version).
@@ -80,14 +92,16 @@ where they are easy to change.
 
 Because the weights are subjective, `analysis/weight_sensitivity.py` re-scores
 the states under a few different weightings and checks how steady the top of the
-table is. On the sample data, six states (AZ, GA, MS, NM, TX, WA) stay in the top
-10 under every weighting, while others move a lot. West Virginia, for example,
-runs from 4th under an outage-heavy weighting to 23rd under a structure-heavy
-one. So the very top is fairly stable, but the middle of the table should be read
-with that movement in mind.
+table is. Seven states (AR, LA, ME, MI, MS, NH, TX) stay in the top 10 under every
+weighting, while others move a lot. West Virginia, for example, runs from 13th
+under an outage-heavy weighting to 28th under a structure-heavy one. So the very
+top is fairly stable, but the middle of the table should be read with that
+movement in mind.
 
-The choice of normalisation matters too: Arizona and Georgia swap the top spot
-between the z-score and min-max versions.
+The choice of normalisation matters less at the top than it did on sample data:
+z-score and min-max both give Maine, Michigan and Texas as the first three. It
+still moves the middle around, and it changes which component is named as a
+state's driver quite a lot, which is worth knowing before quoting that label.
 
 ## Limitations
 
@@ -96,12 +110,16 @@ between the z-score and min-max versions.
 - The concentration measures are blunt. They say nothing about the transmission
   network that moves power around, which probably matters at least as much, but
   that data is harder to get cleanly.
-- The committed results use synthetic data for the outage and demand inputs. The
-  loaders for the real EIA spreadsheets are in place, but I have run them against
-  the sample far more than against the real files, so treat the live paths as
-  lightly tested.
-- The live EIA-860 capacity path is written but not heavily tested either, since
-  it needs a key.
+- Capacity and peak demand are still sample figures, so two of the three
+  components are illustrative. Outage burden, which carries the most weight, is
+  real.
+- The live EIA-860 capacity path is written but not heavily tested, since it needs
+  a key. The reliability loader is tested against a fixture shaped like the real
+  workbook, and has been run against the real 2023 file.
+- Checked against NOAA storm records, the outage data does not line up with
+  severe weather as neatly as the framing here assumes. See the validation section
+  in the README. I have left the framing as it is and reported the mismatch rather
+  than quietly adjusting one to fit the other.
 - The code is written against a generic state column rather than hard-coding the
   US, so in principle it could move to another region, but that has not been
   tried.

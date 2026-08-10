@@ -55,8 +55,17 @@ def run(cfg: dict) -> None:
     plants = sources.load_plants(cfg)
     reliability = sources.load_reliability(cfg)
     demand = sources.load_demand(cfg, plants)
-    origin = plants["source"].iloc[0]
-    print(f"      capacity source: {origin} ({len(plants)} plant rows)")
+
+    # Each input can be real or sample independently, so report them separately
+    # rather than pretending the run has one provenance.
+    origins = {
+        "capacity": plants["source"].iloc[0],
+        "reliability": reliability["source"].iloc[0],
+        "demand": demand["source"].iloc[0],
+    }
+    for what, origin in origins.items():
+        print(f"      {what}: {origin}")
+    provenance = ", ".join(f"{k}={v}" for k, v in origins.items())
 
     print("[2/4] building state table")
     state_table = cleaning.build_state_table(plants, reliability, demand)
@@ -81,7 +90,7 @@ def run(cfg: dict) -> None:
     conn = store.connect(db_path)
     run_id = store.save_run(
         conn, scored[keep], state_table,
-        source=origin, normalize=cfg["scoring"]["normalize"],
+        source=provenance, normalize=cfg["scoring"]["normalize"],
         created_at=datetime.now(timezone.utc).isoformat(timespec="seconds"),
     )
     conn.close()
@@ -107,12 +116,16 @@ def run(cfg: dict) -> None:
     top = scored.head(cfg["scoring"]["top_n"])
     print("\nMost exposed (top of the ranking):")
     print(top[["rank", "state", "exposure_score"]].to_string(index=False))
-    if origin == "synthetic":
-        if os.environ.get("EIA_API_KEY", "").strip():
-            print("\nNote: used the synthetic capacity sample. EIA_API_KEY is set, but the live "
-                  "pull did not return usable data.")
-        else:
-            print("\nNote: ran on the synthetic fallback. Set EIA_API_KEY for live capacity data.")
+    sampled = [k for k, v in origins.items() if v == "synthetic"]
+    if sampled:
+        print(f"\nNote: {' and '.join(sampled)} came from the built-in sample, so treat the "
+              "ranking as part illustrative.")
+        if "capacity" in sampled and not os.environ.get("EIA_API_KEY", "").strip():
+            print("      Set EIA_API_KEY for live capacity data.")
+        if "reliability" in sampled:
+            print("      Point sources.reliability_workbook at an EIA-861 file for real outage data.")
+    else:
+        print("\nEvery input came from real published data.")
 
 
 def main() -> None:

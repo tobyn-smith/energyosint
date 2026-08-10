@@ -15,27 +15,34 @@ the analysis is a proper pipeline, and the write-up is aimed at someone who has
 to think about energy policy rather than wiring. It works at the state level, so
 it is a broad lens rather than anything operational.
 
-![Map of exposure scores by state](outputs/exposure_map_r.png)
+![Map of exposure scores by state](outputs/exposure_map.png)
 
-Note: the map above uses the built-in sample data, not a live download. So the
-ranking is just an example of what comes out, not a real result. More on that
-below.
+Note: the outage figures behind this are real (EIA-861, 2023). Capacity and peak
+demand still come from a built-in sample, so the ranking is part worked example.
+The pipeline prints which inputs were real on every run. More on that below.
 
 ## What it found
 
-On the sample data, three things stand out, and the second is the one I would
-actually carry into a policy conversation.
+Four things stand out. The second is the one I would actually carry into a
+policy conversation, and the last is the one I did not expect.
 
-- **The top of the table is stable.** Six states (AZ, GA, MS, NM, TX, WA) stay in
-  the top 10 under every weighting I tried. The middle moves a lot, so it should
-  be read loosely.
+- **The top of the table is fairly stable.** Seven states (AR, LA, ME, MI, MS, NH,
+  TX) stay in the top 10 under every weighting I tried. The middle moves a lot, so
+  it should be read loosely. Maine is first by a distance: its customers averaged
+  over thirty hours without power in 2023.
 - **The same score means different things in different places.** The South scores
   high on actual outages, the West on thin capacity margins, and the Northeast and
   Midwest on how concentrated their supply is. That changes the policy lever:
-  hardening lines is not the same job as adding capacity.
+  hardening lines is not the same job as adding capacity. Arizona has some of the
+  best outage figures in the country and still lands tenth.
 - **Two of the three parts overlap.** Concentration and the exposure deficit
   correlate at about 0.5, so the structural side is counted a little twice. That
   is a weakness of the index, and it is flagged rather than buried.
+- **The weather story does not hold up as neatly as expected.** Checked against
+  NOAA's storm records, how much damaging weather a state gets barely predicts how
+  many outage minutes it loses to storms (rank correlation 0.21). Texas and Georgia
+  log the most storm events in the country and lose few minutes; Maine logs a
+  fraction as many and lost the most. See below.
 
 ## What is under the hood
 
@@ -77,9 +84,9 @@ the weights and run it again. I put the most weight on outage burden, because
 how often the power really fails is the most direct evidence. The other two are
 more about the underlying setup.
 
-The scaling method also shifts the order a bit. Arizona and Georgia swap the top
-spot depending on which one you use, so the exact ranking depends on a few
-choices made in the settings.
+The scaling method barely shifts the top of the table: z-score and min-max both
+put Maine, Michigan and Texas in the first three. Further down it matters more,
+so the exact position of a middling state depends on choices made in the settings.
 
 The [project page](https://tobyn-smith.github.io/energyosint/) is an interactive
 slide deck. If you would rather not click through it, the "read view" button in
@@ -172,8 +179,8 @@ After running, look in the `outputs` folder:
   It has every state, its score, its rank, and the three pieces that went into
   the score.
 - `ranked_states.png` is a bar chart of the most exposed states.
-- `exposure_map.png` is the map drawn by Python.
-- `exposure_map_r.png` is the map drawn by R (the one shown at the top).
+- `exposure_map.png` is the map drawn by Python (the one shown at the top).
+- `exposure_map_r.png` is the same map drawn by R, if you have run the R script.
 - `exposure_states.gpkg` is the map data in a format you can open in free
   mapping software like QGIS, if you want to explore it as a real map layer.
 
@@ -202,17 +209,60 @@ If there is no key, or the download fails, the project quietly switches to a
 built-in sample so it still runs from start to finish. Sample rows are marked in
 a `source` column, and the program says so when it finishes, so you can always
 tell which one you got. If you would rather the run stop than fall back to sample
-data, set `allow_synthetic_fallback: false` in `config.yaml`. The committed
-results in this repo were made with the sample, which is why the ranking should
-be read as an example.
+data, set `allow_synthetic_fallback: false` in `config.yaml`.
 
 Two of the inputs, the outage numbers (SAIDI and SAIFI) and state peak demand, do
 not have a clean API endpoint the way the generation data does. EIA ships them as
-bulk spreadsheets instead. If you download those and point `config.yaml` at them
+bulk spreadsheets instead. Download the one you want and point `config.yaml` at it
 (`reliability_workbook` and `demand_file`, either an absolute path or a file in
-`data/raw`), the pipeline reads and uses them; if they are missing it falls back
-to the sample for those two, the same as everything else. So you can mix real and
-sample inputs depending on what you have to hand.
+`data/raw`), and the pipeline reads it; if a file is missing it falls back to the
+sample for that input alone. So a run can mix real and sample data, and it prints
+exactly which it used:
+
+```
+[1/4] ingesting public data
+      capacity: synthetic
+      reliability: eia861
+      demand: synthetic
+```
+
+The committed results were produced that way. The outage figures are the real
+EIA-861 ones for 2023, from `f8612023.zip` on the
+[EIA-861 page](https://www.eia.gov/electricity/data/eia861/). That file is not in
+the repo, since it is EIA's to distribute and `data/raw` is ignored, so download it
+yourself to reproduce the numbers exactly.
+
+Reading it is fiddlier than it sounds, which is why there are tests for it. The
+sheet has two stacked header rows, repeats the same column names under "IEEE
+Standard" and again under "Any Standard", and writes missing values as ".". The
+loader takes the IEEE figures including major event days, and uses the sheet EIA
+has already aggregated to states rather than averaging utilities by hand, which
+would count a small co-op the same as one serving millions.
+
+## Does the outage data hold up?
+
+The index leans hardest on outage burden, so `analysis/validate_outages.py` checks
+it against a source collected by somebody else entirely: NOAA's Storm Events
+Database, compiled by the National Weather Service.
+
+The test is a sharp one. EIA publishes outage minutes twice, once counting major
+storm days and once excluding them, so the difference is the part storms account
+for. If the weather story is right, that gap should track how much damaging
+weather a state actually had.
+
+It mostly does not. Across the fifty states the rank correlation is 0.21 against
+the number of damaging storms and 0.24 against how much damage they did. Texas and
+Georgia record the most power-relevant storm events in the country and lose few
+minutes to them; Maine records a fraction as many and lost more than anyone.
+
+Storms clearly matter, or the two outage figures would not be so far apart. But
+how much bad weather arrives does not decide who suffers most, which points at how
+the grid is built and how quickly crews restore it. That is an argument against
+treating exposure as fate. It is one year of data and NOAA event counts partly
+reflect how densely a state is observed, so I would not lean on it harder than
+that, but it is a real result and it is reported as it came out.
+
+![Storms against storm-driven outages](outputs/validation_storms.png)
 
 ## A JSON API
 
@@ -257,6 +307,7 @@ analysis/
   regional_summary.py    averages the scores up to US Census regions
   component_overlap.py   checks whether the three parts overlap
   report.py              writes a short findings summary
+  validate_outages.py    checks the outage data against NOAA storm records
   social_card.py         draws the link preview image for the site
 docs/            the interactive slide deck and the Georgia deep dive
   data/index.json  the per-state data the deck reads, refreshed by the pipeline
@@ -271,11 +322,11 @@ METHODOLOGY.md   the longer write-up of the choices and limits
 
 The weights are a judgement call, so `analysis/weight_sensitivity.py` re-scores
 the states under a few different weightings and prints which ones stay in the top
-10. On the sample data, six states (AZ, GA, MS, NM, TX, WA) land in the top 10 no
-matter how the weights are set, while others move around a lot. West Virginia,
-for instance, runs from 4th under an outage-heavy weighting to 23rd under a
-structure-heavy one. So the very top of the table is fairly stable, but the
-middle depends on the choices, which is worth keeping in mind when reading it.
+10. Seven states (AR, LA, ME, MI, MS, NH, TX) land in the top 10 no matter how the
+weights are set, while others move around a lot. West Virginia, for instance, runs
+from 13th under an outage-heavy weighting to 28th under a structure-heavy one. So
+the very top of the table is fairly stable, but the middle depends on the choices,
+which is worth keeping in mind when reading it.
 
 The full reasoning behind the components, the weights, and the limitations is
 written up in [METHODOLOGY.md](METHODOLOGY.md).
@@ -283,11 +334,10 @@ written up in [METHODOLOGY.md](METHODOLOGY.md).
 ## A regional view
 
 `analysis/regional_summary.py` averages the state scores up to the four US Census
-regions, which is often an easier way to read the pattern. On the sample data the
-West comes out highest, and the telling part is that each region is exposed for a
-different reason: the West through tight capacity margins, the South through
-actual outages, and the Northeast and Midwest through how concentrated their
-supply is. It writes `outputs/regional_summary.csv` and the chart below. Run it
+regions, which is often an easier way to read the pattern. The Northeast and the
+South come out highest, and the telling part is that each region gets there for a
+different reason: the South through actual outages, the West through tight capacity
+margins, and the Northeast and Midwest through how concentrated their supply is. It writes `outputs/regional_summary.csv` and the chart below. Run it
 with `--level division` for the finer nine-way census split.
 
 ![Average exposure by US Census region](outputs/regional_exposure.png)
