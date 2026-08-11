@@ -53,6 +53,32 @@ def test_two_runs_are_independent(tmp_path):
     conn.close()
 
 
+def test_a_later_run_with_different_columns_still_saves(tmp_path):
+    """Changing what the pipeline keeps must not break an existing database."""
+    scored, table = _pipeline_frames()
+    conn = store.connect(tmp_path / "t.db")
+    store.save_run(conn, scored, table, source="synthetic",
+                   normalize="zscore", created_at="2020-01-01T00:00:00+00:00")
+
+    # a later run that adds a column and drops one
+    wider = scored.copy()
+    wider["new_measure"] = 1.0
+    wider = wider.drop(columns=["driver"])
+    run2 = store.save_run(conn, wider, table, source="synthetic",
+                          normalize="zscore", created_at="2020-01-02T00:00:00+00:00")
+
+    back = store.load_scores(conn, run2)
+    assert len(back) == 51
+    assert "new_measure" in back.columns          # the table was widened
+    assert back["new_measure"].notna().all()
+    assert back["driver"].isna().all()            # missing column left null
+
+    first = store.load_scores(conn, 1)            # the earlier run is untouched
+    assert first["driver"].notna().all()
+    assert first["new_measure"].isna().all()
+    conn.close()
+
+
 if __name__ == "__main__":
     import tempfile
     for name, fn in sorted(globals().items()):

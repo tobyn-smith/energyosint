@@ -108,7 +108,7 @@ def state(code: str) -> dict:
     conn = _conn()
     try:
         df = store.load_scores(conn, _latest(conn))
-        row = df[df["state"] == code.upper()]
+        row = df[df["state"] == code.strip().upper()]
         if row.empty:
             raise HTTPException(404, f"no state {code!r} in the latest run")
         return _named(row).iloc[0].to_dict()

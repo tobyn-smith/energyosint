@@ -189,7 +189,7 @@ def main():
     freq = results["how often: storm events vs storm outage minutes"]
     sev = results["how bad: storm damage vs storm outage minutes"]
     print("\nReading:")
-    print(f"  How much weather a state gets barely predicts its storm outage minutes")
+    print("  How much weather a state gets barely predicts its storm outage minutes")
     print(f"  (rank correlation {freq:.2f}). How damaging that weather was does a little")
     print(f"  better ({sev:.2f}) but not much, and its stronger straight-line correlation")
     print("  leans on a handful of extreme states rather than a steady pattern.")

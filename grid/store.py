@@ -61,15 +61,39 @@ def save_run(conn: sqlite3.Connection, scored: pd.DataFrame, state_table: pd.Dat
 
     scored = scored.copy()
     scored.insert(0, "run_id", run_id)
-    scored.to_sql("scores", conn, if_exists="append", index=False)
+    _append(conn, "scores", scored)
 
     keep = [c for c in INPUT_COLS if c in state_table.columns]
     inputs = state_table[keep].copy()
     inputs.insert(0, "run_id", run_id)
-    inputs.to_sql("inputs", conn, if_exists="append", index=False)
+    _append(conn, "inputs", inputs)
 
     conn.commit()
     return run_id
+
+
+def _append(conn: sqlite3.Connection, table: str, df: pd.DataFrame) -> None:
+    """Append a frame, coping with the columns having changed since the last run.
+
+    Plain to_sql(append) raises if the frame and the table disagree on columns, so
+    a change to what the pipeline keeps would break every later run against an
+    existing database. Widen the table for new columns and leave old ones null.
+    """
+    existing = [r[1] for r in conn.execute(f"PRAGMA table_info({table})")]
+    if not existing:                      # first write creates the table
+        df.to_sql(table, conn, if_exists="append", index=False)
+        return
+
+    for col in df.columns:
+        if col not in existing:
+            conn.execute(f'ALTER TABLE {table} ADD COLUMN "{col}"')
+            existing.append(col)
+
+    for col in existing:
+        if col not in df.columns:
+            df[col] = None
+
+    df[existing].to_sql(table, conn, if_exists="append", index=False)
 
 
 def latest_run_id(conn: sqlite3.Connection) -> int | None:
