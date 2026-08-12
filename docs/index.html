@@ -109,28 +109,30 @@
     <section class="slide">
       <div class="slidewrap">
         <h1>Grid Resilience Exposure Index</h1>
-        <p class="stand">Which US states look most exposed to losing power, and what is driving it. Put
-        together from public data, for anyone who has to think about energy policy rather than wiring.</p>
+        <p class="stand">Which US states look most exposed to losing power, and why the answer differs by
+        state. Built from public data, for anyone who has to think about energy policy rather than wiring.</p>
         <p class="byline">Tobyn Smith / built from open EIA, EPA and NOAA data</p>
         <p class="hint">Move through it with the arrow keys, the marks along the bottom, or a swipe on a
-        phone. The numbers run off a built-in sample, so read the ranking as a worked example rather than
-        a finding.</p>
+        phone. Outage figures and plant capacity are real; only peak demand is still a sample, and it is
+        labelled wherever it matters.</p>
       </div>
     </section>
 
     <section class="slide">
       <div class="slidewrap">
         <h2>Why look at this</h2>
-        <p class="lead">Keeping the lights on is quietly one of the bigger infrastructure questions in US
-        policy, and a few things are pulling on the grid at the same time.</p>
+        <p class="lead">Keeping the lights on is quietly one of the larger infrastructure questions in US
+        policy, and several pressures are pulling on the grid at the same time.</p>
         <div class="step"><div class="no">1</div><div><h3>Weather</h3><p>More frequent and more severe
         storms, heat and cold snaps are behind most of the large outages.</p></div></div>
         <div class="step"><div class="no">2</div><div><h3>An ageing network</h3><p>A lot of the wires and
         substations were built decades ago and are being asked to carry more.</p></div></div>
         <div class="step"><div class="no">3</div><div><h3>A changing fuel mix</h3><p>Coal is retiring, gas
         and renewables are growing, and that shifts where the weak spots sit.</p></div></div>
-        <p style="margin-top:22px">Most of the data that speaks to this is public but scattered. This pulls a
-        few open sources into one comparable score per state.</p>
+        <p style="margin-top:22px">Most of the data that speaks to this is already public, but it is scattered
+        across agencies and formats, so the obstacle is not just what gets measured but how little of it is
+        ever brought together. What this project does is pull a few of those sources into one comparable
+        score per state.</p>
       </div>
     </section>
 
@@ -155,16 +157,16 @@
     <section class="slide" id="method">
       <div class="slidewrap">
         <h2>Turning that into one number</h2>
-        <p class="lead">Every state gets a score from 0 to 100. Higher means it looks more likely to struggle
-        to keep the power on. It is built from three pieces.</p>
+        <p class="lead">Every state gets a score from 0 to 100, where higher means it looks more likely to
+        struggle to keep the power on. The number is built from three pieces.</p>
         <div class="step"><div class="no">1</div><div><h3>Outage burden</h3><p>How often the power goes out
         and for how long, from the SAIDI and SAIFI measures.</p></div></div>
         <div class="step"><div class="no">2</div><div><h3>Concentration</h3><p>How much of a state's power
         leans on one fuel type or a single very large plant.</p></div></div>
         <div class="step"><div class="no">3</div><div><h3>Exposure deficit</h3><p>Whether there is much spare
         capacity above peak demand, and how varied the supply is.</p></div></div>
-        <p style="margin-top:20px">The three are put on the same scale and blended. The weights live in one
-        settings file, so they are easy to change. The next two slides let you do exactly that.</p>
+        <p style="margin-top:20px">The three are put on the same scale and then blended. The weights live in a
+        single settings file, so they are easy to change; the next two slides let you do exactly that.</p>
       </div>
     </section>
 
@@ -265,7 +267,8 @@
       <div class="slidewrap">
         <h2>The same score can mean different things</h2>
         <p class="lead">This is the part worth carrying into a policy conversation. A high score is not one
-        problem, it is whichever of the three pieces is doing the work, and that changes by region.</p>
+        problem but three: what matters is which of the pieces is doing the work, and that changes from
+        state to state.</p>
         <div class="step"><div class="no">1</div><div><h3>Mississippi and West Virginia: one fuel</h3>
         <p>Mississippi takes 84 per cent of its capacity from gas and West Virginia 83 per cent from coal,
         the two most concentrated supplies in the country. They lead the table on that alone. The worry is
@@ -276,7 +279,8 @@
         restoring faster.</p></div></div>
         <div class="step"><div class="no">3</div><div><h3>Same score, different job</h3><p>That is the point.
         Spreading a fuel mix, hardening lines and adding spare capacity are three different pieces of policy,
-        and the score alone does not tell you which one a state needs.</p></div></div>
+        with different costs and different timescales. Because of this, a ranking on its own tells you far
+        less than the ranking read alongside its driver.</p></div></div>
         <p style="margin-top:20px">The driver label under each state on the map is the shorthand for this.</p>
       </div>
     </section>
@@ -284,7 +288,8 @@
     <section class="slide">
       <div class="slidewrap">
         <h2>What this is not</h2>
-        <p class="lead">A few honest limits. For a policy reader these matter more than the ranking itself.</p>
+        <p class="lead">A few honest limits. For a policy reader these arguably matter more than the ranking
+        itself, so they are here rather than buried at the end.</p>
         <div class="step"><div class="no">1</div><div><h3>It is not operational</h3><p>State-level figures
         blur a lot. A state can look fine overall and still have fragile pockets inside it.</p></div></div>
         <div class="step"><div class="no">2</div><div><h3>One of the three parts is still sampled</h3><p>Outage
@@ -293,8 +298,8 @@
         <div class="step"><div class="no">3</div><div><h3>It leaves out the wires</h3><p>The score says
         nothing about the transmission network that moves power around, which probably matters as much as the
         plants do.</p></div></div>
-        <p style="margin-top:20px">So the very top and bottom are the interesting bits. Read the middle of the
-        table loosely.</p>
+        <p style="margin-top:20px">As a result the very top and the very bottom are the parts worth reading.
+        The middle should be treated loosely rather than quoted.</p>
       </div>
     </section>
 
@@ -308,9 +313,9 @@
         outage minutes twice, counting major storm days and excluding them. The gap between the two is the
         part storms account for. If the weather story is right, that gap should track how much damaging
         weather a state actually had.</p></div></div>
-        <div class="step"><div class="no">2</div><div><h3>It largely does not</h3><p>Across the fifty
-        places that report both figures, everywhere bar Hawaii, the rank correlation is 0.21 for how many
-        damaging storms a state had, and 0.24 for how much damage they did. Texas and Georgia record the most storm events in the country and lose few minutes. Maine
+        <div class="step"><div class="no">2</div><div><h3>It largely does not</h3><p>Across the fifty places
+        that report both figures, everywhere bar Hawaii, the rank correlation is 0.21 for how many damaging
+        storms a state had and 0.24 for how much damage they did. Texas and Georgia record the most storm events in the country and lose few minutes. Maine
         records a fraction as many and lost the most of anyone.</p></div></div>
         <div class="step"><div class="no">3</div><div><h3>Which is the interesting part</h3><p>Storms
         obviously matter, or the two outage figures would not be so far apart. But how much bad weather
@@ -326,30 +331,30 @@
       <div class="slidewrap">
         <h2>The view from abroad</h2>
         <p class="lead">This is a US project, but the question is not a US question, and reading it from an
-        international angle changes what counts as normal.</p>
+        international angle changes what counts as normal in the first place.</p>
         <div class="step"><div class="no">1</div><div><h3>The gap is real</h3><p>In much of western
         Europe a typical customer loses power for minutes a year. In the US the median state lost four hours
         in 2023 once major storms are counted, and Maine, the worst, lost thirty one. Countries measure this
         differently, so the figures do not line up neatly, but the gap is too wide to be a measurement
         artefact.</p></div></div>
         <div class="step"><div class="no">2</div><div><h3>Different systems, different trade-offs</h3>
-        <p>Countries that score well tend to bury more of their lines and pay for it in their bills. The US
+        <p>Countries that perform well tend to bury more of their lines and pay for it in their bills. The US
         runs long overhead lines through forest and hurricane country, which is cheaper right up until the
         weather arrives.</p></div></div>
         <div class="step"><div class="no">3</div><div><h3>The method travels</h3><p>Nothing in the
         scoring is US-specific. Given capacity, reliability and demand data, the same three components would
         run on German L&auml;nder or Indian states. The hard part abroad is the data, not the method.</p></div></div>
-        <p style="margin-top:20px">That is the quiet upside of the open-data side of this: the US publishes
-        enough for anyone to build all of it from scratch, and not many countries do.</p>
+        <p style="margin-top:20px">That is the quiet upside of the open-data picture: the US publishes enough
+        for anyone to rebuild all of this from scratch, which not many countries do.</p>
       </div>
     </section>
 
     <section class="slide">
       <div class="slidewrap">
         <h2>A closer look at Georgia</h2>
-        <p class="lead">To show what a fuller version looks like, I paired the score for one state with its
-        actual figures from the EIA, EPA eGRID and NOAA, including an interactive map of every power plant of
-        50 MW and up that you can filter by fuel.</p>
+        <p class="lead">To show what a fuller version looks like, I set the score for one state against its
+        actual figures from the EIA, EPA eGRID and NOAA, including an interactive map of every power plant
+        of 50 MW and up that you can filter by fuel.</p>
         <p>On the real data Georgia lands mid-table, nineteenth of fifty-one, which is a duller answer
         than the sample gave and a more useful one. Its 343 minutes off supply in 2023 sit close to the
         national middle, and its fuel mix is broad enough that concentration is not what pushes it up.</p>
@@ -365,7 +370,7 @@
         the <code>usmap</code> package, and the same results export as a GeoPackage so they open in mapping
         software like QGIS.</p>
         <p class="lead">Built with pandas, matplotlib, ggplot2 and geopandas. With Python installed, from the
-        project folder:</p>
+        project folder it is two commands:</p>
         <pre><code><span class="cmt"># install the libraries, then run the pipeline</span>
 pip install -r requirements.txt
 python pipeline.py</code></pre>

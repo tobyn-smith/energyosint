@@ -1,8 +1,9 @@
 <h1 align="center">Grid Resilience Exposure Index</h1>
 
 <p align="center">
-  Which US states look most exposed to losing power, and what is driving it.<br>
-  Every state gets one score from 0 to 100, built only from public government data.
+  Which US states look most exposed to losing power, and why the answer differs by state.<br>
+  One score from 0 to 100 for each, built entirely from public government data.<br>
+  The useful part is not the ranking itself, but what sits behind each state's place in it.
 </p>
 
 <p align="center">
@@ -18,10 +19,10 @@
 
 ![Map of exposure scores by state](outputs/exposure_map.png)
 
-I am an international affairs student who codes, so this sits between the two:
-the analysis is a proper pipeline, and the write-up is aimed at someone who has
-to think about energy policy rather than wiring. It works at the state level, so
-it is a broad lens rather than anything operational.
+I am an international affairs student who codes, so this project sits between the
+two: the analysis is built as a proper pipeline, whilst the write-up is aimed at
+someone who has to think about energy policy rather than wiring. Everything works
+at the state level, which makes it a broad lens rather than an operational one.
 
 > **On the numbers.** Outage figures are real (EIA-861, 2023) and plant capacity
 > is real (EPA eGRID2023). Only peak demand still comes from a built-in sample.
@@ -39,30 +40,33 @@ it is a broad lens rather than anything operational.
 
 ## What it found
 
-Four things stand out. The second is the one I would actually carry into a
-policy conversation, and the last is the one I did not expect.
+Four things stand out. The second is the one I would actually carry into a policy
+conversation; the last is the one I did not expect, and the one I have left in
+because it undercuts part of the framing.
 
 - **The top of the table is stable.** Six states (AR, KY, LA, MS, OK, WV) stay in
-  the top 10 under every weighting I tried, and West Virginia and Mississippi come
-  first and second whichever way the scaling is done. The middle moves a lot, so it
-  should be read loosely.
+  the top 10 under every weighting I tried, and West Virginia and Mississippi hold
+  first and second whichever way the scaling is done. The middle is a different
+  matter: it moves enough that it should be read loosely rather than quoted.
 - **The same score means different things in different places.** Mississippi and
-  West Virginia have the two most fuel-concentrated supplies in the country, one
+  West Virginia hold the two most fuel-concentrated supplies in the country, one
   leaning on gas and the other on coal, and they take the top two places on that
-  alone. Maine is third for the opposite reason: it has the least concentrated fuel
-  mix of any state and still lost its customers thirty one hours of power in 2023.
-  That changes the policy lever, because spreading a fuel mix is not the same job as
-  hardening lines.
-- **Two of the three parts overlap, though less than they used to.** Concentration
+  alone. Maine arrives third for the opposite reason: it has the least concentrated
+  fuel mix of any state and still lost its customers thirty one hours of power in
+  2023. The score is therefore not one problem but three, and that matters, because
+  spreading a fuel mix is not the same job as hardening lines.
+- **Two of the three parts overlap, although less than they once did.** Concentration
   and the exposure deficit correlate at about 0.33, so the structural side is still
-  counted a little twice. On the earlier synthetic capacity data that figure was
-  0.5, so real plant data pulled the two measures further apart.
-- **The weather story does not hold up as neatly as expected.** Checked against
-  NOAA's storm records, how much damaging weather a state gets barely predicts how
-  many outage minutes it loses to storms (rank correlation 0.21). Texas and Georgia
-  log the most storm events in the country and lose few minutes; Maine logs a
-  fraction as many and lost the most. [More below](#does-the-outage-data-hold-up).
-  This one is unaffected by the capacity data, since both sides come from elsewhere.
+  counted a little twice. That figure was 0.5 whilst capacity came from the synthetic
+  sample; swapping in real plant data pulled the two measures a good way apart, which
+  is worth reporting because it means the earlier version overstated the problem.
+- **The weather story does not hold up as neatly as the framing assumes.** Checked
+  against NOAA's storm records, how much damaging weather a state gets barely predicts
+  how many outage minutes it loses to storms: the rank correlation is 0.21. Texas and
+  Georgia record the most storm events in the country and lose few minutes to them;
+  Maine records a fraction as many and lost more than anyone. Neither side of that
+  test touches the capacity data, so it stands whatever happens to the rest.
+  [More below](#does-the-outage-data-hold-up).
 
 The top ten as it currently stands, straight from `outputs/exposure_index.csv`:
 
@@ -84,18 +88,18 @@ The top ten as it currently stands, straight from `outputs/exposure_index.csv`:
 | | |
 |---|---|
 | **Pipeline** | Python (pandas, numpy) that ingests, cleans, scores and plots, with a seeded sample so it runs for anyone with no API key |
-| **Testing** | 29 tests covering the scoring maths, the spreadsheet loaders and the API, run by a GitHub Action on every change to the analysis code |
+| **Testing** | 30 tests covering the scoring maths, the spreadsheet loaders and the API, run by a GitHub Action on every change to the analysis code |
 | **Mapping** | Done in both languages: a Python choropleth via geopandas and an R map via `usmap`, plus a GeoPackage export that opens in QGIS |
 | **Storage** | A SQLite store of every run, and an optional FastAPI service that re-ranks the states live for any weights, using the same scoring code as the pipeline |
 | **Front end** | No JavaScript libraries: the deck, the two interactive maps and the weight explorer are hand-written SVG and vanilla JS |
 
 ## How the score works
 
-Every state gets one number, an "exposure score" from 0 to 100. A higher score
-means the state looks more exposed, meaning more likely to have trouble keeping
-the power on. The darker a state is on the map, the higher its score.
+Every state gets one number, an "exposure score" from 0 to 100, where a higher
+score means the state looks more likely to struggle to keep the power on. The
+darker a state is on the map, the higher its score.
 
-That single number is built from three simpler ideas, all taken from public
+That single number is built from three simpler ideas, each taken from public
 figures:
 
 1. **Outage burden.** How often the power actually goes out, and for how long.
@@ -110,11 +114,11 @@ figures:
    above its busiest demand, and whether its power supply is varied. Tight
    margins and little variety count as worse.
 
-Each piece is put onto the same scale and then blended into the final score.
-How much each piece counts is set in the `config.yaml` file, so you can change
-the weights and run it again. I put the most weight on outage burden, because
-how often the power really fails is the most direct evidence. The other two are
-more about the underlying setup.
+Each piece is put onto the same scale and then blended into the final score. How
+much each one counts is set in `config.yaml`, so the weights can be changed and the
+whole thing re-run. I put the most weight on outage burden, because how often the
+power actually fails is the most direct evidence there is; the other two describe
+how the system is built rather than how it has behaved.
 
 The scaling method barely shifts the top of the table: z-score and min-max both
 put West Virginia, Mississippi and Maine in the first three. Further down it matters more,
@@ -130,10 +134,10 @@ to see its score and what is driving it. There is a separate, deeper dive on
 Georgia too. It sets the score next to the state's real figures from the EIA, EPA
 and NOAA, and has a map of every large power plant that you can filter by fuel.
 
-Nothing in the scoring is US-specific, by the way. Given the same three inputs it
-would run on any country's regions or provinces. It is written against the US
-because the EIA publishes enough open data to build the whole thing from, which
-few statistical agencies anywhere do.
+Nothing in the scoring is US-specific. Given the same three inputs it would run on
+any country's regions or provinces; it is written against the US because the EIA
+publishes enough open data to build the whole thing from, which few statistical
+agencies anywhere do. The hard part abroad is the data rather than the method.
 
 ## Quick start
 
@@ -287,9 +291,9 @@ it against a source collected by somebody else entirely: NOAA's Storm Events
 Database, compiled by the National Weather Service.
 
 The test is a sharp one. EIA publishes outage minutes twice, once counting major
-storm days and once excluding them, so the difference is the part storms account
-for. If the weather story is right, that gap should track how much damaging
-weather a state actually had.
+storm days and once excluding them, so the difference between the two is the part
+that storms account for. If the weather story is right, that gap should track how
+much damaging weather a state actually had.
 
 It mostly does not. Across the fifty places that report both figures (all but
 Hawaii, which only publishes the one), the rank correlation is 0.21 against the
@@ -297,12 +301,13 @@ number of damaging storms and 0.24 against how much damage they did. Texas and
 Georgia record the most power-relevant storm events in the country and lose few
 minutes to them; Maine records a fraction as many and lost more than anyone.
 
-Storms clearly matter, or the two outage figures would not be so far apart. But
-how much bad weather arrives does not decide who suffers most, which points at how
-the grid is built and how quickly crews restore it. That is an argument against
-treating exposure as fate. It is one year of data and NOAA event counts partly
-reflect how densely a state is observed, so I would not lean on it harder than
-that, but it is a real result and it is reported as it came out.
+Storms clearly matter, or the two outage figures would not sit so far apart. What
+they do not do is decide who suffers most, and that points at how the grid is built
+and how quickly crews restore it rather than at the weather itself. As a result I
+would treat exposure here as a policy variable rather than as fate. Two caveats:
+this is a single year, and NOAA event counts partly reflect how densely a state is
+observed. Neither is enough to explain a gap this size, so the result is reported
+as it came out rather than adjusted to fit the framing.
 
 ![Storms against storm-driven outages](outputs/validation_storms.png)
 
