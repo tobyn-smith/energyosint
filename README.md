@@ -88,7 +88,7 @@ The top ten as it currently stands, straight from `outputs/exposure_index.csv`:
 | | |
 |---|---|
 | **Pipeline** | Python (pandas, numpy) that ingests, cleans, scores and plots, with a seeded sample so it runs for anyone with no API key |
-| **Testing** | 30 tests covering the scoring maths, the spreadsheet loaders and the API, run by a GitHub Action on every change to the analysis code |
+| **Testing** | 33 tests covering the scoring maths, the spreadsheet loaders and the API, run by a GitHub Action on every change to the analysis code |
 | **Mapping** | Done in both languages: a Python choropleth via geopandas and an R map via `usmap`, plus a GeoPackage export that opens in QGIS |
 | **Storage** | A SQLite store of every run, and an optional FastAPI service that re-ranks the states live for any weights, using the same scoring code as the pipeline |
 | **Front end** | No JavaScript libraries: the deck, the two interactive maps and the weight explorer are hand-written SVG and vanilla JS |

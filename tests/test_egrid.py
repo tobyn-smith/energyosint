@@ -81,6 +81,30 @@ def test_workbook_without_a_plant_sheet_is_refused(tmp_path):
     assert sources._egrid_plants(_cfg(odd)) is None
 
 
+def test_a_corrupt_file_is_refused_with_a_reason(tmp_path, capsys):
+    bad = tmp_path / "egrid2023.xlsx"
+    bad.write_bytes(b"not a spreadsheet at all")
+    assert sources._egrid_plants(_cfg(bad)) is None
+    assert "could not open" in capsys.readouterr().out
+
+
+def test_missing_columns_are_named(tmp_path, capsys):
+    book = tmp_path / "egrid2023.xlsx"
+    with pd.ExcelWriter(book) as writer:
+        pd.DataFrame([["banner"]]).to_excel(writer, sheet_name="PLNT23", index=False, header=False)
+        pd.DataFrame([["PSTATABB", "WRONG"], ["GA", 1]]).to_excel(
+            writer, sheet_name="PLNT23", index=False, header=False, startrow=1)
+    assert sources._egrid_plants(_cfg(book)) is None
+    said = capsys.readouterr().out
+    assert "NAMEPCAP" in said and "using the sample instead" in said
+
+
+def test_a_missing_file_says_nothing(tmp_path, capsys):
+    """The normal case for anyone who has not downloaded eGRID: quiet fallback."""
+    assert sources._egrid_plants(_cfg(tmp_path / "nope.xlsx")) is None
+    assert capsys.readouterr().out == ""
+
+
 def test_the_loader_feeds_the_scorer(tmp_path):
     """The whole point: eGRID output must be usable by cleaning and scoring."""
     from grid import cleaning, scoring

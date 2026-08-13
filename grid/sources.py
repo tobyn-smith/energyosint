@@ -352,7 +352,8 @@ def _live_demand(cfg: dict) -> pd.DataFrame | None:
     try:
         reader = pd.read_excel if path.suffix.lower() in (".xlsx", ".xls") else pd.read_csv
         df = reader(path)
-    except Exception:
+    except Exception as err:
+        print(f"  [sources] could not read {path.name} ({err}), using the sample instead")
         return None
     df.columns = [str(c).strip().lower() for c in df.columns]
 
@@ -365,6 +366,8 @@ def _live_demand(cfg: dict) -> pd.DataFrame | None:
     state_col = _find("state")
     peak_col = _find("peak") or _find("demand")
     if not (state_col and peak_col):
+        print(f"  [sources] {path.name} needs a state column and a peak demand column, "
+              "using the sample instead")
         return None
 
     out = pd.DataFrame({"state": df[state_col].astype(str).str.strip().str.upper()})
@@ -433,16 +436,28 @@ def _egrid_plants(cfg: dict) -> pd.DataFrame | None:
     # rather than hard-coding, and the real header sits on the second row.
     try:
         book = pd.ExcelFile(path)
-        sheet = next((s for s in book.sheet_names if s.upper().startswith("PLNT")), None)
-        if sheet is None:
-            return None
+    except ImportError:
+        print("  [sources] reading .xlsx needs openpyxl (pip install openpyxl), using the sample instead")
+        return None
+    except Exception as err:
+        print(f"  [sources] could not open {path.name} ({err}), using the sample instead")
+        return None
+
+    sheet = next((s for s in book.sheet_names if s.upper().startswith("PLNT")), None)
+    if sheet is None:
+        print(f"  [sources] {path.name} has no plant sheet in it, using the sample instead")
+        return None
+    try:
         df = pd.read_excel(book, sheet_name=sheet, header=1)
-    except Exception:
+    except Exception as err:
+        print(f"  [sources] could not read {sheet} from {path.name} ({err}), using the sample instead")
         return None
 
     cols = {"PSTATABB": "state", "PNAME": "plant_name",
             "PLFUELCT": "fuel", "NAMEPCAP": "capacity_mw"}
-    if not set(cols).issubset(df.columns):
+    missing = sorted(set(cols) - set(df.columns))
+    if missing:
+        print(f"  [sources] {path.name} is missing {', '.join(missing)}, using the sample instead")
         return None
 
     out = df[list(cols)].rename(columns=cols)
@@ -452,6 +467,7 @@ def _egrid_plants(cfg: dict) -> pd.DataFrame | None:
     # Retired and proposed plants sit in the sheet with no or zero capacity.
     out = out[out["capacity_mw"] > 0].dropna(subset=["fuel"])
     if out.empty:
+        print(f"  [sources] no usable plant rows in {path.name}, using the sample instead")
         return None
 
     # eGRID's categories are close to ours already; fold them to the same names so
