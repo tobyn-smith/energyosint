@@ -149,25 +149,41 @@ def _synthetic_demand(plants: pd.DataFrame) -> pd.DataFrame:
 # --------------------------------------------------------------------------- #
 
 def _live_plants(base: str, key: str) -> pd.DataFrame | None:
-    # EIA-860M operating generator capacity by plant and energy source.
+    # EIA-860M operating generator capacity by plant and energy source. It is a
+    # monthly snapshot of every generator in the country (tens of thousands of
+    # rows), so one page is never enough: walk the pages with offset, then keep
+    # only the newest month, or the repeated history would count every plant
+    # once per month.
     url = f"{base}/electricity/operating-generator-capacity/data/"
-    params = {
-        "api_key": key,
-        "frequency": "monthly",
-        "data[0]": "nameplate-capacity-mw",
-        "sort[0][column]": "period",
-        "sort[0][direction]": "desc",
-        "length": 5000,
-    }
-    payload = _get_json(url, params)
-    try:
-        records = payload["response"]["data"]
-    except (TypeError, KeyError):
-        return None
-    if not records:
-        return None
+    page = 5000
+    frames = []
+    offset = 0
+    while True:
+        params = {
+            "api_key": key,
+            "frequency": "monthly",
+            "data[0]": "nameplate-capacity-mw",
+            "sort[0][column]": "period",
+            "sort[0][direction]": "desc",
+            "length": page,
+            "offset": offset,
+        }
+        payload = _get_json(url, params)
+        try:
+            records = payload["response"]["data"]
+        except (TypeError, KeyError):
+            break
+        if not records:
+            break
+        frames.append(pd.DataFrame(records))
+        if len(records) < page:
+            break
+        offset += page
 
-    df = pd.DataFrame(records)
+    if not frames:
+        return None
+    df = pd.concat(frames, ignore_index=True)
+
     # Field names drift between EIA datasets; map defensively.
     rename = {
         "stateid": "state", "plantName": "plant_name",
@@ -178,6 +194,21 @@ def _live_plants(base: str, key: str) -> pd.DataFrame | None:
     needed = {"state", "fuel", "capacity_mw"}
     if not needed.issubset(df.columns):
         return None
+
+    # Pin to the latest period present, so monthly history never inflates
+    # capacity totals.
+    if "period" in df.columns:
+        df = df[df["period"] == df["period"].max()]
+
+    # EIA and eGRID label the same fuels differently ("Natural Gas" vs "GAS"),
+    # so fold the API's descriptions onto the names the rest of the pipeline
+    # uses, or the fuel counts would not line up across sources.
+    df["fuel"] = df["fuel"].astype(str).str.strip().str.lower()
+    df["fuel"] = df["fuel"].replace({
+        "natural gas": "natural_gas",
+        "petroleum": "oil",
+        "other fossil": "other_fossil",
+    })
 
     df["capacity_mw"] = pd.to_numeric(df["capacity_mw"], errors="coerce")
     df = df.dropna(subset=["capacity_mw"])

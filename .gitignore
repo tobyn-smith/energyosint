@@ -11,6 +11,3 @@ data/interim/
 # up on GitHub. Delete locally and rerun to regenerate.
 # The SQLite store is a regenerable binary the API reads locally, so skip it.
 outputs/index.db
-
-# Local editor/agent config
-.claude/
