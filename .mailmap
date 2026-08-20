@@ -1,0 +1,6 @@
+# Aggregate every identity that appears in this repo's history to a single
+# canonical author, so GitHub's contributor list shows tobyn-smith only.
+tobyn-smith <tobyn@crowdwave.ai>
+tobyn-smith <tobyn@crowdwave.ai> tobyn <298003421+tobyn-smith@users.noreply.github.com>
+tobyn-smith <tobyn@crowdwave.ai> tobyn-smith <tobynsmith4@gmail.com>
+tobyn-smith <tobyn@crowdwave.ai> Codebuff <noreply@codebuff.com>
