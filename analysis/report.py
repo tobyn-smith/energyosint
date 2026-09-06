@@ -104,7 +104,7 @@ def main():
     split = ", ".join(f"{n} by {name}" for name, n in counts.items())
     lines.append("## What tends to drive exposure")
     lines.append("")
-    lines.append(f"Across the 51 states, the standout signal is: {split}.")
+    lines.append(f"Across the {len(df)} states, the standout signal is: {split}.")
     lines.append("")
 
     lines.append("## Reading it for policy")
