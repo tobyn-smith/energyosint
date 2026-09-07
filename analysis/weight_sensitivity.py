@@ -21,10 +21,21 @@ from grid import scoring
 STATE_TABLE = Path("data/interim/state_table.csv")
 
 
-def _default_weights() -> dict:
-    """The live default, read from config.yaml so it can't drift out of sync."""
+def _config() -> dict:
+    """The live settings, read from config.yaml so nothing drifts out of sync."""
     with open(ROOT / "config.yaml", encoding="utf-8") as f:
-        return yaml.safe_load(f)["weights"]
+        return yaml.safe_load(f)
+
+
+def rank_under_weightings(table, weightings: dict, normalize: str = "zscore"):
+    """Rank every state under each named weighting, using the same scoring code
+    and normalization the pipeline runs. Returns a state-indexed frame with one
+    column per weighting."""
+    return pd.DataFrame({
+        name: scoring.score(table, weights=w, normalize=normalize)
+                     .set_index("state")["rank"]
+        for name, w in weightings.items()
+    })
 
 
 # The fixed scenarios to push the default against. "default" itself is added in
@@ -40,15 +51,13 @@ def main():
     if not STATE_TABLE.exists():
         raise SystemExit("run `python pipeline.py` first, the state table is missing")
 
+    cfg = _config()
+    normalize = cfg.get("scoring", {}).get("normalize", "zscore")
     table = pd.read_csv(STATE_TABLE)
 
-    weightings = {"default": _default_weights(), **ALT_WEIGHTINGS}
+    weightings = {"default": cfg["weights"], **ALT_WEIGHTINGS}
 
-    ranks = {}
-    for name, w in weightings.items():
-        scored = scoring.score(table, weights=w, normalize="zscore")
-        ranks[name] = scored.set_index("state")["rank"]
-    ranks = pd.DataFrame(ranks)
+    ranks = rank_under_weightings(table, weightings, normalize)
 
     in_top10 = ranks <= 10
     hits = in_top10.sum(axis=1)
