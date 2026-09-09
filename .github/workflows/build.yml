@@ -20,6 +20,10 @@ on:
       - "config.yaml"
       - "requirements.txt"
       - "requirements-api.txt"
+      # Also validate when the committed results or the site data change, so a
+      # hand refresh that drifts or corrupts them is caught before it lands.
+      - "outputs/**"
+      - "docs/data/**"
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -49,6 +53,13 @@ jobs:
 
       - name: Run tests
         run: pytest -q
+
+      # Validate the committed figures BEFORE the pipeline smoke test below
+      # overwrites outputs/ with sample data in the runner. This checks that the
+      # published results table and the site JSON are in range, agree with each
+      # other, and reproduce from their components (i.e. are computed, not edited).
+      - name: Validate published data
+        run: python analysis/validate_data.py
 
       - name: Check the pipeline runs end to end on the sample
         run: python pipeline.py
