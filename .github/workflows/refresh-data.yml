@@ -1,0 +1,117 @@
+name: refresh data
+
+# Rebuilds the committed results and the site JSON, and commits them ONLY when
+# the run actually used real capacity and reliability figures. A run without them
+# falls back to the synthetic sample, which must never be committed over the real
+# numbers (see the note in build.yml), so this skips instead of publishing.
+#
+# The source workbooks are large and not redistributable, so the operator supplies
+# the real inputs:
+#   - EIA_API_KEY (repo secret)            -> live plant capacity via the EIA API
+#   - reliability_url / plants_url          -> the EIA-861 zip and EPA eGRID workbook
+#     (dispatch inputs, or the repo variables RELIABILITY_URL / PLANTS_URL for the
+#     scheduled run)
+# With none of these present the scheduled run is a safe no-op: it rebuilds on the
+# sample, sees the sample provenance, and commits nothing.
+
+on:
+  workflow_dispatch:
+    inputs:
+      reliability_url:
+        description: "URL to the EIA-861 annual zip (f861YYYY.zip) or Reliability_YYYY.xlsx"
+        required: false
+        default: ""
+      plants_url:
+        description: "URL to the EPA eGRID workbook (egridYYYY.xlsx)"
+        required: false
+        default: ""
+  schedule:
+    - cron: "0 6 * * 1"   # Mondays, 06:00 UTC
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-data
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt -r requirements-api.txt
+          # geopandas is optional; installing it lets the choropleth refresh too.
+          pip install geopandas || echo "geopandas unavailable; the map will be left as is"
+
+      - name: Fetch real source workbooks if provided
+        env:
+          RELIABILITY_URL: ${{ github.event.inputs.reliability_url || vars.RELIABILITY_URL }}
+          PLANTS_URL: ${{ github.event.inputs.plants_url || vars.PLANTS_URL }}
+        run: |
+          mkdir -p data/raw
+          if [ -n "$RELIABILITY_URL" ]; then
+            echo "downloading EIA-861 reliability workbook"
+            curl -fsSL "$RELIABILITY_URL" -o data/raw/f8612023.zip
+          fi
+          if [ -n "$PLANTS_URL" ]; then
+            echo "downloading EPA eGRID workbook"
+            curl -fsSL "$PLANTS_URL" -o data/raw/egrid2023.xlsx
+          fi
+
+      - name: Rebuild from whatever real data is available
+        env:
+          EIA_API_KEY: ${{ secrets.EIA_API_KEY }}
+        run: python pipeline.py
+
+      - name: Refuse to publish sample data
+        id: gate
+        run: |
+          python - <<'PY'
+          import os
+          from grid import store
+          conn = store.connect("outputs/index.db")
+          src = store.list_runs(conn).iloc[0]["source"]
+          print("provenance:", src)
+          synthetic = [p for p in ("capacity=synthetic", "reliability=synthetic") if p in src]
+          with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
+              fh.write(f"real={'false' if synthetic else 'true'}\n")
+          if synthetic:
+              print("capacity and/or reliability came from the sample; nothing will be published.")
+          else:
+              print("capacity and reliability are real; refreshing the derived artifacts.")
+          PY
+
+      - name: Refresh the derived artifacts
+        if: steps.gate.outputs.real == 'true'
+        run: |
+          python analysis/report.py
+          python analysis/weight_sensitivity.py
+          python analysis/regional_summary.py
+          python analysis/component_overlap.py
+
+      - name: Validate the rebuilt figures
+        if: steps.gate.outputs.real == 'true'
+        run: python analysis/validate_data.py
+
+      - name: Commit the refreshed data if it changed
+        if: steps.gate.outputs.real == 'true'
+        run: |
+          git config user.name "Tobyn Smith"
+          git config user.email "298003421+tobyn-smith@users.noreply.github.com"
+          git add outputs docs/data/index.json
+          if git diff --cached --quiet; then
+            echo "the published figures are already up to date"
+          else
+            git commit -m "Refresh published exposure figures from latest data"
+            git push
+          fi
