@@ -1,5 +1,6 @@
-"""Checks on the published-data validator: it must pass real pipeline output and
-catch the ways the committed figures could go wrong (drift, corruption, editing)."""
+"""quick checks on the published-data validator: it should pass a real run
+and catch a hand-edited score, a missing state, or the two files drifting.
+"""
 
 import json
 import sys
@@ -26,8 +27,7 @@ KEEP = [
 
 
 def _write_dataset(dirpath: Path):
-    """A full 51-state dataset straight from the pipeline's own code, so the CSV
-    and the site JSON are genuinely self-consistent to begin with."""
+    """a full 51-state run from the pipeline's own code, so the two files start out agreeing"""
     plants = sources.load_plants(CFG)
     rel = sources.load_reliability(CFG)
     dem = sources.load_demand(CFG, plants)

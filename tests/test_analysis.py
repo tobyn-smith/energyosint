@@ -1,5 +1,6 @@
-"""Checks on the analysis helper scripts, so a change does not quietly break the
-ranking sensitivity table or the findings summary."""
+"""quick checks on the analysis helpers, so a change doesn't quietly break
+the ranking sensitivity table or the findings summary.
+"""
 
 import sys
 from pathlib import Path
@@ -38,8 +39,7 @@ def test_rank_under_weightings_returns_one_column_per_weighting():
 
 
 def test_rank_under_weightings_honours_the_normalize_argument():
-    # The whole point of the fix: the helper must score under the normalization it
-    # is handed, matching what scoring.score does directly, not a hardcoded one.
+    # must score under the normalisation it is handed, not a hardcoded one
     direct = scoring.score(TINY, WEIGHTINGS["even"], normalize="minmax")
     direct = direct.set_index("state")["rank"].to_dict()
     via_helper = ws.rank_under_weightings(TINY, WEIGHTINGS, normalize="minmax")["even"].to_dict()

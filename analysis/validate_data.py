@@ -1,25 +1,10 @@
 """Check the published figures still hold together.
 
-The results table and the site JSON are committed to the repo and only refreshed
-by hand, from agency workbooks too large to keep here. That leaves a few ways for
-them to go quietly wrong between refreshes, so this looks for each one.
-
-First the obvious corruption: a score outside 0 to 100, a missing value, a state
-code that is not one of the 51, a rank that has gone astray.
-
-Then the two files drifting apart. outputs/exposure_index.csv, which the README
-and the API describe, and docs/data/index.json, which the web deck reads, are
-written from the same run, so they have to agree; if one is regenerated and the
-other is not, the table and the map start telling different stories.
-
-Then the useful one: figures that were typed in rather than computed. Every
-published score, rank and driver has to fall back out of the three components when
-the weights are re-applied, using the same maths the pipeline uses. A hand-edited
-or made-up number will not reproduce, so recomputing and comparing is a cheap way
-to tell real output from a good guess.
-
-None of this needs the real data or a key, so it runs anywhere against whatever is
-committed, and exits non-zero with the reason on any failure.
+The results table and the site JSON are committed and only refreshed by hand.
+This looks for the obvious ways they can go quietly wrong: a score outside
+0 to 100, the two files drifting apart, or a number that was typed in rather
+than computed. Every published score has to fall back out of the three
+components when the weights are re-applied.
 
     python analysis/validate_data.py
 """
@@ -52,7 +37,7 @@ SCORE_TOL = 0.2
 
 
 class DataError(Exception):
-    """A specific reason the published figures cannot be trusted."""
+    """Why the published figures cannot be trusted."""
 
 
 def _weights(cfg: dict) -> dict:
@@ -136,8 +121,7 @@ def _check_files_agree(csv: pd.DataFrame, site: list[dict]) -> None:
 
 
 def _check_scores_are_real(csv: pd.DataFrame, weights: dict) -> None:
-    """Recompute each score and rank from the components and check it matches what
-    was published. A made-up number will not reproduce."""
+    """Recompute each score from the components. A made-up number will not match."""
     comp = csv.set_index("state")[COMPONENTS]
 
     # driver = the component a state stands highest on (matches scoring.py).
@@ -185,7 +169,7 @@ def main() -> int:
     try:
         validate()
     except DataError as err:
-        print(f"data check FAILED: {err}")
+        print(f"data check failed: {err}")
         return 1
     print(f"data check passed: {len(STATE_NAMES)} states, "
           f"{CSV.relative_to(ROOT)} and {SITE.relative_to(ROOT)} agree and reproduce.")

@@ -1,18 +1,17 @@
 name: refresh data
 
-# Rebuilds the committed results and the site JSON, and commits them ONLY when
-# the run actually used real capacity and reliability figures. A run without them
-# falls back to the synthetic sample, which must never be committed over the real
-# numbers (see the note in build.yml), so this skips instead of publishing.
+# Rebuilds the committed results and the site JSON, and only commits them
+# when the run actually used real capacity and reliability figures. A run
+# without them falls back to the sample, which must never land on top of
+# the real numbers (see the note in build.yml), so this skips instead.
 #
-# The source workbooks are large and not redistributable, so the operator supplies
-# the real inputs:
+# The workbooks are large and not mine to redistribute, so you pass them in:
 #   - EIA_API_KEY (repo secret)            -> live plant capacity via the EIA API
 #   - reliability_url / plants_url          -> the EIA-861 zip and EPA eGRID workbook
 #     (dispatch inputs, or the repo variables RELIABILITY_URL / PLANTS_URL for the
 #     scheduled run)
-# With none of these present the scheduled run is a safe no-op: it rebuilds on the
-# sample, sees the sample provenance, and commits nothing.
+# With none of these present the scheduled run does nothing useful: it
+# rebuilds on the sample, sees that, and commits nothing.
 
 on:
   workflow_dispatch:
@@ -46,14 +45,14 @@ jobs:
           python-version: "3.12"
           cache: pip
 
-      - name: Install dependencies
+      - name: Install the python deps
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt -r requirements-api.txt
-          # geopandas is optional; installing it lets the choropleth refresh too.
+          # geopandas is optional; without it the map is left as is
           pip install geopandas || echo "geopandas unavailable; the map will be left as is"
 
-      - name: Fetch real source workbooks if provided
+      - name: Download the real workbooks if we have urls
         env:
           RELIABILITY_URL: ${{ github.event.inputs.reliability_url || vars.RELIABILITY_URL }}
           PLANTS_URL: ${{ github.event.inputs.plants_url || vars.PLANTS_URL }}
@@ -68,7 +67,7 @@ jobs:
             curl -fsSL "$PLANTS_URL" -o data/raw/egrid2023.xlsx
           fi
 
-      - name: Rebuild from whatever real data is available
+      - name: Rebuild
         env:
           EIA_API_KEY: ${{ secrets.EIA_API_KEY }}
         run: python pipeline.py
@@ -91,7 +90,7 @@ jobs:
               print("capacity and reliability are real; refreshing the derived artifacts.")
           PY
 
-      - name: Refresh the derived artifacts
+      - name: Refresh the findings and the other derived files
         if: steps.gate.outputs.real == 'true'
         run: |
           python analysis/report.py
@@ -99,11 +98,11 @@ jobs:
           python analysis/regional_summary.py
           python analysis/component_overlap.py
 
-      - name: Validate the rebuilt figures
+      - name: Check the rebuilt figures still add up
         if: steps.gate.outputs.real == 'true'
         run: python analysis/validate_data.py
 
-      - name: Commit the refreshed data if it changed
+      - name: Commit if anything changed
         if: steps.gate.outputs.real == 'true'
         run: |
           git config user.name "Tobyn Smith"
@@ -112,6 +111,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "the published figures are already up to date"
           else
-            git commit -m "Refresh published exposure figures from latest data"
+            git commit -m "refresh the published figures"
             git push
           fi
