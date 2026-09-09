@@ -22,15 +22,13 @@ STATE_TABLE = Path("data/interim/state_table.csv")
 
 
 def _config() -> dict:
-    """The live settings, read from config.yaml so nothing drifts out of sync."""
+    """The live settings, read from config.yaml so they can't drift out of sync."""
     with open(ROOT / "config.yaml", encoding="utf-8") as f:
         return yaml.safe_load(f)
 
 
 def rank_under_weightings(table, weightings: dict, normalize: str = "zscore"):
-    """Rank every state under each named weighting, using the same scoring code
-    and normalization the pipeline runs. Returns a state-indexed frame with one
-    column per weighting."""
+    """Rank every state under each named weighting."""
     return pd.DataFrame({
         name: scoring.score(table, weights=w, normalize=normalize)
                      .set_index("state")["rank"]

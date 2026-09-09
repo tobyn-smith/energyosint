@@ -88,7 +88,7 @@ The top ten as it currently stands, straight from `outputs/exposure_index.csv`:
 | | |
 |---|---|
 | **Pipeline** | Python (pandas, numpy) that ingests, cleans, scores and plots, with a seeded sample so it runs for anyone with no API key |
-| **Testing** | 33 tests covering the scoring maths, the spreadsheet loaders and the API, run by a GitHub Action on every change to the analysis code |
+| **Testing** | 45 tests covering the scoring maths, the spreadsheet loaders, the published figures and the API, run by a GitHub Action on every change |
 | **Mapping** | Done in both languages: a Python choropleth via geopandas and an R map via `usmap`, plus a GeoPackage export that opens in QGIS |
 | **Storage** | A SQLite store of every run, and an optional FastAPI service that re-ranks the states live for any weights, using the same scoring code as the pipeline |
 | **Front end** | No JavaScript libraries: the deck, the two interactive maps and the weight explorer are hand-written SVG and vanilla JS |
@@ -211,6 +211,7 @@ python analysis/weight_sensitivity.py   # how much the weights move the ranking
 python analysis/regional_summary.py     # roll the scores up to census regions
 python analysis/component_overlap.py    # do the three parts measure the same thing
 python analysis/validate_outages.py     # check the outage data against NOAA storms
+python analysis/validate_data.py        # check the published figures still add up
 python analysis/report.py               # write a short findings summary
 ```
 
@@ -410,6 +411,7 @@ analysis/
   component_overlap.py   checks whether the three parts overlap
   report.py              writes a short findings summary
   validate_outages.py    checks the outage data against NOAA storm records
+  validate_data.py       checks the published figures still add up
   social_card.py         draws the link preview image for the site
 docs/            the interactive slide deck and the Georgia deep dive
   data/index.json  the per-state data the deck reads, refreshed by the pipeline
@@ -417,7 +419,8 @@ docs/            the interactive slide deck and the Georgia deep dive
 config.yaml      the weights and other settings
 requirements-api.txt  extra libraries for the API only
 METHODOLOGY.md   the longer write-up of the choices and limits
-.github/workflows/build.yml  rebuilds the site data on push
+.github/workflows/build.yml  runs the tests and the data check
+.github/workflows/refresh-data.yml  rebuilds the figures, but only from real data
 ```
 
 ## Sources
