@@ -87,7 +87,7 @@ jobs:
           if synthetic:
               print("capacity and/or reliability came from the sample; nothing will be published.")
           else:
-              print("capacity and reliability are real; refreshing the derived artifacts.")
+              print("capacity and reliability are real; refreshing the findings and the rest.")
           PY
 
       - name: Refresh the findings and the other derived files
