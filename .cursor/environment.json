@@ -1,17 +1,17 @@
 {
-  "name": "Grid Resilience Exposure Index",
+  "name": "energyosint",
   "user": "ubuntu",
   "install": "bash ./.cursor/install.sh",
   "terminals": [
     {
       "name": "api",
       "command": ".venv/bin/uvicorn server:app --host 0.0.0.0 --port 8000",
-      "description": "FastAPI JSON API over the scored data (http://localhost:8000/docs). Run `.venv/bin/python pipeline.py` to refresh the data it serves."
+      "description": "the json api. run the pipeline first so it has a run to serve."
     },
     {
       "name": "deck",
       "command": ".venv/bin/python -m http.server 8080 --directory docs",
-      "description": "Serves the interactive slide deck and Georgia deep dive (http://localhost:8080/)."
+      "description": "the slide deck and the georgia page"
     }
   ],
   "ports": [
