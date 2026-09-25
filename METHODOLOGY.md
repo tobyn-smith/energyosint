@@ -96,13 +96,12 @@ Because the weights are subjective, `analysis/weight_sensitivity.py` re-scores
 the states under a few different weightings and checks how steady the top of the
 table is. Six states (AR, KY, LA, MS, OK, WV) stay in the top 10 under every
 weighting, while others move a lot. Tennessee, for example, runs from 10th under an
-outage-heavy weighting to 42nd under a structure-heavy one, so the very top is
-fairly stable and I would read the middle with that movement in mind.
+outage-heavy weighting to 42nd under a structure-heavy one. The top holds. Further
+down, the place depends on the weights.
 
-The choice of normalisation matters little at the top, since z-score and min-max
-both give West Virginia, Mississippi and Maine as the first three. It still moves
-the middle around, and it changes which component is named as a state's driver
-quite a lot, so I would check that before quoting the label.
+Normalisation matters little at the top. Z-score and min-max both give West
+Virginia, Mississippi and Maine as the first three. It still moves the middle,
+and it changes which component gets named as a state's driver.
 
 ## Limitations
 

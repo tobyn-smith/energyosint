@@ -113,7 +113,7 @@ def main():
     lines.append("")
     lines.append("- Outage burden is a weather and wires problem, so hardening and restoration matter more here than new plants.")
     lines.append("- Concentration is a single-point-of-failure problem, and the response is diversifying what the state leans on.")
-    lines.append("- An exposure deficit is a headroom problem, which means capacity, storage, or work on the demand side.")
+    lines.append("- An exposure deficit is a headroom problem, and the response is capacity, storage, or work on the demand side.")
     lines.append("")
 
     lines.append("## Caveats")

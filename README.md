@@ -3,7 +3,7 @@
 <p align="center">
   Which US states look most exposed to losing power, and why that is not the same problem in every state.<br>
   One score from 0 to 100 for each, built from public government data.<br>
-  The ranking is less useful on its own than what is sitting behind each state's place in it.
+  What sits behind each state's place matters more than the rank itself.
 </p>
 
 <p align="center">
@@ -19,11 +19,9 @@
 
 ![Map of exposure scores by state](outputs/exposure_map.png)
 
-I study international affairs and I also write the code, so the project has to
-work as both. The analysis is set up as a proper pipeline, while the write-up is
-meant for someone who has to think about energy policy rather than the wiring
-itself. Because everything sits at state level, it is a broad look at the problem,
-and not something you would actually use to run a grid.
+I study international affairs, and I wrote the code for this as well. The question
+is which states look most exposed to losing power, and why that is not the same
+problem in every state. The whole thing is at state level.
 
 > **On the numbers.** Outage figures are real (EIA-861, 2023) and plant capacity
 > is real (EPA eGRID2023). Peak demand is the only input that still comes from a
@@ -41,31 +39,28 @@ and not something you would actually use to run a grid.
 
 ## What it found
 
-A few things came out of this. The second is the one I would actually use in a
-policy conversation. The last one surprised me, and I have left it in because it
-cuts against part of how I set the project up.
+A few things came out of this.
 
 - **The top of the table does not move much.** Six states (AR, KY, LA, MS, OK, WV)
-  stay in the top 10 under every weighting I tried, and West Virginia and Mississippi
-  stay first and second whichever way the scaling is done. The middle is a different
-  story, because it moves enough that I would not quote a precise rank there.
+  stay in the top 10 under every weighting I tried, with West Virginia and Mississippi
+  first and second whichever way the scaling is done. The middle moves enough that
+  a precise rank there does not hold.
 - **The same score is not the same problem.** Mississippi and West Virginia have the
-  two most fuel-concentrated supplies in the country, one on gas and the other on
-  coal, and they take the top two places on that alone. Maine comes third for the
-  opposite reason, since it has the least concentrated fuel mix of any state and its
-  customers still lost thirty-one hours of power in 2023. For me that is the useful
-  distinction, because spreading a fuel mix and hardening lines are different jobs.
+  two most fuel-concentrated supplies in the country, one on gas and one on coal, and
+  they take the top two places on that alone. Maine is third for the opposite reason:
+  it has the least concentrated fuel mix of any state, and its customers still lost
+  thirty-one hours of power in 2023. Spreading a fuel mix and hardening lines are
+  different jobs.
 - **Two of the three parts overlap, though less than they used to.** Concentration
   and the exposure deficit correlate at about 0.33, so the structural side is still
-  counted a little twice. That figure was 0.5 while capacity came from the synthetic
-  sample, and putting in the real plant data pulled the two measures apart, which
-  means the earlier version overstated the problem.
-- **The weather story is weaker than I expected.** Checked against NOAA's storm
-  records, how much damaging weather a state gets barely predicts how many outage
-  minutes it loses to storms, with a rank correlation of 0.21. Texas and Georgia
-  record the most storm events in the country and lose few minutes to them, while
-  Maine records a fraction as many and lost more than anyone. That check does not
-  use the capacity data, so it stands on its own.
+  counted a little twice. That figure was 0.5 when capacity came from the synthetic
+  sample. Real plant data pulled the two apart, and the earlier version overstated
+  the overlap.
+- **The weather story is weaker than I expected.** Against NOAA's storm records, how
+  much damaging weather a state gets barely predicts how many outage minutes it loses
+  to storms (a rank correlation of 0.21). Texas and Georgia record the most storm
+  events in the country and lose few minutes to them, while Maine records a fraction
+  as many and lost more than anyone. The check does not use the capacity data.
   [More below](#does-the-outage-data-hold-up).
 
 The top ten as it currently stands, straight from `outputs/exposure_index.csv`:
@@ -95,9 +90,9 @@ The top ten as it currently stands, straight from `outputs/exposure_index.csv`:
 
 ## How the score works
 
-Every state gets one number, an exposure score from 0 to 100, where a higher
-score means the state looks more likely to struggle to keep the power on. On the
-map, the darker a state is, the higher its score.
+Every state gets an exposure score from 0 to 100. A higher score means the state
+looks more likely to struggle to keep the power on, and those are the darker states
+on the map.
 
 That number comes from three simpler ideas, each taken from public figures:
 
@@ -115,28 +110,26 @@ That number comes from three simpler ideas, each taken from public figures:
 
 Each piece is put on the same scale and then combined into the final score. How
 much each one counts is set in `config.yaml`, so the weights can be changed and the
-whole thing re-run. I put the most weight on outage burden, because how often the
-power actually fails is the most direct evidence there is, while the other two
-describe how the system is built rather than how it has behaved.
+whole thing re-run. I put the most weight on outage burden, since how often the
+power actually fails is the most direct evidence. The other two are about how the
+system is built.
 
-The scaling method barely shifts the top of the table, since z-score and min-max
-both put West Virginia, Mississippi and Maine in the first three. Further down it
-matters more, so the exact position of a middling state depends on the settings.
+The scaling barely moves the top of the table. Z-score and min-max both put West
+Virginia, Mississippi and Maine in the first three, while further down the exact
+place of a middling state depends on the settings.
 
 The [project page](https://tobyn-smith.github.io/energyosint/) is an interactive
 slide deck. If you would rather not click through it, the "read view" button in
 the corner lays the same slides out as one page, and printing does the same thing.
 You can move through it with the arrow keys, the marks along the bottom, or a swipe
-on your phone, and the three weights are sliders, so moving them re-ranks the table
-and re-shades the map. You can also hover any state to see its score and what is
-driving it. There is a separate look at Georgia too, which sets the score next to
-the state's figures from the EIA, EPA and NOAA and includes a map of every large
-power plant that you can filter by fuel.
+on your phone. The weight sliders re-rank the table and re-shade the map, and you
+can hover a state for its score and what is driving it. There is a separate page on
+Georgia, with the state's EIA, EPA and NOAA figures and a map of the large plants
+that you can filter by fuel.
 
-Nothing in the scoring is US-specific, and with the same three inputs it would run
-on another country's regions or provinces. I wrote it against the US because the EIA
-publishes enough open data to build the whole thing, which few statistical
-agencies do, so the hard part abroad is getting the data rather than the method.
+Nothing in the scoring is US-specific. With the same three inputs it would run on
+another country's regions. I used the US because the EIA publishes enough to
+build it, and abroad the hard part is getting hold of the same three inputs.
 
 ## Quick start
 
@@ -301,12 +294,9 @@ Georgia record the most power-relevant storm events in the country and lose few
 minutes to them, while Maine records a fraction as many and lost more than anyone.
 
 Storms clearly matter, or the two outage figures would not sit so far apart, but
-they do not decide who suffers most. That points at how the grid is built and how
-quickly crews restore it, rather than at the weather on its own, so I would treat
-exposure here as something policy can change rather than as fate. There are two
-caveats. This is a single year, and NOAA event counts partly reflect how densely a
-state is observed, but neither is enough to explain a gap this size, so I have
-reported the result as it came out.
+they do not decide who suffers most. How the grid is built, and how quickly crews
+restore it, seem to matter more. It is one year of data, and NOAA event counts
+partly reflect how densely a state is observed.
 
 ![Storms against storm-driven outages](outputs/validation_storms.png)
 
@@ -321,9 +311,8 @@ The weights are a judgement call, so `analysis/weight_sensitivity.py` re-scores
 the states under a few different weightings and prints which ones stay in the top
 10. Six states (AR, KY, LA, MS, OK, WV) land in the top 10 no matter how the
 weights are set, while others move around a lot. Tennessee, for instance, runs from
-10th under an outage-heavy weighting to 42nd under a structure-heavy one, which is
-why I would treat the very top as fairly stable and read the middle with the
-choices in mind.
+10th under an outage-heavy weighting to 42nd under a structure-heavy one. The top
+holds, while the middle depends on the choices.
 
 The full reasoning behind the components, the weights, and the limitations is
 written up in [METHODOLOGY.md](METHODOLOGY.md).

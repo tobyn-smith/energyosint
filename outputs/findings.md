@@ -33,7 +33,7 @@ The driver matters more than the rank, and each one points at a different respon
 
 - Outage burden is a weather and wires problem, so hardening and restoration matter more here than new plants.
 - Concentration is a single-point-of-failure problem, and the response is diversifying what the state leans on.
-- An exposure deficit is a headroom problem, which means capacity, storage, or work on the demand side.
+- An exposure deficit is a headroom problem, and the response is capacity, storage, or work on the demand side.
 
 ## Caveats
 

@@ -110,10 +110,10 @@
       <div class="slidewrap">
         <h1>Grid Resilience Exposure Index</h1>
         <p class="stand">Which US states look most exposed to losing power, and why that is not the same
-        problem everywhere. I built this from public data, for someone who has to think about energy policy rather than the wiring.</p>
+        problem in every state. I built the score from public data.</p>
         <p class="byline">Tobyn Smith / built from open EIA, EPA and NOAA data</p>
         <p class="hint">Use the arrow keys, the marks along the bottom, or a swipe on a phone. The outage
-        figures and the plant capacity are real, while peak demand is still a sample, and I have labelled it where that matters.</p>
+        figures and the plant capacity are real, while peak demand is still a sample.</p>
       </div>
     </section>
 
@@ -129,8 +129,7 @@
         <div class="step"><div class="no">3</div><div><h3>A changing fuel mix</h3><p>Coal is retiring, gas
         and renewables are growing, and that shifts where the weak spots sit.</p></div></div>
         <p style="margin-top:22px">Most of the data for this is already public, but it is split across agencies
-        and formats, so the hard part is getting it into one place. What this project does is pull a few of those
-        sources into one score per state, so they can actually be compared.</p>
+        and formats. I pulled a few of those sources into one score per state so they can be compared.</p>
       </div>
     </section>
 
@@ -147,7 +146,7 @@
         set against peak demand, so you can see how thin the margin is on a bad day.</p></div></div>
         <p class="hint" style="margin-top:18px">The outage figures are the real EIA-861 numbers for 2023, for every state, and
         plant capacity is real too, from EPA eGRID2023. Peak demand still comes from a built-in
-        sample, so the project runs without a data key, which is worth keeping in mind when you read the ranking.</p>
+        sample, which is why the project runs without a data key.</p>
       </div>
     </section>
 
@@ -227,9 +226,9 @@
 </svg>
           <div class="mapscale"><span>less exposed</span><i class="scale"></i><span>more exposed</span></div>
           <p class="readout" id="readout">Hover or tap a state to see its score.</p>
-          <figcaption>Outage figures are real (EIA-861 for 2023), and plant capacity is real too (EPA eGRID2023),
-          but the spare-capacity part still uses a sample peak demand, so I would treat that part as illustrative. If you change the weights on the next slide, this
-          map re-shades with them.</figcaption>
+          <figcaption>Outage figures are real (EIA-861 for 2023) and plant capacity is real too (EPA eGRID2023),
+          while the spare-capacity part still uses a sample peak demand. Changing the weights on the next slide
+          re-shades this map.</figcaption>
         </figure>
       </div>
     </section>
@@ -263,19 +262,17 @@
     <section class="slide">
       <div class="slidewrap">
         <h2>The same score can mean different things</h2>
-        <p class="lead">This is the part I would actually use in a policy conversation. A high score is not one problem,
-        because it depends which piece is doing the work, and that changes by state.</p>
+        <p class="lead">A high score is not one problem. It depends which piece is doing the work, and that
+        changes by state.</p>
         <div class="step"><div class="no">1</div><div><h3>Mississippi and West Virginia: one fuel</h3>
-        <p>Mississippi takes 84 per cent of its capacity from gas, and West Virginia 83 per cent from coal,
-        which makes them the two most concentrated supplies in the country, and they lead the table on that alone. The problem, for me, is
-        what happens if a state has bet almost everything on one fuel.</p></div></div>
+        <p>Mississippi takes 84 per cent of its capacity from gas, and West Virginia 83 per cent from coal.
+        They are the two most concentrated supplies in the country, and they lead the table on that alone.
+        If either fuel has a bad year, there is not much else to fall back on.</p></div></div>
         <div class="step"><div class="no">2</div><div><h3>Maine: the opposite problem</h3><p>Maine has the
         least concentrated fuel mix of any state and still comes third, because its customers lost thirty-one
-        hours of power in 2023. That is not about fragile plants, so the response there is hardening lines and
-        restoring power faster.</p></div></div>
+        hours of power in 2023. That is a lines and restoration problem, not a plant problem.</p></div></div>
         <div class="step"><div class="no">3</div><div><h3>Same score, different job</h3><p>Spreading a fuel mix, hardening lines and adding spare capacity are three different jobs,
-        with different costs and different timescales, so a ranking on its own tells you
-        less than the ranking read next to what is driving it.</p></div></div>
+        with different costs and different timescales. A rank on its own does not say which job it is.</p></div></div>
         <p style="margin-top:20px">The label under each state on the map is just the short version of that.</p>
       </div>
     </section>
@@ -283,8 +280,7 @@
     <section class="slide">
       <div class="slidewrap">
         <h2>What this is not</h2>
-        <p class="lead">A few limits, which I think matter more than the ranking if you are reading this
-        for policy, so they are here rather than at the end.</p>
+        <p class="lead">The limits matter more than the ranking if you are going to use this for policy.</p>
         <div class="step"><div class="no">1</div><div><h3>It is not operational</h3><p>State-level figures
         blur a lot. A state can look fine overall and still have fragile pockets inside it.</p></div></div>
         <div class="step"><div class="no">2</div><div><h3>One of the three parts is still sampled</h3><p>Outage
@@ -293,8 +289,8 @@
         <div class="step"><div class="no">3</div><div><h3>It leaves out the wires</h3><p>The score says
         nothing about the transmission network that moves power around, which probably matters as much as the
         plants do.</p></div></div>
-        <p style="margin-top:20px">I would read the very top and the very bottom, because the middle moves around and I would
-        not quote a precise place in it.</p>
+        <p style="margin-top:20px">The top and the bottom hold. The middle moves around, and a precise place in it
+        is not stable.</p>
       </div>
     </section>
 
@@ -316,16 +312,15 @@
         obviously matter, or the two outage figures would not sit so far apart, but how much bad weather
         arrives does not decide who suffers most. What the grid is like when it arrives, and how fast crews
         restore it, look like they matter more.</p></div></div>
-        <p style="margin-top:20px">I would not treat exposure as fate, because the result points towards spending on hardening and
-        restoration. It is only one year of data, so I would not lean on it harder than that.</p>
+        <p style="margin-top:20px">It is one year of data, and NOAA event counts partly reflect how densely a state is observed.</p>
       </div>
     </section>
 
     <section class="slide">
       <div class="slidewrap">
         <h2>The view from abroad</h2>
-        <p class="lead">This is a US project, but the question is not only a US question, and looking at it from
-        outside the US changes what counts as normal.</p>
+        <p class="lead">This is a US project, but the question is not only a US one. Looking at it from
+        outside changes what counts as a normal year.</p>
         <div class="step"><div class="no">1</div><div><h3>The gap is real</h3><p>In much of western
         Europe a typical customer loses power for minutes a year, while in the US the median state lost four hours
         in 2023 once major storms are counted, and Maine, the worst, lost thirty-one. Countries measure this
@@ -338,8 +333,7 @@
         <div class="step"><div class="no">3</div><div><h3>The method is not US-specific</h3><p>Nothing in the
         scoring is US-specific. With capacity, reliability and demand data, the same three components would
         run on German L&auml;nder or Indian states, and the hard part abroad is getting hold of the data.</p></div></div>
-        <p style="margin-top:20px">The useful part of the open data is that the US publishes enough for someone
-        to rebuild this from scratch, which not many countries do.</p>
+        <p style="margin-top:20px">The US publishes enough of this that someone else could rebuild the score. Not many countries do.</p>
       </div>
     </section>
 
