@@ -65,7 +65,7 @@ def provenance_line() -> str:
     if not real:
         return "Generated from the sample data, so this is illustrative rather than a real result."
     return (f"Generated from real {' and '.join(real)}, with {' and '.join(sample)} still "
-            f"coming from the built-in sample, so the ranking is part worked example.")
+            f"coming from the built-in sample, so part of the ranking is a worked example.")
 
 
 def sample_caveats() -> list:
@@ -104,16 +104,16 @@ def main():
     split = ", ".join(f"{n} by {name}" for name, n in counts.items())
     lines.append("## What tends to drive exposure")
     lines.append("")
-    lines.append(f"Across the {len(df)} states, the standout signal is: {split}.")
+    lines.append(f"Across the {len(df)} states, the split is: {split}.")
     lines.append("")
 
     lines.append("## Reading it for policy")
     lines.append("")
-    lines.append("The driver matters more than the rank, because each one points at a different lever:")
+    lines.append("The driver matters more than the rank. Each one points at a different response:")
     lines.append("")
-    lines.append("- Outage burden is a weather and wires problem. The lever is hardening and restoration, not new plants.")
-    lines.append("- Concentration is a single-point-of-failure problem. The lever is diversifying what the state leans on.")
-    lines.append("- An exposure deficit is a headroom problem. The lever is capacity, storage or demand-side work.")
+    lines.append("- Outage burden is a weather and wires problem. Hardening and restoration matter more here than new plants.")
+    lines.append("- Concentration is a single-point-of-failure problem. The response is diversifying what the state leans on.")
+    lines.append("- An exposure deficit is a headroom problem. That means capacity, storage, or work on the demand side.")
     lines.append("")
 
     lines.append("## Caveats")

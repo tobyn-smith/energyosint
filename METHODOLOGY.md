@@ -1,14 +1,14 @@
 # Methodology
 
 Notes on how the exposure index is put together, what the numbers mean, and
-where the weak spots are. This is a research sketch, so the point is to be clear
-about the choices rather than to claim the result is definitive.
+where the weak spots are. This is a research sketch. I am trying to be clear about
+the choices, not to claim the result is definitive.
 
 ## The question
 
 Which US states look most exposed, in the sense of being more likely to struggle
-to keep electricity flowing? Everything is at the state level and comes from
-public data, so it is a broad lens, not a precise or operational measure.
+to keep electricity flowing? Everything is at state level and comes from public
+data, so it is a broad look, not a precise or operational measure.
 
 ## Data
 
@@ -22,24 +22,24 @@ Three inputs, each keyed on the state:
 
 When there is no EIA API key, or a request fails, the pipeline falls back to a
 seeded synthetic sample so it still runs end to end. Sample rows are tagged in a
-`source` column, and each input falls back on its own, so a run can mix real and
+`source` column. Each input falls back on its own, so a run can mix real and
 sample data. The pipeline prints which it used for each.
 
 The committed results use the real EIA-861 reliability figures for 2023 and real
-plant capacity from EPA's eGRID2023, leaving peak demand as the only sample input.
-Two of the three components are therefore built on real data, and the third, the
-exposure deficit, is part real: the installed capacity side of the margin is real
-and only the peak demand it is divided by is not.
+plant capacity from EPA's eGRID2023. Peak demand is the only sample input. Two of
+the three components are built on real data. The third, the exposure deficit, is
+part real: the installed capacity side of the margin is real, and only the peak
+demand it is divided by is not.
 
 EIA-861 reliability, eGRID capacity and state peak demand all ship as bulk
 spreadsheets rather than a clean API route. The pipeline will read a local copy of
-any of them if you point `config.yaml` at it, and otherwise falls back to the
+any of them if you point `config.yaml` at it. Otherwise it falls back to the
 synthetic path for that input alone.
 
-The reliability workbook takes some care to read. It carries two stacked header
-rows, repeats the same column names under "IEEE Standard" and again under "Any
+The reliability workbook takes some care to read. It has two stacked header rows,
+repeats the same column names under "IEEE Standard" and again under "Any
 Standard", and writes missing values as ".". I take the IEEE series because it is
-the like-for-like one across utilities, including major event days because storms
+the like-for-like one across utilities. I include major event days because storms
 are the point, and I use the sheet EIA has already aggregated to states. Rolling
 the per-utility sheet up by hand would weight a co-op with a few thousand customers
 the same as a utility serving millions.
@@ -55,15 +55,15 @@ Each component is built so that a higher value means more exposed.
 without power per year) does most of the work, with SAIFI (number of
 interruptions) as a lighter second signal. I combine them as 0.7 SAIDI and 0.3
 SAIFI after putting each on a common scale. This is the most direct evidence of
-resilience, since it measures what actually happened rather than how the system
+resilience, because it measures what actually happened rather than how the system
 is built.
 
 **Concentration.** How much the supply leans on a single thing. Two parts: a
 Herfindahl index of capacity across fuel types (the same concentration score
 economists use for market share, from 0 to 10000, higher when one fuel dominates),
 and the share of total capacity sitting in the single largest plant.
-I weight these 0.6 and 0.4. The idea is that a grid riding on one fuel or one big
-asset has more to lose if that thing goes down.
+I weight these 0.6 and 0.4. A grid riding on one fuel or one big asset has more
+to lose if that thing goes down.
 
 **Exposure deficit.** Whether there is slack and variety in the system. Two
 parts: the capacity margin (installed capacity divided by peak demand, where a
@@ -73,10 +73,10 @@ combined 0.65 and 0.35.
 
 ## Putting them together
 
-Each component is put on a common scale before the three are combined (a z-score
-by default, which just measures how far each state sits above or below the
-average, with a min-max option as well), so no part dominates only because its
-raw numbers happen to be larger. The composite uses the weights in `config.yaml`:
+Each component is put on a common scale before the three are combined. The default
+is a z-score, which measures how far each state sits above or below the average,
+and there is a min-max option as well. That stops one part dominating only because
+its raw numbers happen to be larger. The composite uses the weights in `config.yaml`:
 
 - outage burden 0.45
 - concentration 0.30
@@ -84,11 +84,10 @@ raw numbers happen to be larger. The composite uses the weights in `config.yaml`
 
 I put the most weight on outage burden because how often the power really fails
 is the most direct signal. The other two are more about how the system is built,
-so they count for less. The
-weights are normalised to sum to one, and the final composite is rescaled to a 0
-to 100 score for readability.
+so they count for less. The weights are normalised to sum to one, and the final
+composite is rescaled to a 0 to 100 score so it is easier to read.
 
-The weights are a judgement call, which is the main reason they live in one file
+The weights are a judgement call. That is the main reason they live in one file,
 where they are easy to change.
 
 ## How sensitive the ranking is
@@ -96,43 +95,42 @@ where they are easy to change.
 Because the weights are subjective, `analysis/weight_sensitivity.py` re-scores
 the states under a few different weightings and checks how steady the top of the
 table is. Six states (AR, KY, LA, MS, OK, WV) stay in the top 10 under every
-weighting, while others move a lot. Tennessee, for example, runs from 10th under an
-outage-heavy weighting to 42nd under a structure-heavy one. So the very top is
-fairly stable, but the middle of the table should be read with that movement in
-mind.
+weighting. Others move a lot. Tennessee, for example, runs from 10th under an
+outage-heavy weighting to 42nd under a structure-heavy one. The very top is fairly
+stable. I would read the middle with that movement in mind.
 
-The choice of normalisation matters little at the top: z-score and min-max both
-give West Virginia, Mississippi and Maine as the first three. It
-still moves the middle around, and it changes which component is named as a
-state's driver quite a lot, which is worth knowing before quoting that label.
+The choice of normalisation matters little at the top. Z-score and min-max both
+give West Virginia, Mississippi and Maine as the first three. It still moves the
+middle around, and it changes which component is named as a state's driver quite a
+lot. I would check that before quoting the label.
 
 ## Limitations
 
 - State-level aggregation hides a lot. A state can look fine overall and still
   have fragile pockets inside it.
 - The concentration measures are blunt. They say nothing about the transmission
-  network that moves power around, which probably matters at least as much, but
-  that data is harder to get cleanly.
+  network that moves power around, which probably matters at least as much. That
+  data is harder to get cleanly.
 - Peak demand is still a sample figure, so the capacity margin inside the
   exposure deficit is illustrative. Outage burden and concentration are both built
   entirely on real data.
 - The live EIA-860 API path is written but not heavily tested, since it needs a
-  key. In practice eGRID covers the same ground without one. The reliability loader is tested against a fixture shaped like the real
-  workbook, and has been run against the real 2023 file.
+  key. In practice eGRID covers the same ground without one. The reliability loader
+  is tested against a fixture shaped like the real workbook, and has been run
+  against the real 2023 file.
 - Checked against NOAA storm records, the outage data does not line up with
-  severe weather as neatly as the framing here assumes. See the validation section
-  in the README. I have left the framing as it is and reported the mismatch rather
-  than quietly adjusting one to fit the other.
+  severe weather as neatly as I expected when I set this up. See the validation
+  section in the README. I have left the framing as it is and reported the
+  mismatch, rather than adjusting one to fit the other.
 - The code is written against a generic state column rather than hard-coding the
-  US, so in principle it could move to another region, but that has not been
-  tried.
+  US, so in principle it could move to another region. I have not tried that.
 
 ## What this is not
 
-This is not an operational tool and not a way to point at specific vulnerable
-infrastructure. It works from aggregate, public, state-level figures, the same
-kind of data used in energy reporting and academic work, and the coarse
-granularity is intentional.
+This is not an operational tool, and it is not a way to point at specific
+vulnerable infrastructure. It works from aggregate, public, state-level figures,
+the same kind of data used in energy reporting and academic work. The coarse
+grain is intentional.
 
 ## Reproducing
 

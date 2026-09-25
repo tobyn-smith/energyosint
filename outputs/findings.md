@@ -1,6 +1,6 @@
 # Findings
 
-Generated from real outage figures and plant capacity, with peak demand still coming from the built-in sample, so the ranking is part worked example.
+Generated from real outage figures and plant capacity, with peak demand still coming from the built-in sample, so part of the ranking is a worked example.
 
 ## Most exposed states
 
@@ -25,15 +25,15 @@ Generated from real outage figures and plant capacity, with peak demand still co
 
 ## What tends to drive exposure
 
-Across the 51 states, the standout signal is: 18 by the exposure deficit, 17 by outage burden, 16 by concentration.
+Across the 51 states, the split is: 18 by the exposure deficit, 17 by outage burden, 16 by concentration.
 
 ## Reading it for policy
 
-The driver matters more than the rank, because each one points at a different lever:
+The driver matters more than the rank. Each one points at a different response:
 
-- Outage burden is a weather and wires problem. The lever is hardening and restoration, not new plants.
-- Concentration is a single-point-of-failure problem. The lever is diversifying what the state leans on.
-- An exposure deficit is a headroom problem. The lever is capacity, storage or demand-side work.
+- Outage burden is a weather and wires problem. Hardening and restoration matter more here than new plants.
+- Concentration is a single-point-of-failure problem. The response is diversifying what the state leans on.
+- An exposure deficit is a headroom problem. That means capacity, storage, or work on the demand side.
 
 ## Caveats
 
