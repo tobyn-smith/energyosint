@@ -26,20 +26,20 @@ seeded synthetic sample so it still runs end to end. Sample rows are tagged in a
 sample data. The pipeline prints which it used for each.
 
 The committed results use the real EIA-861 reliability figures for 2023 and real
-plant capacity from EPA's eGRID2023. Peak demand is the only sample input. Two of
-the three components are built on real data. The third, the exposure deficit, is
-part real: the installed capacity side of the margin is real, and only the peak
+plant capacity from EPA's eGRID2023, so peak demand is the only sample input. Two of
+the three components are built on real data, and the third, the exposure deficit, is
+only part real: the installed capacity side of the margin is real, and only the peak
 demand it is divided by is not.
 
 EIA-861 reliability, eGRID capacity and state peak demand all ship as bulk
 spreadsheets rather than a clean API route. The pipeline will read a local copy of
-any of them if you point `config.yaml` at it. Otherwise it falls back to the
+any of them if you point `config.yaml` at it, and otherwise it falls back to the
 synthetic path for that input alone.
 
 The reliability workbook takes some care to read. It has two stacked header rows,
 repeats the same column names under "IEEE Standard" and again under "Any
 Standard", and writes missing values as ".". I take the IEEE series because it is
-the like-for-like one across utilities. I include major event days because storms
+the like-for-like one across utilities, I include major event days because storms
 are the point, and I use the sheet EIA has already aggregated to states. Rolling
 the per-utility sheet up by hand would weight a co-op with a few thousand customers
 the same as a utility serving millions.
@@ -83,11 +83,11 @@ its raw numbers happen to be larger. The composite uses the weights in `config.y
 - exposure deficit 0.25
 
 I put the most weight on outage burden because how often the power really fails
-is the most direct signal. The other two are more about how the system is built,
-so they count for less. The weights are normalised to sum to one, and the final
+is the most direct signal, while the other two are more about how the system is
+built and so count for less. The weights are normalised to sum to one, and the final
 composite is rescaled to a 0 to 100 score so it is easier to read.
 
-The weights are a judgement call. That is the main reason they live in one file,
+The weights are a judgement call, which is the main reason they live in one file
 where they are easy to change.
 
 ## How sensitive the ranking is
@@ -95,14 +95,14 @@ where they are easy to change.
 Because the weights are subjective, `analysis/weight_sensitivity.py` re-scores
 the states under a few different weightings and checks how steady the top of the
 table is. Six states (AR, KY, LA, MS, OK, WV) stay in the top 10 under every
-weighting. Others move a lot. Tennessee, for example, runs from 10th under an
-outage-heavy weighting to 42nd under a structure-heavy one. The very top is fairly
-stable. I would read the middle with that movement in mind.
+weighting, while others move a lot. Tennessee, for example, runs from 10th under an
+outage-heavy weighting to 42nd under a structure-heavy one, so the very top is
+fairly stable and I would read the middle with that movement in mind.
 
-The choice of normalisation matters little at the top. Z-score and min-max both
-give West Virginia, Mississippi and Maine as the first three. It still moves the
-middle around, and it changes which component is named as a state's driver quite a
-lot. I would check that before quoting the label.
+The choice of normalisation matters little at the top, since z-score and min-max
+both give West Virginia, Mississippi and Maine as the first three. It still moves
+the middle around, and it changes which component is named as a state's driver
+quite a lot, so I would check that before quoting the label.
 
 ## Limitations
 
@@ -129,7 +129,7 @@ lot. I would check that before quoting the label.
 
 This is not an operational tool, and it is not a way to point at specific
 vulnerable infrastructure. It works from aggregate, public, state-level figures,
-the same kind of data used in energy reporting and academic work. The coarse
+the same kind of data used in energy reporting and academic work, and the coarse
 grain is intentional.
 
 ## Reproducing

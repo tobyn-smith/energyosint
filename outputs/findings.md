@@ -29,11 +29,11 @@ Across the 51 states, the split is: 18 by the exposure deficit, 17 by outage bur
 
 ## Reading it for policy
 
-The driver matters more than the rank. Each one points at a different response:
+The driver matters more than the rank, and each one points at a different response:
 
-- Outage burden is a weather and wires problem. Hardening and restoration matter more here than new plants.
-- Concentration is a single-point-of-failure problem. The response is diversifying what the state leans on.
-- An exposure deficit is a headroom problem. That means capacity, storage, or work on the demand side.
+- Outage burden is a weather and wires problem, so hardening and restoration matter more here than new plants.
+- Concentration is a single-point-of-failure problem, and the response is diversifying what the state leans on.
+- An exposure deficit is a headroom problem, which means capacity, storage, or work on the demand side.
 
 ## Caveats
 

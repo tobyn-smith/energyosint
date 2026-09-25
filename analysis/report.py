@@ -109,11 +109,11 @@ def main():
 
     lines.append("## Reading it for policy")
     lines.append("")
-    lines.append("The driver matters more than the rank. Each one points at a different response:")
+    lines.append("The driver matters more than the rank, and each one points at a different response:")
     lines.append("")
-    lines.append("- Outage burden is a weather and wires problem. Hardening and restoration matter more here than new plants.")
-    lines.append("- Concentration is a single-point-of-failure problem. The response is diversifying what the state leans on.")
-    lines.append("- An exposure deficit is a headroom problem. That means capacity, storage, or work on the demand side.")
+    lines.append("- Outage burden is a weather and wires problem, so hardening and restoration matter more here than new plants.")
+    lines.append("- Concentration is a single-point-of-failure problem, and the response is diversifying what the state leans on.")
+    lines.append("- An exposure deficit is a headroom problem, which means capacity, storage, or work on the demand side.")
     lines.append("")
 
     lines.append("## Caveats")
