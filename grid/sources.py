@@ -185,6 +185,11 @@ def _live_plants(base: str, key: str) -> pd.DataFrame | None:
     df = pd.concat(frames, ignore_index=True)
 
     # Field names drift between EIA datasets; map defensively.
+    # Checked against a live v2 sample on 27 Oct 2026: the fuel description is
+    # `energy-source-desc` (hyphens). The underscored name was a guess and is
+    # still accepted so older fixtures keep working.
+    if "energy-source-desc" in df.columns and "energy_source_desc" not in df.columns:
+        df = df.rename(columns={"energy-source-desc": "energy_source_desc"})
     rename = {
         "stateid": "state", "plantName": "plant_name",
         "energy_source_desc": "fuel",

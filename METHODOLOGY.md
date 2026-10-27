@@ -26,7 +26,10 @@ seeded synthetic sample so it still runs end to end. Sample rows are tagged in a
 sample data. The pipeline prints which it used for each.
 
 The committed results use the real EIA-861 reliability figures for 2023 and real
-plant capacity from EPA's eGRID2023, so peak demand is the only sample input. Two of
+plant capacity from EPA's eGRID2023, so peak demand is the only sample input.
+The outage minutes were checked against the public 2023 EIA-861 zip; see
+[DATA_VERIFICATION.md](DATA_VERIFICATION.md) for what was compared and what was
+not. Two of
 the three components are built on real data, and the third, the exposure deficit, is
 only part real: the installed capacity side of the margin is real, and only the peak
 demand it is divided by is not.
@@ -113,10 +116,11 @@ and it changes which component gets named as a state's driver.
 - Peak demand is still a sample figure, so the capacity margin inside the
   exposure deficit is illustrative. Outage burden and concentration are both built
   entirely on real data.
-- The live EIA-860 API path is written but not heavily tested, since it needs a
-  key. In practice eGRID covers the same ground without one. The reliability loader
-  is tested against a fixture shaped like the real workbook, and has been run
-  against the real 2023 file.
+- The live EIA-860 API path is written but not used for the committed scores.
+  A sample response shows the fuel description field is `energy-source-desc`.
+  In practice eGRID covers plant capacity without a key. The reliability loader
+  is tested against a fixture shaped like the real workbook, and the committed
+  2023 SAIDI values match the public State Totals sheet.
 - Checked against NOAA storm records, the outage data does not line up with
   severe weather as neatly as I expected when I set this up. See the validation
   section in the README. I have left the framing as it is and reported the
