@@ -18,15 +18,16 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from grid import sources
 
 
-def _fake_plant(period: str, state: str, plant: str, fuel: str, mw: float) -> dict:
-    # Field names as the EIA v2 API returns them for this dataset.
-    return {
+def _fake_plant(period: str, state: str, plant: str, fuel: str, mw: float, *, live_fuel_key: str = "energy-source-desc") -> dict:
+    # Default keys match a live EIA v2 sample (operating-generator-capacity, 2026-08).
+    row = {
         "period": period,
         "stateid": state,
         "plantName": plant,
-        "energy_source_desc": fuel,
         "nameplate-capacity-mw": mw,
     }
+    row[live_fuel_key] = fuel
+    return row
 
 
 def test_walks_all_pages_and_keeps_latest_period(monkeypatch):
@@ -79,3 +80,15 @@ def test_single_page_works_without_repeating(monkeypatch):
 def test_failed_pages_fall_back_to_none(monkeypatch):
     monkeypatch.setattr(sources, "_get_json", lambda url, params: None)
     assert sources._live_plants("https://api.eia.gov/v2", "key") is None
+
+
+def test_accepts_the_older_underscored_fuel_field(monkeypatch):
+    history = [_fake_plant("2024-01", "TX", "TX-1", "Wind", 200.0,
+                           live_fuel_key="energy_source_desc")]
+    monkeypatch.setattr(
+        sources, "_get_json",
+        lambda url, params: {"response": {"data": history}},
+    )
+    out = sources._live_plants("https://api.eia.gov/v2", "key")
+    assert out is not None
+    assert out.iloc[0]["fuel"] == "wind"

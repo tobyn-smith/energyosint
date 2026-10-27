@@ -23,9 +23,10 @@ I study international affairs, and I wrote the code for this as well. The questi
 is which states look most exposed to losing power, and why that is not the same
 problem in every state. The whole thing is at state level.
 
-> **On the numbers.** Outage figures are real (EIA-861, 2023) and plant capacity
-> is real (EPA eGRID2023). Peak demand is the only input that still comes from a
-> built-in sample. The pipeline prints which inputs were real on every run.
+> **On the numbers.** Outage minutes in the committed table match EIA-861 2023
+> (checked against the public zip; see [verification](#data-verification-status)).
+> Plant capacity is from EPA eGRID2023, not from the EIA API. Peak demand is still
+> a built-in sample. The pipeline prints which inputs were real on every run.
 
 **Contents** ·
 [What it found](#what-it-found) ·
@@ -34,6 +35,7 @@ problem in every state. The whole thing is at state level.
 [Quick start](#quick-start) ·
 [Data](#data-and-the-sample-fallback) ·
 [Validation](#does-the-outage-data-hold-up) ·
+[Verification](#data-verification-status) ·
 [API](#a-json-api) ·
 [Layout](#how-the-project-is-laid-out)
 
@@ -83,7 +85,7 @@ The top ten as it currently stands, straight from `outputs/exposure_index.csv`:
 | | |
 |---|---|
 | **Pipeline** | Python (pandas, numpy) that ingests, cleans, scores and plots, with a seeded sample so it runs without an API key |
-| **Testing** | 33 tests covering the scoring maths, the spreadsheet loaders and the API, run by a GitHub Action on every change to the analysis code |
+| **Testing** | 46 tests covering the scoring maths, the spreadsheet loaders, the published figures and the API, run by a GitHub Action on every change |
 | **Mapping** | A Python choropleth via geopandas and an R map via `usmap`, plus a GeoPackage export that opens in QGIS |
 | **Storage** | A SQLite store of every run, and an optional FastAPI service that re-ranks the states live for any weights, using the same scoring code as the pipeline |
 | **Front end** | No JavaScript libraries. The deck, the two interactive maps and the weight explorer are hand-written SVG and vanilla JS |
@@ -133,7 +135,7 @@ build it, and abroad the hard part is getting hold of the same three inputs.
 
 ## Quick start
 
-With Python installed, from the project folder:
+With Python 3.12 (the version CI uses) installed, from the project folder:
 
 ```bash
 pip install -r requirements.txt
@@ -141,7 +143,10 @@ python pipeline.py
 ```
 
 That is the whole thing. It prints its progress, shows the most exposed states,
-and writes the results into the `outputs` folder.
+and writes the results into the `outputs` folder. Without the agency workbooks
+in `data/raw` (that folder is gitignored), this run uses the seeded sample for
+any missing input. The committed tables and maps in `outputs/` are the
+real-data results already; you do not need a key just to inspect them.
 
 Two settings can be changed without editing any files. `--normalize` switches the
 scaling method and `--top-n` sets how many states show up in the bar chart:
@@ -203,6 +208,7 @@ python analysis/weight_sensitivity.py   # how much the weights move the ranking
 python analysis/regional_summary.py     # roll the scores up to census regions
 python analysis/component_overlap.py    # do the three parts measure the same thing
 python analysis/validate_outages.py     # check the outage data against NOAA storms
+python analysis/validate_data.py        # check the published figures still add up
 python analysis/report.py               # write a short findings summary
 ```
 
@@ -233,9 +239,10 @@ you want to see the numbers at each step.
 
 ## Data and the sample fallback
 
-The real generation data comes from the EIA open data service. Using it needs a
-free key. You request one at https://www.eia.gov/opendata, then save it where
-the project can find it:
+Plant capacity can come from the EIA open data service. That path needs a
+free key (https://www.eia.gov/opendata). The committed results do not use it:
+they use EPA's eGRID workbook instead, which does not need a key. If you do
+want the EIA API, save the key where the project can find it:
 
 ```bash
 setx EIA_API_KEY your_key_here     # Windows
@@ -265,9 +272,19 @@ which it used:
 
 The committed results were produced that way. The outage figures are the real
 EIA-861 ones for 2023, from `f8612023.zip` on the
-[EIA-861 page](https://www.eia.gov/electricity/data/eia861/). That file is not in
-the repo, because it is EIA's to distribute and `data/raw` is ignored, so download
-it yourself if you want the same numbers.
+[EIA-861 page](https://www.eia.gov/electricity/data/eia861/). The 2023 file now
+lives at
+[archive/zip/f8612023.zip](https://www.eia.gov/electricity/data/eia861/archive/zip/f8612023.zip).
+That file is not in the repo, because it is EIA's to distribute and `data/raw`
+is ignored, so download it yourself if you want the same numbers:
+
+```bash
+mkdir -p data/raw
+curl -fsSL -o data/raw/f8612023.zip \
+  https://www.eia.gov/electricity/data/eia861/archive/zip/f8612023.zip
+```
+
+`config.yaml` already points `reliability_workbook` at `f8612023.zip`.
 
 Reading it is fiddlier than it sounds, which is why there are tests for it. The
 sheet has two stacked header rows, repeats the same column names under "IEEE
@@ -299,6 +316,36 @@ restore it, seem to matter more. It is one year of data, and NOAA event counts
 partly reflect how densely a state is observed.
 
 ![Storms against storm-driven outages](outputs/validation_storms.png)
+
+## Data verification status
+
+A recruiter-length summary. The full check, URLs, and commands are in
+[DATA_VERIFICATION.md](DATA_VERIFICATION.md). Checked on 27 October 2026.
+
+**Verified against the public EIA source**
+
+- Committed SAIDI (outage minutes) for all 51 places in
+  `outputs/exposure_index.csv` matches EIA-861 2023, sheet `State Totals`,
+  IEEE standard including major event days.
+- The EIA v2 route `electricity/operating-generator-capacity` and series
+  `nameplate-capacity-mw` exist. Sample records include `stateid`, `plantName`,
+  and `nameplate-capacity-mw`.
+- Rounded Georgia profile figures on the Georgia page match EIA's Georgia
+  Electricity Profile 2024, Table 1.
+
+**Not verified, or only partly checked**
+
+- Plant capacity in the committed index is EPA eGRID2023. It was not compared
+  to EIA-860 here.
+- Peak demand is still the synthetic sample.
+- The live EIA-860 fuel field in the API is `energy-source-desc`, not the
+  guessed `energy_source_desc`. The loader now accepts both. A full national
+  API pull was not run, and API fuel labels are still not a complete map onto
+  the pipeline's fuel names, so committed capacity still comes from eGRID.
+- SAIFI is used in scoring but is not a published column, so it was not
+  matched to the committed CSV.
+- `python analysis/validate_data.py` checks that the published scores recompute
+  from their components. That is an internal check, not an EIA check.
 
 ## Digging further
 
@@ -397,6 +444,7 @@ analysis/
   component_overlap.py   checks whether the three parts overlap
   report.py              writes a short findings summary
   validate_outages.py    checks the outage data against NOAA storm records
+  validate_data.py       checks the published figures still add up
   social_card.py         draws the link preview image for the site
 docs/            the interactive slide deck and the Georgia deep dive
   data/index.json  the per-state data the deck reads, refreshed by the pipeline
@@ -404,7 +452,9 @@ docs/            the interactive slide deck and the Georgia deep dive
 config.yaml      the weights and other settings
 requirements-api.txt  extra libraries for the API only
 METHODOLOGY.md   the longer write-up of the choices and limits
-.github/workflows/build.yml  rebuilds the site data on push
+DATA_VERIFICATION.md  what was checked against EIA, and what was not
+.github/workflows/build.yml  runs the tests and the data check
+.github/workflows/refresh-data.yml  rebuilds the figures, but only from real data
 ```
 
 ## Sources
