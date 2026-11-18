@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Grid Resilience Exposure Index</title>
   <meta name="description" content="An interactive slide deck ranking US states by how exposed their electricity systems look, built from public data.">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2317181a'/><rect x='6' y='19' width='5' height='7' fill='%23f6f4ef'/><rect x='13.5' y='13' width='5' height='13' fill='%23e08a63'/><rect x='21' y='7' width='5' height='19' fill='%23b5462f'/></svg>">
-  <meta name="theme-color" content="#f6f4ef">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%233B5571'/><rect x='6' y='19' width='5' height='7' fill='%23F7F3EA'/><rect x='13.5' y='13' width='5' height='13' fill='%23e08a63'/><rect x='21' y='7' width='5' height='19' fill='%23b5462f'/></svg>">
+  <meta name="theme-color" content="#F7F3EA">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Grid Resilience Exposure Index">
   <meta property="og:description" content="Which US states look most exposed to losing power, and why that is not the same problem everywhere. Built from open EIA, EPA and NOAA data.">
@@ -15,7 +15,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,700;1,6..72,400&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script>document.documentElement.classList.add('js');</script>
   <link rel="stylesheet" href="style.css">
   <style>
@@ -50,14 +50,14 @@
     .explorer label { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 5px 10px; font-size: .96rem; }
     .explorer label span { font-family: "JetBrains Mono", monospace; font-size: .78rem; font-variant-numeric: tabular-nums; color: var(--gray); }
     .explorer input[type=range] { grid-column: 1 / -1; width: 100%; accent-color: var(--warm); margin: 0; }
-    .explorer button { justify-self: start; margin-top: 4px; font-family: "JetBrains Mono", monospace; font-size: .76rem;
+    .explorer button { justify-self: start; margin-top: 4px; font-family: "Source Sans 3", sans-serif; font-size: .76rem;
       color: var(--gray); background: none; border: 1px solid var(--hair); padding: 6px 12px; cursor: pointer; }
     .explorer button:hover { color: var(--ink); border-color: var(--ink); }
 
     /* bottom navigation: a segmented rail rather than carousel dots */
     .controls { position: fixed; bottom: 0; left: 0; right: 0; z-index: 40; display: flex; align-items: center;
       justify-content: center; gap: 20px; padding: 18px 0 24px; background: linear-gradient(to top, var(--paper) 62%, transparent); }
-    .nav-btn { font-family: "JetBrains Mono", monospace; font-size: .76rem; letter-spacing: .04em;
+    .nav-btn { font-family: "Source Sans 3", sans-serif; font-size: .76rem; letter-spacing: .04em;
       color: var(--gray); background: none; border: none; padding: 4px 2px; cursor: pointer; transition: color .12s; }
     .nav-btn:hover:not(:disabled) { color: var(--ink); }
     .nav-btn:disabled { opacity: .3; cursor: default; }
@@ -112,23 +112,16 @@
         <p class="stand">Which US states look most exposed to losing power, and why that is not the same
         problem in every state. I built the score from public data.</p>
         <p class="byline">Tobyn Smith / built from open EIA, EPA and NOAA data</p>
-        <p class="hint">Use the arrow keys, the marks along the bottom, or a swipe on a phone. The outage
-        figures and the plant capacity are real, while peak demand is still a sample.</p>
+        <p class="hint">Use the arrow keys, the marks along the bottom, or a swipe on a phone.</p>
       </div>
     </section>
 
     <section class="slide">
       <div class="slidewrap">
         <h2>Why look at this</h2>
-        <p class="lead">Keeping the power on is one of the bigger infrastructure questions in US policy,
-        and a few pressures are hitting the grid at the same time.</p>
-        <div class="step"><div class="no">1</div><div><h3>Weather</h3><p>More frequent and more severe
-        storms, heat and cold snaps are behind most of the large outages.</p></div></div>
-        <div class="step"><div class="no">2</div><div><h3>An ageing network</h3><p>A lot of the wires and
-        substations were built decades ago and are being asked to carry more.</p></div></div>
-        <div class="step"><div class="no">3</div><div><h3>A changing fuel mix</h3><p>Coal is retiring, gas
-        and renewables are growing, and that shifts where the weak spots sit.</p></div></div>
-        <p style="margin-top:22px">Most of the data for this is already public, but it is split across agencies
+        <p class="lead">I study international affairs, and I wrote the code for this as well. I wanted one comparable figure for how exposed each state's grid looks, from public data, and living in Georgia made the US numbers hard to ignore.</p>
+        <p>Weather is part of it. More frequent and more severe storms, heat and cold snaps are behind most of the large outages. A lot of the wires and substations were built decades ago and are being asked to carry more. Coal is retiring, gas and renewables are growing, and that shifts where the weak spots sit.</p>
+        <p>Most of the data for this is already public, but it is split across agencies
         and formats. I pulled a few of those sources into one score per state so they can be compared.</p>
       </div>
     </section>
@@ -136,7 +129,7 @@
     <section class="slide">
       <div class="slidewrap">
         <h2>What it is built on</h2>
-        <p class="lead">Three public inputs, from two federal agencies, with no paywall and no login.</p>
+        <p class="lead">It uses three public datasets from EIA and EPA. You do not need a login or a paid key.</p>
         <div class="step"><div class="no">1</div><div><h3>How often the power fails</h3><p>The industry
         reliability measures, SAIDI and SAIFI, for how long and how often customers lose power.</p></div></div>
         <div class="step"><div class="no">2</div><div><h3>How the supply is built</h3><p>Generating capacity
@@ -144,9 +137,7 @@
         station.</p></div></div>
         <div class="step"><div class="no">3</div><div><h3>How much slack there is</h3><p>Installed capacity
         set against peak demand, so you can see how thin the margin is on a bad day.</p></div></div>
-        <p class="hint" style="margin-top:18px">The outage figures are the real EIA-861 numbers for 2023, for every state, and
-        plant capacity is real too, from EPA eGRID2023. Peak demand still comes from a built-in
-        sample, which is why the project runs without a data key.</p>
+        <p class="hint" style="margin-top:18px">Outage figures and plant capacity are the real 2023 numbers. Peak demand is still a sample, so treat the spare-capacity part as a worked example. That is also why the project runs without a data key.</p>
       </div>
     </section>
 
@@ -226,9 +217,7 @@
 </svg>
           <div class="mapscale"><span>less exposed</span><i class="scale"></i><span>more exposed</span></div>
           <p class="readout" id="readout">Hover or tap a state to see its score.</p>
-          <figcaption>Outage figures are real (EIA-861 for 2023) and plant capacity is real too (EPA eGRID2023),
-          while the spare-capacity part still uses a sample peak demand. Changing the weights on the next slide
-          re-shades this map.</figcaption>
+          <figcaption>Changing the weights on the next slide re-shades this map.</figcaption>
         </figure>
       </div>
     </section>
@@ -271,9 +260,7 @@
         <div class="step"><div class="no">2</div><div><h3>Maine: the opposite problem</h3><p>Maine has the
         least concentrated fuel mix of any state and still comes third, because its customers lost thirty-one
         hours of power in 2023. That is a lines and restoration problem, not a plant problem.</p></div></div>
-        <div class="step"><div class="no">3</div><div><h3>Same score, different job</h3><p>Spreading a fuel mix, hardening lines and adding spare capacity are three different jobs,
-        with different costs and different timescales. A rank on its own does not say which job it is.</p></div></div>
-        <p style="margin-top:20px">The label under each state on the map is just the short version of that.</p>
+        <p style="margin-top:20px">Spreading a fuel mix is one job. Hardening lines is another. Adding spare plants is a third. A rank does not tell you which of those you are looking at. The label under each state on the map is just the short version of that.</p>
       </div>
     </section>
 
@@ -281,15 +268,8 @@
       <div class="slidewrap">
         <h2>What this is not</h2>
         <p class="lead">The limits matter more than the ranking if you are going to use this for policy.</p>
-        <div class="step"><div class="no">1</div><div><h3>It is not operational</h3><p>State-level figures
-        blur a lot. A state can look fine overall and still have fragile pockets inside it.</p></div></div>
-        <div class="step"><div class="no">2</div><div><h3>One of the three parts is still sampled</h3><p>Outage
-        figures and plant capacity are both real, but peak demand is not, so the spare-capacity part is still
-        a worked example, and I have labelled the parts where they appear.</p></div></div>
-        <div class="step"><div class="no">3</div><div><h3>It leaves out the wires</h3><p>The score says
-        nothing about the transmission network that moves power around, which probably matters as much as the
-        plants do.</p></div></div>
-        <p style="margin-top:20px">The top and the bottom hold. The middle moves around, and a precise place in it
+        <p>It is not operational. State-level figures blur a lot, and a state can look fine overall and still have fragile pockets inside it. As I said earlier, the spare-capacity part is a worked example, and I have labelled the parts where they appear. The score also says nothing about the transmission network that moves power around, which probably matters as much as the plants do.</p>
+        <p>The top and the bottom hold. The middle moves around, and a precise place in it
         is not stable.</p>
       </div>
     </section>
@@ -318,22 +298,11 @@
 
     <section class="slide">
       <div class="slidewrap">
-        <h2>The view from abroad</h2>
-        <p class="lead">This is a US project, but the question is not only a US one. Looking at it from
-        outside changes what counts as a normal year.</p>
-        <div class="step"><div class="no">1</div><div><h3>The gap is real</h3><p>In much of western
-        Europe a typical customer loses power for minutes a year, while in the US the median state lost four hours
-        in 2023 once major storms are counted, and Maine, the worst, lost thirty-one. Countries measure this
-        differently, so the figures do not line up neatly, but the gap is too wide to be a measurement
-        artefact.</p></div></div>
-        <div class="step"><div class="no">2</div><div><h3>Different systems, different trade-offs</h3>
-        <p>Countries that perform well tend to bury more of their lines and pay for it in their bills. The US
-        runs long overhead lines through forest and hurricane country, which is cheaper right up until the
-        weather arrives.</p></div></div>
-        <div class="step"><div class="no">3</div><div><h3>The method is not US-specific</h3><p>Nothing in the
-        scoring is US-specific. With capacity, reliability and demand data, the same three components would
-        run on German L&auml;nder or Indian states, and the hard part abroad is getting hold of the data.</p></div></div>
-        <p style="margin-top:20px">The US publishes enough of this that someone else could rebuild the score. Not many countries do.</p>
+        <h2>What counts as a normal year</h2>
+        <p class="lead">I look at this as someone from the UK, now living in Georgia. What counts as a bad year for outages in the US would be extraordinary in much of western Europe.</p>
+        <p>In much of western Europe a typical customer loses power for minutes a year, while in the US the median state lost four hours in 2023 once major storms are counted, and Maine, the worst, lost thirty-one. Countries measure this differently, so the figures do not line up neatly, but the gap is too wide to be a measurement artefact.</p>
+        <p>Countries that perform well tend to bury more of their lines and pay for it in their bills. The US runs long overhead lines through forest and hurricane country, which is cheaper right up until the weather arrives.</p>
+        <p>Nothing in the scoring is US-specific. With capacity, reliability and demand data, the same three components would run on German L&auml;nder or Indian states, and the hard part abroad is getting hold of the data. The US publishes enough of this that someone else could rebuild the score. Not many countries do.</p>
       </div>
     </section>
 

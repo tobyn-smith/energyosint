@@ -1,74 +1,86 @@
 /* Shared look for both pages. Kept in one file so the deck and the Georgia
    write-up cannot drift apart when the theme changes. Page-specific layout
-   stays in each page's own <style> block. */
+   stays in each page's own <style> block.
+
+   Colour and type tokens confirmed from Tobyn's Counterterrorism Google
+   Slides deck (15EAfZA6jiUY69MgCRRJ-OsDiAUnw44EFtFY0j58f_is, read 18 Nov 2026):
+   Newsreader headings, Source Sans 3 body, slate #3B5571 title bands with
+   cream #F7F3EA text, cream #F7F3EA background, #ECE6D9 panels, ink #1E2833,
+   secondary #5E6875, muted-on-slate #D3DCE6. All pairs checked at WCAG AA. */
 
 :root {
-  --paper: #f6f4ef; --panel: #fbfaf6; --ink: #17181a; --gray: #64655f;
-  --hair: #ddd9d0; --accent: #2d4f63; --warm: #b5462f; --maxw: 700px;
+  --paper: #F7F3EA; --panel: #ECE6D9; --ink: #1E2833; --gray: #5E6875;
+  --hair: rgba(30, 40, 51, 0.18); --rule: #1E2833; --accent: #3B5571;
+  --band: #3B5571; --cream: #F7F3EA; --muted-on-band: #D3DCE6;
+  --warm: #b5462f; --maxw: 700px;
 }
 @media (prefers-color-scheme: dark) {
-  :root { --paper: #121316; --panel: #191a1d; --ink: #e9e7e1; --gray: #97968f;
-          --hair: #2a2b2e; --accent: #8ab4cc; --warm: #d9633f; }
+  /* On-brand adaptation of the same tokens, not in the deck itself. */
+  :root { --paper: #1E2833; --panel: #2C4258; --ink: #F7F3EA; --gray: #D3DCE6;
+          --hair: rgba(247, 243, 234, 0.22); --rule: #F7F3EA; --accent: #D3DCE6;
+          --band: #3B5571; --cream: #F7F3EA; --muted-on-band: #D3DCE6;
+          --warm: #d9633f; }
 }
 
 * { box-sizing: border-box; }
 body {
   margin: 0; background: var(--paper); color: var(--ink);
-  font: 17.5px/1.7 "Source Serif 4", Georgia, serif; -webkit-font-smoothing: antialiased;
+  font: 17.5px/1.7 "Source Sans 3", system-ui, sans-serif; -webkit-font-smoothing: antialiased;
 }
 .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 26px; }
-a { color: var(--ink); }
+a { color: var(--accent); }
+a:hover { color: var(--ink); }
 
-/* masthead: a double rule under the bar, the way a paper sets its title off */
-/* sticky rather than fixed, so it holds a place in the flow on the scrolling
-   page and still sits over the deck, where the body does not scroll */
+/* masthead: slate title band, cream type, as on the CT title slides */
 header.bar { position: sticky; top: 0; height: 58px;
-  background: var(--paper); border-bottom: 3px double var(--hair); z-index: 40; }
-header.bar .wrap { display: flex; align-items: center; justify-content: space-between; height: 55px; }
-.wordmark { font-weight: 700; font-size: 1.02rem; letter-spacing: .005em; }
+  background: var(--band); color: var(--cream); border-bottom: none; z-index: 40; }
+header.bar .wrap { display: flex; align-items: center; justify-content: space-between; height: 58px; }
+.wordmark, .wordmark a { font-family: Newsreader, Georgia, serif; font-weight: 600;
+  font-size: 1.08rem; letter-spacing: 0; color: var(--cream); }
 header.bar nav { display: flex; align-items: center; gap: 18px; }
-header.bar nav a { color: var(--gray); text-decoration: none; font-size: .95rem; }
-header.bar nav a:hover { color: var(--ink); }
-.counter { font-family: "JetBrains Mono", monospace; font-size: .78rem; color: var(--gray); font-variant-numeric: tabular-nums; }
-.viewtoggle { font-family: "JetBrains Mono", monospace; font-size: .72rem; letter-spacing: .03em;
-  color: var(--gray); background: none; border: 1px solid var(--hair); padding: 4px 10px; cursor: pointer; transition: .12s; }
-.viewtoggle:hover { color: var(--ink); border-color: var(--ink); }
+header.bar nav a { color: var(--muted-on-band); text-decoration: none; font-size: .95rem; }
+header.bar nav a:hover { color: var(--cream); }
+.counter { font-family: "Source Sans 3", sans-serif; font-size: .78rem; color: var(--muted-on-band); font-variant-numeric: tabular-nums; }
+.viewtoggle { font-family: "Source Sans 3", sans-serif; font-size: .72rem; letter-spacing: .03em;
+  color: var(--muted-on-band); background: none; border: 1px solid var(--muted-on-band); padding: 4px 10px; cursor: pointer; transition: .12s; }
+.viewtoggle:hover { color: var(--cream); border-color: var(--cream); }
 @media (max-width: 600px) { header.bar nav a { display: none; } }
 
-h1 { font-weight: 700; font-size: clamp(2.2rem, 6vw, 3.4rem); line-height: 1.08; letter-spacing: -.018em; margin: 0 0 20px; }
-h2 { font-weight: 600; font-size: clamp(1.45rem, 3.4vw, 1.8rem); line-height: 1.2; letter-spacing: -.012em;
-  margin: 0 0 18px; padding-bottom: 12px; border-bottom: 1px solid var(--hair); }
-h3 { font-size: 1.06rem; font-weight: 600; margin: 0 0 4px; }
+h1, h2, h3 { font-family: Newsreader, Georgia, serif; color: var(--ink); }
+h1 { font-weight: 600; font-size: clamp(2.2rem, 6vw, 3.4rem); line-height: 1.08; letter-spacing: -.01em; margin: 0 0 20px; }
+h2 { font-weight: 600; font-size: clamp(1.45rem, 3.4vw, 1.8rem); line-height: 1.2; letter-spacing: 0;
+  margin: 0 0 18px; padding-bottom: 12px; border-bottom: 1px solid var(--rule); }
+h3 { font-size: 1.12rem; font-weight: 600; margin: 0 0 4px; }
 p { margin: 0 0 16px; }
-.stand { font-size: 1.22rem; line-height: 1.5; color: var(--gray); margin: 0 0 26px; max-width: 42ch; }
+.stand { font-family: Newsreader, Georgia, serif; font-style: italic; font-weight: 400;
+  font-size: 1.22rem; line-height: 1.5; color: var(--ink); margin: 0 0 26px; max-width: 42ch; }
 .lead { color: var(--gray); }
 .hint { font-size: .93rem; line-height: 1.6; color: var(--gray); margin-top: 14px; }
-.byline { font-family: "JetBrains Mono", monospace; font-size: .74rem; letter-spacing: .02em;
-  color: var(--gray); margin: 0 0 26px; padding-top: 16px; border-top: 1px solid var(--hair); }
-.cta { display: inline-block; text-decoration: none; border: 1px solid var(--ink);
-  padding: 9px 17px; font-size: .97rem; transition: .12s; }
-.cta:hover { color: var(--paper); background: var(--ink); }
+.byline { font-family: "Source Sans 3", sans-serif; font-size: .8rem; letter-spacing: .02em;
+  color: var(--gray); margin: 0 0 26px; padding-top: 16px; border-top: 1px solid var(--rule); }
+.cta { display: inline-block; text-decoration: none; background: var(--band); color: var(--cream);
+  border: 1px solid var(--band); padding: 9px 17px; font-size: .97rem; transition: .12s; }
+.cta:hover { color: var(--cream); background: var(--ink); border-color: var(--ink); }
 
-.step { display: grid; grid-template-columns: 26px 1fr; gap: 18px; padding: 15px 0; }
-.step + .step { border-top: 1px solid var(--hair); }
-.step .no { font-family: "JetBrains Mono", monospace; font-size: .82rem; color: var(--accent);
-  font-variant-numeric: tabular-nums; padding-top: .35em; }
+.step { display: grid; grid-template-columns: 26px 1fr; gap: 14px; padding: 14px 16px;
+  background: var(--panel); margin: 0 0 10px; }
+.step + .step { border-top: none; }
+.step .no { font-family: "Source Sans 3", sans-serif; font-size: .82rem; color: var(--accent);
+  font-variant-numeric: tabular-nums; padding-top: .45em; font-weight: 600; }
 .step p { margin: 0; color: var(--gray); font-size: 1rem; }
 
 figure { margin: 8px 0 0; }
 figcaption { font-size: .92rem; color: var(--gray); margin-top: 14px; line-height: 1.55;
   padding-top: 12px; border-top: 1px solid var(--hair); }
-.maptip { position: fixed; pointer-events: none; background: var(--ink); color: var(--paper); padding: 5px 9px;
-  font-family: "JetBrains Mono", monospace; font-size: .74rem; opacity: 0; transition: opacity .1s; z-index: 60; white-space: nowrap; }
-/* a readout under each map, so the maps still say something when there is no
-   mouse to hover with (a tap fills this in on a phone) */
-.readout { text-align: center; font-family: "JetBrains Mono", monospace; font-size: .76rem;
+.maptip { position: fixed; pointer-events: none; background: var(--band); color: var(--cream); padding: 5px 9px;
+  font-family: "Source Sans 3", sans-serif; font-size: .74rem; opacity: 0; transition: opacity .1s; z-index: 60; white-space: nowrap; }
+.readout { text-align: center; font-family: "Source Sans 3", sans-serif; font-size: .76rem;
   color: var(--gray); margin: 12px 0 0; min-height: 1.5em; line-height: 1.5; }
 .readout b { color: var(--ink); font-weight: 600; }
 
 table { width: 100%; border-collapse: collapse; }
-th { text-align: left; font-family: "JetBrains Mono", monospace; font-weight: 400; font-size: .72rem;
-  letter-spacing: .04em; text-transform: uppercase; color: var(--gray); padding: 0 8px 9px; border-bottom: 1px solid var(--ink); }
+th { text-align: left; font-family: "Source Sans 3", sans-serif; font-weight: 600; font-size: .72rem;
+  letter-spacing: .04em; text-transform: uppercase; color: var(--gray); padding: 0 8px 9px; border-bottom: 1px solid var(--rule); }
 td { padding: 9px 8px; border-bottom: 1px solid var(--hair); font-variant-numeric: tabular-nums; }
 .track { height: 4px; background: var(--hair); overflow: hidden; }
 .track i { display: block; height: 100%; background: var(--warm); transition: width .12s ease; }
@@ -79,7 +91,7 @@ pre .cmt { color: var(--gray); }
 code { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: .85em; }
 p code, li code { background: var(--panel); border: 1px solid var(--hair); padding: 1px 5px; }
 
-footer { border-top: 1px solid var(--hair); padding: 26px 0 52px; }
+footer { border-top: 1px solid var(--rule); padding: 26px 0 52px; }
 footer p { margin: 0; font-size: .9rem; color: var(--gray); }
 footer a { color: var(--gray); }
 footer a:hover { color: var(--ink); }
