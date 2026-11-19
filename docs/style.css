@@ -6,20 +6,17 @@
    Slides deck (15EAfZA6jiUY69MgCRRJ-OsDiAUnw44EFtFY0j58f_is, read 18 Nov 2026):
    Newsreader headings, Source Sans 3 body, slate #3B5571 title bands with
    cream #F7F3EA text, cream #F7F3EA background, #ECE6D9 panels, ink #1E2833,
-   secondary #5E6875, muted-on-slate #D3DCE6. All pairs checked at WCAG AA. */
+   secondary #5E6875, muted-on-slate #D3DCE6. All pairs checked at WCAG AA.
+   The Baltic site (tobyn-smith/transit theme.scss) uses the same tokens, nav
+   band, heading sizes, panels, map frame, legend and tooltip, so the two
+   projects read as one family. */
 
 :root {
   --paper: #F7F3EA; --panel: #ECE6D9; --ink: #1E2833; --gray: #5E6875;
   --hair: rgba(30, 40, 51, 0.18); --rule: #1E2833; --accent: #3B5571;
   --band: #3B5571; --cream: #F7F3EA; --muted-on-band: #D3DCE6;
   --warm: #b5462f; --maxw: 700px;
-}
-@media (prefers-color-scheme: dark) {
-  /* On-brand adaptation of the same tokens, not in the deck itself. */
-  :root { --paper: #1E2833; --panel: #2C4258; --ink: #F7F3EA; --gray: #D3DCE6;
-          --hair: rgba(247, 243, 234, 0.22); --rule: #F7F3EA; --accent: #D3DCE6;
-          --band: #3B5571; --cream: #F7F3EA; --muted-on-band: #D3DCE6;
-          --warm: #d9633f; }
+  --radius: 6px; --map-sea: #E8ECEF;
 }
 
 * { box-sizing: border-box; }
@@ -28,26 +25,36 @@ body {
   font: 17.5px/1.7 "Source Sans 3", system-ui, sans-serif; -webkit-font-smoothing: antialiased;
 }
 .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 26px; }
-a { color: var(--accent); }
+a { color: var(--accent); text-underline-offset: 2px; }
 a:hover { color: var(--ink); }
 
 /* masthead: slate title band, cream type, as on the CT title slides */
 header.bar { position: sticky; top: 0; height: 58px;
   background: var(--band); color: var(--cream); border-bottom: none; z-index: 40; }
-header.bar .wrap { display: flex; align-items: center; justify-content: space-between; height: 58px; }
+header.bar .wrap { display: flex; align-items: center; justify-content: space-between; height: 58px;
+  max-width: none; padding: 0 24px; }
 .wordmark, .wordmark a { font-family: Newsreader, Georgia, serif; font-weight: 600;
   font-size: 1.08rem; letter-spacing: 0; color: var(--cream); }
 header.bar nav { display: flex; align-items: center; gap: 18px; }
-header.bar nav a { color: var(--muted-on-band); text-decoration: none; font-size: .95rem; }
+header.bar nav a { color: var(--muted-on-band); text-decoration: none; font-size: .92rem; }
 header.bar nav a:hover { color: var(--cream); }
 .counter { font-family: "Source Sans 3", sans-serif; font-size: .78rem; color: var(--muted-on-band); font-variant-numeric: tabular-nums; }
 .viewtoggle { font-family: "Source Sans 3", sans-serif; font-size: .72rem; letter-spacing: .03em;
-  color: var(--muted-on-band); background: none; border: 1px solid var(--muted-on-band); padding: 4px 10px; cursor: pointer; transition: .12s; }
+  color: var(--muted-on-band); background: none; border: 1px solid var(--muted-on-band); border-radius: 4px;
+  padding: 4px 10px; cursor: pointer; transition: .12s; }
 .viewtoggle:hover { color: var(--cream); border-color: var(--cream); }
-@media (max-width: 600px) { header.bar nav a { display: none; } }
+.wordmark { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+header.bar nav { flex-shrink: 0; }
+.counter, .viewtoggle { white-space: nowrap; }
+@media (max-width: 600px) {
+  header.bar nav a { display: none; }
+  header.bar .wrap { padding: 0 12px; gap: 10px; }
+  header.bar nav { gap: 10px; }
+  .wordmark, .wordmark a { font-size: .94rem; }
+}
 
 h1, h2, h3 { font-family: Newsreader, Georgia, serif; color: var(--ink); }
-h1 { font-weight: 600; font-size: clamp(2.2rem, 6vw, 3.4rem); line-height: 1.08; letter-spacing: -.01em; margin: 0 0 20px; }
+h1 { font-weight: 600; font-size: clamp(2.2rem, 5vw, 3rem); line-height: 1.1; letter-spacing: -.01em; margin: 0 0 20px; }
 h2 { font-weight: 600; font-size: clamp(1.45rem, 3.4vw, 1.8rem); line-height: 1.2; letter-spacing: 0;
   margin: 0 0 18px; padding-bottom: 12px; border-bottom: 1px solid var(--rule); }
 h3 { font-size: 1.12rem; font-weight: 600; margin: 0 0 4px; }
@@ -59,11 +66,11 @@ p { margin: 0 0 16px; }
 .byline { font-family: "Source Sans 3", sans-serif; font-size: .8rem; letter-spacing: .02em;
   color: var(--gray); margin: 0 0 26px; padding-top: 16px; border-top: 1px solid var(--rule); }
 .cta { display: inline-block; text-decoration: none; background: var(--band); color: var(--cream);
-  border: 1px solid var(--band); padding: 9px 17px; font-size: .97rem; transition: .12s; }
+  border: 1px solid var(--band); border-radius: 4px; padding: 9px 17px; font-size: .97rem; transition: .12s; }
 .cta:hover { color: var(--cream); background: var(--ink); border-color: var(--ink); }
 
 .step { display: grid; grid-template-columns: 26px 1fr; gap: 14px; padding: 14px 16px;
-  background: var(--panel); margin: 0 0 10px; }
+  background: var(--panel); border-radius: var(--radius); margin: 0 0 10px; }
 .step + .step { border-top: none; }
 .step .no { font-family: "Source Sans 3", sans-serif; font-size: .82rem; color: var(--accent);
   font-variant-numeric: tabular-nums; padding-top: .45em; font-weight: 600; }
@@ -72,8 +79,12 @@ p { margin: 0 0 16px; }
 figure { margin: 8px 0 0; }
 figcaption { font-size: .92rem; color: var(--gray); margin-top: 14px; line-height: 1.55;
   padding-top: 12px; border-top: 1px solid var(--hair); }
-.maptip { position: fixed; pointer-events: none; background: var(--band); color: var(--cream); padding: 5px 9px;
-  font-family: "Source Sans 3", sans-serif; font-size: .74rem; opacity: 0; transition: opacity .1s; z-index: 60; white-space: nowrap; }
+/* maps: one frame, sea tint, legend and tooltip shared with the Baltic site */
+.usmap, .gamap { background: var(--map-sea); border: 1px solid var(--hair); border-radius: 8px; padding: 14px; }
+.maptip { position: fixed; pointer-events: none; background: var(--cream); color: var(--ink);
+  border: 1px solid var(--hair); border-radius: var(--radius); box-shadow: 0 2px 8px rgba(30, 40, 51, .12);
+  padding: 5px 10px; font-family: "Source Sans 3", sans-serif; font-size: .8rem; opacity: 0; transition: opacity .1s;
+  z-index: 60; white-space: nowrap; }
 .readout { text-align: center; font-family: "Source Sans 3", sans-serif; font-size: .76rem;
   color: var(--gray); margin: 12px 0 0; min-height: 1.5em; line-height: 1.5; }
 .readout b { color: var(--ink); font-weight: 600; }
@@ -82,10 +93,10 @@ table { width: 100%; border-collapse: collapse; }
 th { text-align: left; font-family: "Source Sans 3", sans-serif; font-weight: 600; font-size: .72rem;
   letter-spacing: .04em; text-transform: uppercase; color: var(--gray); padding: 0 8px 9px; border-bottom: 1px solid var(--rule); }
 td { padding: 9px 8px; border-bottom: 1px solid var(--hair); font-variant-numeric: tabular-nums; }
-.track { height: 4px; background: var(--hair); overflow: hidden; }
+.track { height: 4px; background: var(--hair); border-radius: 2px; overflow: hidden; }
 .track i { display: block; height: 100%; background: var(--warm); transition: width .12s ease; }
 
-pre { background: var(--panel); border: 1px solid var(--hair); padding: 15px 17px; overflow-x: auto;
+pre { background: var(--panel); border: 1px solid var(--hair); border-radius: var(--radius); padding: 15px 17px; overflow-x: auto;
   margin: 4px 0 16px; font: 13px/1.7 "JetBrains Mono", ui-monospace, monospace; }
 pre .cmt { color: var(--gray); }
 code { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: .85em; }

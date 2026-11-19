@@ -32,7 +32,7 @@
     .stats b { display: block; font-size: 1.36rem; font-weight: 700; line-height: 1.15; font-variant-numeric: tabular-nums; }
     .stats span { display: block; font-size: .88rem; color: var(--gray); margin-top: 3px; }
     .stats small { display: block; margin-top: 6px; color: var(--accent);
-      font-family: "JetBrains Mono", monospace; font-size: .68rem; letter-spacing: .03em; }
+      font-size: .78rem; letter-spacing: .02em; }
     @media (max-width: 560px) { .stats { grid-template-columns: repeat(2, 1fr); } }
 
     .rank { display: flex; flex-wrap: wrap; gap: 26px; margin: 20px 0 0; }
@@ -43,16 +43,16 @@
     .mix { margin: 20px 0 0; }
     .mix .row { display: grid; grid-template-columns: 92px 1fr 44px; align-items: center; gap: 12px; margin: 8px 0; font-size: .95rem; }
     .mix .track { height: 7px; }
-    .mix .pct { font-family: "JetBrains Mono", monospace; font-variant-numeric: tabular-nums; color: var(--gray); text-align: right; font-size: .8rem; }
+    .mix .pct { font-variant-numeric: tabular-nums; color: var(--gray); text-align: right; font-size: .8rem; }
 
     .tablewrap { overflow-x: auto; margin: 22px 0; }
     table.plants { min-width: 430px; font-size: .94rem; }
     table.plants td.name { font-weight: 600; font-variant-numeric: normal; }
     table.plants td.fuel { color: var(--gray); font-variant-numeric: normal; }
-    .src { font-family: "JetBrains Mono", monospace; font-size: .72rem; letter-spacing: .03em; line-height: 1.6; color: var(--gray); }
+    .src { font-size: .82rem; line-height: 1.6; color: var(--gray); }
 
     .gamap { width: 100%; max-width: 400px; height: auto; display: block; margin: 10px auto 0; }
-    .ga-outline { fill: var(--panel); stroke: var(--gray); stroke-width: 1.1; }
+    .ga-outline { fill: var(--panel); stroke: #CFC5B2; stroke-width: 1.1; }
     .dot { stroke: var(--paper); stroke-width: .6; fill-opacity: .85; cursor: pointer; transition: stroke .1s; }
     .dot:hover, .dot.hi { stroke: var(--ink); stroke-width: 1.8; fill-opacity: 1; }
     .dot.off { display: none; }
@@ -62,13 +62,13 @@
     .d-bio { fill: #5fa05f; } .d-hyd { fill: #3f86c4; } .d-oil { fill: #9c6b52; }
 
     .maplegend { display: flex; flex-wrap: wrap; gap: 7px 8px; justify-content: center; margin: 16px 0 0; }
-    .maplegend .lg { display: inline-flex; align-items: center; gap: 6px; font-family: "JetBrains Mono", monospace;
-      font-size: .72rem; letter-spacing: .02em; color: var(--gray);
-      background: none; border: 1px solid var(--hair); padding: 4px 10px; cursor: pointer; transition: opacity .1s; }
+    .maplegend .lg { display: inline-flex; align-items: center; gap: 6px; font-family: "Source Sans 3", sans-serif;
+      font-size: .8rem; color: var(--ink);
+      background: var(--cream); border: 1px solid var(--hair); border-radius: var(--radius); padding: 4px 10px; cursor: pointer; transition: opacity .1s; }
     .maplegend .lg:hover { border-color: var(--gray); color: var(--ink); }
     .maplegend .lg[aria-pressed="false"] { opacity: .38; }
     .maplegend i { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
-    .mapcount { text-align: center; font-family: "JetBrains Mono", monospace; font-size: .74rem; color: var(--gray); margin: 14px 0 0; }
+    .mapcount { text-align: center; font-size: .82rem; color: var(--gray); margin: 14px 0 0; }
     .mapcount button { font: inherit; color: var(--gray); background: none; border: none;
       border-bottom: 1px solid var(--hair); cursor: pointer; padding: 0 0 1px; margin-left: 10px; }
     .mapcount button:hover { color: var(--ink); border-color: var(--ink); }
@@ -80,7 +80,7 @@
 
   <header class="bar">
     <div class="wrap">
-      <span class="wordmark">Grid Resilience</span>
+      <span class="wordmark"><a href="https://tobynsmith.me/" style="color:inherit;text-decoration:none">Tobyn Smith</a> / Grid Resilience</span>
       <nav>
         <a href="index.html">Back to the index</a>
         <a href="https://github.com/tobyn-smith/energyosint">GitHub</a>
@@ -92,51 +92,39 @@
 
     <div class="hero">
       <h1>Georgia: a closer look</h1>
-      <p class="stand">Georgia is where I live, so I wanted to look at it more closely than a fifty-state
-      ranking allows. This sets the project's score for Georgia against the state's figures from the
-      EIA and a couple of other open sources.</p>
+      <p class="stand">Georgia is where I live, and I wanted to look at it more closely than a fifty-state ranking allows. This page sets the project's score for Georgia against the state's own figures from the EIA and a couple of other open sources.</p>
     </div>
 
     <section>
       <h2>Where Georgia sits in the index</h2>
-      <p class="lead">On the real data Georgia sits in the middle of the table, and no single part of the
-      score stands out as its problem. An earlier draft, on the sample, had it near the top.</p>
+      <p class="lead">On the real data Georgia sits in the middle of the table, and no single part of the score stands out as its problem. An earlier draft, built on the sample, had it near the top.</p>
       <div class="rank">
         <div><b>19th</b><span>of 50 states and DC</span></div>
         <div><b>41.1</b><span>exposure score (0 to 100)</span></div>
         <div><b>343 min</b><span>off supply per customer, 2023</span></div>
         <div><b>Spare capacity</b><span>is what mostly drives it</span></div>
       </div>
-      <p style="margin-top:20px">An earlier version of this page had Georgia second. That was the sample.
-      With the real EIA-861 outage figures and real plant capacity from eGRID it comes out nineteenth, and
-      343 minutes off supply is close to the national middle.</p>
-      <p>Nothing about Georgia is extreme on this measure. Its 343 outage minutes are middling, and gas,
-      nuclear, coal, solar, biomass and hydro all contribute, so it is nowhere near the concentrated supplies
-      that put Mississippi and West Virginia at the top. What edges it up is the spare-capacity part, which
-      still runs on sample peak demand.</p>
+      <p style="margin-top:20px">An earlier version of this page had Georgia second, and that came from the sample. With the real EIA-861 outage figures (the EIA's annual survey of utilities) and real plant capacity from eGRID (the EPA's power plant database), it comes out nineteenth, and 343 minutes off supply is close to the national middle.</p>
+      <p>Nothing about Georgia is extreme on this measure. Its 343 outage minutes are middling, and gas, nuclear, coal, solar, biomass and hydro all play a part, which keeps it well away from the concentrated supplies that put Mississippi and West Virginia at the top. What edges it up is the spare-capacity part, and that part still runs on sample peak demand.</p>
     </section>
 
     <section>
       <h2>The real numbers</h2>
-      <p class="lead">These come from the EIA's Georgia electricity profile for 2024, so they are real
-      figures rather than the sample.</p>
+      <p class="lead">These come from the EIA's Georgia electricity profile for 2024. They are real figures, and none of them comes from the sample.</p>
       <div class="stats">
         <div><b>140 TWh</b><span>net generation a year</span><br><small>8th in the US</small></div>
         <div><b>39,746 MW</b><span>summer capacity</span><br><small>7th in the US</small></div>
         <div><b>Natural gas</b><span>largest single source</span><br><small>EIA 2024</small></div>
         <div><b>11.4&cent;/kWh</b><span>average retail price</span><br><small>26th in the US</small></div>
         <div><b>150 TWh</b><span>retail sales a year</span><br><small>5th in the US</small></div>
-        <div><b>28 GW</b><span>of that is regulated utilities</span><br><small>the rest is IPPs and CHP</small></div>
+        <div><b>28 GW</b><span>of that is regulated utilities</span><br><small>the rest is independent power producers (IPPs) and combined heat and power (CHP)</small></div>
       </div>
-      <p>Georgia both makes and uses a great deal of power. It sells more electricity than all but four
-      states, while the price people actually pay stays fairly ordinary.</p>
+      <p>Georgia makes and uses a great deal of power. It sells more electricity than all but four states, and yet the price people actually pay stays fairly ordinary.</p>
     </section>
 
     <section>
       <h2>Where the power comes from</h2>
-      <p class="lead">Share of generation by fuel, from EPA's eGRID for 2023. That is a different source
-      from the EIA totals above. Gas does most of the work and nuclear is a clear second, while coal keeps
-      slipping as solar climbs.</p>
+      <p class="lead">Share of generation by fuel, from EPA's eGRID for 2023, which is a different source from the EIA totals above. Gas does most of the work and nuclear is a clear second. Coal keeps slipping as solar climbs.</p>
       <div class="mix">
         <div class="row"><span>Natural gas</span><div class="track"><i style="width:46%"></i></div><span class="pct">46%</span></div>
         <div class="row"><span>Nuclear</span><div class="track"><i style="width:29%"></i></div><span class="pct">29%</span></div>
@@ -150,10 +138,7 @@
 
     <section>
       <h2>The big plants</h2>
-      <p>A lot of Georgia's power comes from a handful of very big stations, which is the sort of thing the
-      concentration part of the score is meant to catch. Two of them matter nationally: Bowen is the
-      second largest coal plant in the United States, and Vogtle is among the largest nuclear stations. The
-      five largest in the state, from eGRID:</p>
+      <p>A lot of Georgia's power comes from a handful of very big stations, which is the sort of thing the concentration part of the score is meant to catch. Two of them matter nationally. Bowen is the second largest coal plant in the United States, and Vogtle is among the largest nuclear stations. Here are the five largest in the state, from eGRID:</p>
 
       <div class="tablewrap">
       <table class="plants">
@@ -170,26 +155,17 @@
       <p class="src">Source: EPA eGRID2023. Generation in terawatt-hours; CO2 in millions of tons a year.</p>
 
       <h3>Plant Vogtle (nuclear)</h3>
-      <p>Vogtle's two new reactors, Units 3 and 4, started up in 2023 and 2024, the first newly built US
-      reactors in a generation. The number above is for 2023, before Unit 4 was running, and with Unit 4 Vogtle is
-      past Palo Verde in Arizona, which the 2023 data still has as the largest in the country at
-      4,210 MW. All that steady, low-carbon output helps on
-      the spare-capacity side of the score, but it also means a lot now rides on one site.</p>
+      <p>Vogtle's two new reactors, Units 3 and 4, started up in 2023 and 2024, and they were the first newly built US reactors in a generation. The number above is for 2023, before Unit 4 was running. With Unit 4, Vogtle is past Palo Verde in Arizona, which the 2023 data still has as the largest in the country at 4,210 MW. All that steady, low-carbon output helps on the spare-capacity side of the score, although it also means a lot now rides on one site.</p>
 
       <h3>Plant Scherer (coal)</h3>
-      <p>Scherer, near Juliette, is the seventh largest coal plant in the country out of 222. At 8.3
-      million tons of CO2 in 2023 it was the twenty-second biggest single emitter of any US power plant. Coal is a shrinking part of Georgia's power
-      now, but a plant this size still counts, both for emissions and for how much sits on one asset.</p>
+      <p>Scherer, near Juliette, is the seventh largest coal plant in the country out of 222. At 8.3 million tons of CO2 in 2023, it was the twenty-second biggest single emitter of any US power plant. Coal is a shrinking part of Georgia's power now, but a plant this size still counts, both for its emissions and for how much sits on one asset.</p>
 
-      <p style="margin-top:18px">Most of the state buys from Georgia Power, part of Southern Company, with
-      the rest covered by a big set of electric membership co-ops and city-owned systems.</p>
+      <p style="margin-top:18px">Most of the state buys its power from Georgia Power, part of Southern Company. The rest is covered by a large group of electric membership co-ops and city-owned systems.</p>
     </section>
 
     <section>
       <h2>Where the plants are</h2>
-      <p class="lead">Every Georgia plant of 50 MW or more from eGRID, placed roughly where it sits. Size is
-      capacity, colour is the fuel, and you can hover a dot for its name and size. The handful of big dots
-      are where most of the power actually comes from.</p>
+      <p class="lead">Every Georgia plant of 50 MW or more in eGRID, placed roughly where it sits. Dot size shows capacity and colour shows fuel, and you can hover over a dot for its name and size. The handful of big dots are where most of the power actually comes from.</p>
       <svg viewBox="0 0 552 634" class="gamap" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Map of Georgia power plants">
   <path class="ga-outline" d="M 83.7,534.6 78.4,519.3 71.4,502.7 74.4,481.4 77.2,458.5 71.3,434.0 77.3,392.8 95.4,370.0 85.8,346.8 70.2,306.2 44.4,177.2 16.0,16.1 100.2,17.3 158.5,16.0 294.4,17.0 282.5,27.8 265.0,52.4 294.4,74.0 313.4,81.8 333.7,122.9 346.8,145.9 384.8,176.7 392.3,192.8 418.2,214.0 430.9,244.9 465.8,271.0 473.6,300.7 480.1,315.0 476.3,324.6 496.7,338.8 507.4,363.1 507.3,387.8 517.3,392.6 536.0,399.3 484.5,476.2 467.7,568.4 444.6,566.0 423.0,556.5 409.8,560.9 409.5,606.0 395.4,617.6 387.3,594.9 210.2,575.5 100.3,569.5 83.7,534.6 Z"/>
   <circle class="dot d-sol" cx="400.8" cy="348.6" r="3.6" data-n="Live Oak Solar, LLC" data-f="solar" data-c="51"><title>Live Oak Solar, LLC, solar, 51 MW</title></circle>
@@ -301,27 +277,16 @@
 
     <section>
       <h2>The storms behind the outages</h2>
-      <p>Outages are not what drives Georgia's score, but they are still the part most people would
-      recognise. NOAA's Storm Events Database logs the severe weather that brings lines down. Georgia gets a
-      great deal of it: hurricanes and tropical storms from the Gulf and the Atlantic, summer thunderstorms,
-      and the occasional ice storm.</p>
-      <p>The clearest recent example is Hurricane Helene in September 2024. It tracked inland across Georgia
-      and knocked out power to well over a million customers, one of the worst outage events the state has
-      had. That is the sort of thing the SAIDI and SAIFI numbers are averaging out, and for Georgia the exposure
-      here is really about the weather rather than its plants.</p>
+      <p>Outages do not drive Georgia's score. They are still the part most people would recognise, though. NOAA's Storm Events Database logs the severe weather that brings lines down, and Georgia gets a great deal of it. Hurricanes and tropical storms come in from the Gulf and the Atlantic, summer brings thunderstorms, and every so often there is an ice storm.</p>
+      <p>The clearest recent example is Hurricane Helene in September 2024. It tracked inland across Georgia and cut power to well over a million customers, one of the worst outage events the state has had. That is the sort of thing the SAIDI and SAIFI numbers (average minutes without power, and average number of power cuts, per customer) are averaging out. For Georgia, the exposure here really comes down to the weather far more than its plants.</p>
     </section>
 
     <section>
       <h2>What it means for resilience</h2>
-      <p>Put the two halves together and Georgia comes out unremarkable, well below where the sample had it.
-      Its outage minutes are middling for a storm-prone Southeast, and its
-      fuel mix is one of the broader ones in the country, so <strong>concentration is not its problem</strong>
-      the way it is for Mississippi or West Virginia. The nuclear at Vogtle adds a big block of firm capacity
-      on top of that.</p>
-      <p>What nudges Georgia up is the <strong>spare-capacity</strong> part of the score. Real state peak demand would show whether the margin is actually tight or an artefact of the sample. The other gap is the wires. None of this says anything
-      about the transmission network, and for a state that loses power mostly to storms that is probably
-      where the answer is.</p>
-      <p class="note">The rank is from my index. The plant and outage figures on this page are the real EIA and EPA numbers. Peak demand in the score is still a sample, and I have kept those two kinds of figure separate. The generation, capacity, price and plant figures in the sections above are real throughout, from the EIA, EPA eGRID and NOAA.</p>
+      <p>Put the two halves together and Georgia comes out unremarkable, well below where the sample had it. Its outage minutes are middling for the storm-prone Southeast, and its fuel mix is one of the broader ones in the country, so <strong>concentration is not its problem</strong>
+      the way it is for Mississippi or West Virginia. On top of that, the nuclear at Vogtle adds a big block of firm capacity.</p>
+      <p>What nudges Georgia up is the <strong>spare-capacity</strong> part of the score. Real state peak demand would show whether the margin is genuinely tight or just an artefact of the sample. The other gap is the wires. Nothing here covers the transmission network, and for a state that loses power mostly to storms, that is probably where the answer is.</p>
+      <p class="note">The rank comes from my index. The plant and outage figures on this page are the real EIA and EPA numbers, while peak demand in the score is still a sample, and I have kept the two kinds of figure apart. The generation, capacity, price and plant figures in the sections above are real throughout, from the EIA, EPA eGRID and NOAA.</p>
     </section>
 
   </main>

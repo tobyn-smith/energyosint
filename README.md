@@ -1,9 +1,9 @@
 <h1 align="center">Grid Resilience Exposure Index</h1>
 
 <p align="center">
-  Which US states look most exposed to losing power, and why that is not the same problem in every state.<br>
-  One score from 0 to 100 for each, built from public government data.<br>
-  What sits behind each state's place matters more than the rank itself.
+  Which US states look most exposed to losing power, and why the reasons differ from one state to the next.<br>
+  I score each one from 0 to 100, using public government data.<br>
+  I think what sits behind each state's place matters more than the rank itself.
 </p>
 
 <p align="center">
@@ -20,12 +20,13 @@
 ![Map of exposure scores by state](outputs/exposure_map.png)
 
 I study international affairs, and I wrote the code for this as well. The question
-is which states look most exposed to losing power, and why that is not the same
-problem in every state. The whole thing is at state level.
+is which states look most exposed to losing power, and why the reasons differ from
+one state to the next. Everything here works at state level.
 
-> **On the numbers.** Outage figures are real (EIA-861, 2023) and plant capacity
-> is real (EPA eGRID2023). Peak demand is the only input that still comes from a
-> built-in sample. The pipeline prints which inputs were real on every run.
+> **On the numbers.** Outage figures are real (EIA-861, 2023, the EIA's annual
+> utility survey) and plant capacity is real (EPA eGRID2023, the EPA's power plant
+> database). Peak demand is the only input that still comes from a built-in sample.
+> Every run prints which inputs were real.
 
 **Contents** ·
 [What it found](#what-it-found) ·
@@ -39,28 +40,28 @@ problem in every state. The whole thing is at state level.
 
 ## What it found
 
-A few things came out of this.
+These are the main things I found.
 
 - **The top of the table does not move much.** Six states (AR, KY, LA, MS, OK, WV)
-  stay in the top 10 under every weighting I tried, with West Virginia and Mississippi
-  first and second whichever way the scaling is done. The middle moves enough that
-  a precise rank there does not hold.
-- **The same score is not the same problem.** Mississippi and West Virginia have the
-  two most fuel-concentrated supplies in the country, one on gas and one on coal, and
-  they take the top two places on that alone. Maine is third for the opposite reason:
-  it has the least concentrated fuel mix of any state, and its customers still lost
-  thirty-one hours of power in 2023. Spreading a fuel mix and hardening lines are
-  different jobs.
+  stay in the top 10 under every weighting I tried, and West Virginia and Mississippi
+  come first and second whichever way the scaling is done. The middle moves around
+  enough that I would not trust a precise rank there.
+- **The same score can hide different problems.** Mississippi and West Virginia have
+  the two most fuel-concentrated supplies in the country, one on gas and one on coal,
+  and that alone gives them the top two places. Maine comes third for the opposite
+  reason. It has the least concentrated fuel mix of any state, and its customers still
+  lost thirty-one hours of power in 2023. Spreading a fuel mix is one job, and
+  hardening lines is another.
 - **Two of the three parts overlap, though less than they used to.** Concentration
-  and the exposure deficit correlate at about 0.33, so the structural side is still
-  counted a little twice. That figure was 0.5 when capacity came from the synthetic
-  sample. Real plant data pulled the two apart, and the earlier version overstated
-  the overlap.
+  and the exposure deficit correlate at about 0.33, which means the structural side
+  is still counted a little twice. That figure was 0.5 when capacity came from the
+  synthetic sample. The real plant data pulled the two apart, and the earlier version
+  overstated the overlap.
 - **The weather story is weaker than I expected.** Against NOAA's storm records, how
   much damaging weather a state gets barely predicts how many outage minutes it loses
   to storms (a rank correlation of 0.21). Texas and Georgia record the most storm
   events in the country and lose few minutes to them, while Maine records a fraction
-  as many and lost more than anyone. The check does not use the capacity data.
+  as many and lost more than anyone. This check does not use the capacity data.
   [More below](#does-the-outage-data-hold-up).
 
 The top ten as it currently stands, straight from `outputs/exposure_index.csv`:
@@ -91,45 +92,46 @@ The top ten as it currently stands, straight from `outputs/exposure_index.csv`:
 ## How the score works
 
 Every state gets an exposure score from 0 to 100. A higher score means the state
-looks more likely to struggle to keep the power on, and those are the darker states
-on the map.
+looks more likely to struggle to keep the power on, and those states are shaded
+darker on the map.
 
-That number comes from three simpler ideas, each taken from public figures:
+The number is built from three simpler ideas, each taken from public figures:
 
 1. **Outage burden.** How often the power actually goes out, and for how long.
-   The electricity industry tracks this with two standard measures called SAIDI
-   and SAIFI. More and longer outages count as worse.
+   The electricity industry tracks this with two standard measures, SAIDI (average
+   minutes without power per customer) and SAIFI (average number of power cuts per
+   customer). More and longer outages count as worse.
 
-2. **Concentration.** How much of a state's power leans on one type of fuel, or
-   on a single very large plant. If a lot depends on one thing, losing that one
-   thing hurts more.
+2. **Concentration.** How much of a state's power depends on one type of fuel,
+   or on a single very large plant. When a lot rests on one thing, losing it hurts
+   more.
 
 3. **Exposure deficit.** Whether a state has much spare generating capacity
-   above its busiest demand, and whether its power supply is varied. Tight
-   margins and little variety count as worse.
+   above its busiest demand, and whether its supply is varied. Tight margins and
+   little variety count as worse.
 
-Each piece is put on the same scale and then combined into the final score. How
-much each one counts is set in `config.yaml`, so the weights can be changed and the
-whole thing re-run. I put the most weight on outage burden, since how often the
-power actually fails is the most direct evidence. The other two are about how the
+I put each piece on the same scale and then combine them into the final score.
+How much each one counts is set in `config.yaml`, and you can change the weights
+and re-run the whole thing. I gave outage burden the most weight, because how often
+the power actually fails is the most direct evidence. The other two describe how the
 system is built.
 
-The scaling barely moves the top of the table. Z-score and min-max both put West
-Virginia, Mississippi and Maine in the first three, while further down the exact
+The choice of scaling barely moves the top of the table. Z-score and min-max both
+put West Virginia, Mississippi and Maine in the first three. Further down, the exact
 place of a middling state depends on the settings.
 
 The [project page](https://tobyn-smith.github.io/energyosint/) is an interactive
 slide deck. If you would rather not click through it, the "read view" button in
-the corner lays the same slides out as one page, and printing does the same thing.
+the corner lays the same slides out on one page, and printing does the same.
 You can move through it with the arrow keys, the marks along the bottom, or a swipe
 on your phone. The weight sliders re-rank the table and re-shade the map, and you
-can hover a state for its score and what is driving it. There is a separate page on
+can hover over a state for its score and what is driving it. A separate page covers
 Georgia, with the state's EIA, EPA and NOAA figures and a map of the large plants
 that you can filter by fuel.
 
-Nothing in the scoring is US-specific. With the same three inputs it would run on
-another country's regions. I used the US because the EIA publishes enough to
-build it, and abroad the hard part is getting hold of the same three inputs.
+Nothing in the scoring is specific to the US. With the same three inputs it would
+run on another country's regions. I used the US because the EIA publishes enough to
+build it. Abroad, the hard part is getting hold of those three inputs.
 
 ## Quick start
 
@@ -140,7 +142,7 @@ pip install -r requirements.txt
 python pipeline.py
 ```
 
-That is the whole thing. It prints its progress, shows the most exposed states,
+That is all it takes. It prints its progress, shows the most exposed states,
 and writes the results into the `outputs` folder.
 
 Two settings can be changed without editing any files. `--normalize` switches the
@@ -223,8 +225,8 @@ After running, look in the `outputs` folder:
 
 The Python map and the GeoPackage need an extra library called geopandas. If you
 want them, run `pip install geopandas` first. Without it the pipeline still runs
-and just skips those two files (it prints a line saying so). The bar chart and
-the results table do not need it.
+and skips those two files (it prints a line saying so). The bar chart and the
+results table do not need it.
 
 There is also a `data` folder with the cleaned table and the raw inputs, in case
 you want to see the numbers at each step.
@@ -243,18 +245,18 @@ export EIA_API_KEY=your_key_here   # Mac or Linux
 ```
 
 If there is no key, or the download fails, the project switches to a built-in
-sample so it still runs from start to finish. Sample rows are marked in a
-`source` column, and the program says so when it finishes, so you can tell which
-one you got. If you would rather the run stop than fall back to sample data, set
+sample and still runs from start to finish. Sample rows are marked in a
+`source` column, and the program tells you when it finishes, so you know which
+one you got. If you would rather the run stopped than fell back to sample data, set
 `allow_synthetic_fallback: false` in `config.yaml`.
 
 Two of the inputs, the outage numbers (SAIDI and SAIFI) and state peak demand, do
-not have a clean API endpoint the way the generation data does. EIA ships them as
+not have a clean API endpoint like the generation data does. EIA publishes them as
 bulk spreadsheets. Download the one you want and point `config.yaml` at it
 (`reliability_workbook` and `demand_file`, either an absolute path or a file in
 `data/raw`), and the pipeline reads it. If a file is missing it falls back to the
-sample for that input alone, so a run can mix real and sample data, and it prints
-which it used:
+sample for that input alone. A run can therefore mix real and sample data, and it
+prints which it used:
 
 ```
 [1/4] ingesting public data
@@ -266,36 +268,36 @@ which it used:
 The committed results were produced that way. The outage figures are the real
 EIA-861 ones for 2023, from `f8612023.zip` on the
 [EIA-861 page](https://www.eia.gov/electricity/data/eia861/). That file is not in
-the repo, because it is EIA's to distribute and `data/raw` is ignored, so download
+the repo, because it is EIA's to distribute and `data/raw` is ignored. Download
 it yourself if you want the same numbers.
 
-Reading it is fiddlier than it sounds, which is why there are tests for it. The
+Reading it is fiddlier than it sounds, which is why it has its own tests. The
 sheet has two stacked header rows, repeats the same column names under "IEEE
 Standard" and again under "Any Standard", and writes missing values as ".". The
 loader takes the IEEE figures, including major event days, and uses the sheet EIA
-has already aggregated to states. Averaging utilities by hand would count a small
-co-op the same as one serving millions.
+has already aggregated to states. Averaging utilities by hand would have counted a
+small co-op the same as one serving millions.
 
 ## Does the outage data hold up?
 
-The index leans hardest on outage burden, so `analysis/validate_outages.py` checks
-it against a source collected by someone else: NOAA's Storm Events Database,
-compiled by the National Weather Service.
+The index leans hardest on outage burden, and `analysis/validate_outages.py`
+checks it against a source collected by someone else entirely, NOAA's Storm Events
+Database, which the National Weather Service compiles.
 
 EIA publishes outage minutes twice, once counting major storm days and once
-excluding them. The difference is the part that storms account for. If the weather
+leaving them out. The difference is the part that storms account for. If the weather
 story is right, that gap should track how much damaging weather a state actually
 had.
 
-It mostly does not. Across the fifty places that report both figures (all but
+Mostly it does not. Across the fifty places that report both figures (all but
 Hawaii, which only publishes the one), the rank correlation is 0.21 against the
 number of damaging storms and 0.24 against how much damage they did. Texas and
 Georgia record the most power-relevant storm events in the country and lose few
-minutes to them, while Maine records a fraction as many and lost more than anyone.
+minutes to them. Maine records a fraction as many and lost more than anyone.
 
-Storms clearly matter, or the two outage figures would not sit so far apart, but
-they do not decide who suffers most. How the grid is built, and how quickly crews
-restore it, seem to matter more. It is one year of data, and NOAA event counts
+Storms clearly matter, or the two outage figures would not sit so far apart. They
+just do not decide who suffers most. How the grid is built, and how quickly crews
+restore it, seem to matter more. This is one year of data, and NOAA event counts
 partly reflect how densely a state is observed.
 
 ![Storms against storm-driven outages](outputs/validation_storms.png)
@@ -307,12 +309,12 @@ partly reflect how densely a state is observed.
 
 <br>
 
-The weights are a judgement call, so `analysis/weight_sensitivity.py` re-scores
+The weights are a judgement call, and `analysis/weight_sensitivity.py` re-scores
 the states under a few different weightings and prints which ones stay in the top
-10. Six states (AR, KY, LA, MS, OK, WV) land in the top 10 no matter how the
-weights are set, while others move around a lot. Tennessee, for instance, runs from
-10th under an outage-heavy weighting to 42nd under a structure-heavy one. The top
-holds, while the middle depends on the choices.
+10. Six states (AR, KY, LA, MS, OK, WV) land in the top 10 however the weights are
+set, while others move around a lot. Tennessee, for instance, runs from 10th under
+an outage-heavy weighting to 42nd under a structure-heavy one. The top holds. The
+middle depends on the choices.
 
 The full reasoning behind the components, the weights, and the limitations is
 written up in [METHODOLOGY.md](METHODOLOGY.md).
@@ -325,9 +327,9 @@ written up in [METHODOLOGY.md](METHODOLOGY.md).
 <br>
 
 `analysis/regional_summary.py` averages the state scores up to the four US Census
-regions, which is often an easier way to read the pattern. The South comes out
-highest, then the Northeast, and they get there for different reasons: the South
-and Midwest through actual outages, and the Northeast and West through how
+regions, which I often find an easier way to read the pattern. The South comes out
+highest, then the Northeast, and they get there for different reasons. The South
+and Midwest score through actual outages, the Northeast and West through how
 concentrated their supply is. It writes `outputs/regional_summary.csv` and the chart
 below. Run it with `--level division` for the finer nine-way census split.
 
@@ -341,21 +343,21 @@ below. Run it with `--level division` for the finer nine-way census split.
 <br>
 
 `analysis/component_overlap.py` checks how much the three components correlate,
-since adding them up only makes sense if they are not all measuring the same thing.
-Outage burden turns out to be its own signal, but concentration and the exposure
-deficit move together (about 0.33), because a state with a concentrated supply also
-tends to have a tighter, less varied one. The index therefore leans on that
-structural side a little twice. That overlap was 0.5 while capacity came from the
-synthetic sample, so the real plant data pulled the two apart a fair way.
+because adding them up only makes sense if they are measuring different things.
+Outage burden turns out to be its own signal. Concentration and the exposure
+deficit move together (about 0.33), since a state with a concentrated supply also
+tends to have a tighter, less varied one. The index therefore counts that structural
+side a little twice. The overlap was 0.5 while capacity came from the synthetic
+sample, and the real plant data pulled the two apart a fair way.
 
 </details>
 
 ## A JSON API
 
-If you want the numbers as an API rather than files, there is a small optional
+If you want the numbers as an API rather than as files, there is a small optional
 server. It reads whatever the pipeline last saved to the SQLite database and can
-re-rank the states live for any set of weights, using the same scoring code as the
-pipeline so the two do not disagree.
+re-rank the states live for any set of weights. It uses the same scoring code as
+the pipeline, which keeps the two in agreement.
 
 ```bash
 pip install -r requirements-api.txt
@@ -373,10 +375,10 @@ Then open http://127.0.0.1:8000/docs for the interactive list, or call it direct
 | `GET /api/runs`, `GET /health` | What is stored |
 
 Every pipeline run is also saved to `outputs/index.db` (a SQLite file) and written
-out to `docs/data/index.json`, which is what the web deck reads. That file is
-refreshed locally rather than in CI, because the real figures come from agency
-workbooks that are too large to commit and are not mine to redistribute. A runner
-without them would fall back to the sample and overwrite the real numbers.
+out to `docs/data/index.json`, which is what the web deck reads. I refresh that file
+locally rather than in CI. The real figures come from agency workbooks that are too
+large to commit and are not mine to redistribute, and a runner without them would
+fall back to the sample and overwrite the real numbers.
 
 ## How the project is laid out
 
